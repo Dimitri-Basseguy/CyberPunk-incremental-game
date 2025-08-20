@@ -1,0 +1,136 @@
+{
+  "version": "1.0.0",
+  "decks": [
+    {
+      "id": "deck_mk1",
+      "name": "Cyberdeck Mk.I",
+      "slots": 1,
+      "cpu": 4,
+      "cost": 120,
+      "bonuses": {
+        "netrun": 1,
+        "speed": 1
+      }
+    },
+    {
+      "id": "deck_mk2",
+      "name": "Cyberdeck Mk.II",
+      "slots": 2,
+      "cpu": 7,
+      "cost": 380,
+      "requires": [
+        "deck_mk1"
+      ],
+      "bonuses": {
+        "netrun": 2,
+        "speed": 2
+      }
+    },
+    {
+      "id": "deck_mk3",
+      "name": "Cyberdeck Mk.III",
+      "slots": 3,
+      "cpu": 10,
+      "cost": 1200,
+      "requires": [
+        "deck_mk2"
+      ],
+      "bonuses": {
+        "netrun": 3,
+        "speed": 3
+      }
+    }
+  ],
+  "consoles": [
+    {
+      "id": "console_neo",
+      "name": "Console NEO‑Link",
+      "slots": 1,
+      "cpu": 2,
+      "cost": 160,
+      "bonuses": {
+        "decrypt": 1
+      }
+    },
+    {
+      "id": "console_quantum",
+      "name": "Console Q‑Nexus",
+      "slots": 2,
+      "cpu": 5,
+      "cost": 660,
+      "requires": [
+        "console_neo"
+      ],
+      "bonuses": {
+        "decrypt": 2,
+        "netrun": 1
+      }
+    }
+  ],
+  "implants": [
+    {
+      "id": "implant_neural",
+      "name": "Implant neural µWeave",
+      "cost": 220,
+      "bonuses": {
+        "speed": 1
+      }
+    },
+    {
+      "id": "implant_cortex",
+      "name": "Cortex coproc.",
+      "cost": 760,
+      "requires": [
+        "implant_neural"
+      ],
+      "bonuses": {
+        "netrun": 1,
+        "decrypt": 1
+      }
+    }
+  ],
+  "mods": [
+    {
+      "id": "mod_cooling",
+      "name": "Mod refroidissement",
+      "cost": 140,
+      "bonuses": {
+        "heatReduce": 0.08
+      }
+    },
+    {
+      "id": "mod_stealth",
+      "name": "Mod camo‑réseau",
+      "cost": 260,
+      "bonuses": {
+        "stealth": 1
+      }
+    },
+    {
+      "id": "mod_overclock",
+      "name": "Mod overclock",
+      "cost": 420,
+      "bonuses": {
+        "successAdd": 0.05
+      }
+    }
+  ],
+  "tools": [
+    {
+      "id": "tool_sniffer",
+      "name": "Sniffer paquets",
+      "cost": 90,
+      "bonuses": {
+        "decrypt": 1
+      }
+    },
+    {
+      "id": "tool_router",
+      "name": "Routeur furtif",
+      "cost": 190,
+      "bonuses": {
+        "stealth": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "version": "1.0.0",
+  "missions": {
+    "neongate": [
+      {
+        "id": "ng_m1",
+        "name": "Repérage",
+        "objective": {
+          "target": "neongate",
+          "server": "ng_gate"
+        },
+        "reward": {
+          "cred": 120,
+          "rep": 1
+        }
+      },
+      {
+        "id": "ng_m2",
+        "name": "Vol proto",
+        "objective": {
+          "target": "neongate",
+          "server": "ng_rnd"
+        },
+        "reward": {
+          "cred": 220,
+          "rep": 1
+        }
+      },
+      {
+        "id": "ng_m3",
+        "name": "Assaut financier",
+        "objective": {
+          "target": "neongate",
+          "server": "ng_fin"
+        },
+        "reward": {
+          "cred": 360,
+          "rep": 2
+        }
+      },
+      {
+        "id": "ng_m4",
+        "name": "Q-Sec down",
+        "objective": {
+          "target": "neongate",
+          "server": "ng_core"
+        },
+        "reward": {
+          "cred": 600,
+          "rep": 3
+        }
+      }
+    ],
+    "blacksun": [
+      {
+        "id": "bs_m1",
+        "name": "Ouvrir le portail",
+        "objective": {
+          "target": "blacksun",
+          "server": "bs_gate"
+        },
+        "reward": {
+          "cred": 100,
+          "rep": 1
+        }
+      },
+      {
+        "id": "bs_m2",
+        "name": "Piller les logs",
+        "objective": {
+          "target": "blacksun",
+          "server": "bs_logs"
+        },
+        "reward": {
+          "cred": 200,
+          "rep": 1
+        }
+      },
+      {
+        "id": "bs_m3",
+        "name": "Piéger le SOC",
+        "objective": {
+          "target": "blacksun",
+          "server": "bs_ops"
+        },
+        "reward": {
+          "cred": 330,
+          "rep": 2
+        }
+      },
+      {
+        "id": "bs_m4",
+        "name": "Abattre Cerbère",
+        "objective": {
+          "target": "blacksun",
+          "server": "bs_core"
+        },
+        "reward": {
+          "cred": 620,
+          "rep": 3
+        }
+      }
+    ],
+    "axiom": [
+      {
+        "id": "ax_m1",
+        "name": "Échantillons d’essai",
+        "objective": {
+          "target": "axiom",
+          "server": "ax_trials"
+        },
+        "reward": {
+          "cred": 110,
+          "rep": 1
+        }
+      },
+      {
+        "id": "ax_m2",
+        "name": "Données génétiques",
+        "objective": {
+          "target": "axiom",
+          "server": "ax_gen"
+        },
+        "reward": {
+          "cred": 210,
+          "rep": 1
+        }
+      },
+      {
+        "id": "ax_m3",
+        "name": "Vol de brevets",
+        "objective": {
+          "target": "axiom",
+          "server": "ax_ip"
+        },
+        "reward": {
+          "cred": 350,
+          "rep": 2
+        }
+      },
+      {
+        "id": "ax_m4",
+        "name": "Bio-Nexus",
+        "objective": {
+          "target": "axiom",
+          "server": "ax_core"
+        },
+        "reward": {
+          "cred": 640,
+          "rep": 3
+        }
+      }
+    ],
+    "orbital": [
+      {
+        "id": "on_m1",
+        "name": "Accroche uplink",
+        "objective": {
+          "target": "orbital",
+          "server": "on_sat"
+        },
+        "reward": {
+          "cred": 130,
+          "rep": 1
+        }
+      },
+      {
+        "id": "on_m2",
+        "name": "Manifest cargo",
+        "objective": {
+          "target": "orbital",
+          "server": "on_cargo"
+        },
+        "reward": {
+          "cred": 240,
+          "rep": 1
+        }
+      },
+      {
+        "id": "on_m3",
+        "name": "Comptes off-world",
+        "objective": {
+          "target": "orbital",
+          "server": "on_fin"
+        },
+        "reward": {
+          "cred": 380,
+          "rep": 2
+        }
+      },
+      {
+        "id": "on_m4",
+        "name": "Noyau orbital",
+        "objective": {
+          "target": "orbital",
+          "server": "on_core"
+        },
+        "reward": {
+          "cred": 700,
+          "rep": 3
+        }
+      }
+    ]
+  }
+}

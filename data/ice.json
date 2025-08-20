@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "ice": {
+    "GLACE Blanche": {
+      "strength": 10,
+      "effect": "Basique"
+    },
+    "Traceur": {
+      "strength": 15,
+      "effect": "Augmente la chaleur en cas d’échec"
+    },
+    "GLACE Goudron": {
+      "strength": 22,
+      "effect": "Ralentit les prochaines tentatives"
+    },
+    "Adaptative": {
+      "strength": 30,
+      "effect": "S’adapte aux techniques du joueur"
+    },
+    "Noire": {
+      "strength": 42,
+      "effect": "Riposte : perte de crédits et chaleur"
+    },
+    "IA Q-Sec": {
+      "strength": 55,
+      "effect": "Déploie des contre-mesures intelligentes"
+    }
+  }
+}

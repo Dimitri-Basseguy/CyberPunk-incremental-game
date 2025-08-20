@@ -1,0 +1,208 @@
+{
+  "version": "1.0.0",
+  "branches": {
+    "stealth": {
+      "name": "Furtivité",
+      "nodes": [
+        {
+          "id": "st_t1_shroud",
+          "tier": 1,
+          "name": "Shroud I",
+          "sp": 1,
+          "desc": "Chaleur en échec -10%",
+          "effect": {
+            "heatFailMul": 0.9
+          }
+        },
+        {
+          "id": "st_t2_ghost",
+          "tier": 2,
+          "name": "Ghost Net",
+          "sp": 2,
+          "req": [
+            "st_t1_shroud"
+          ],
+          "desc": "Événements de sécu -15%",
+          "effect": {
+            "eventProbMul": 0.85
+          }
+        },
+        {
+          "id": "st_t3_cloaksync",
+          "tier": 3,
+          "name": "CLOAK Sync",
+          "sp": 2,
+          "req": [
+            "st_t2_ghost"
+          ],
+          "desc": "CLOAK -10% chaleur supp.",
+          "effect": {
+            "cloakExtraHeatMul": 0.9
+          }
+        },
+        {
+          "id": "st_t4_traceevade",
+          "tier": 4,
+          "name": "Trace Evade",
+          "sp": 3,
+          "req": [
+            "st_t3_cloaksync"
+          ],
+          "desc": "20% d’éviter la chaleur en échec",
+          "effect": {
+            "avoidHeatOnFailPct": 20
+          }
+        },
+        {
+          "id": "st_cap_silentrunner",
+          "tier": 5,
+          "name": "Silent Runner",
+          "sp": 3,
+          "req": [
+            "st_t4_traceevade"
+          ],
+          "desc": "Lockout -30% & chaleur max -10 pts",
+          "effect": {
+            "lockoutMul": 0.7,
+            "heatCapMinus": 10
+          }
+        }
+      ]
+    },
+    "decrypt": {
+      "name": "Décryptage",
+      "nodes": [
+        {
+          "id": "dc_t1_tables",
+          "tier": 1,
+          "name": "Tables optimisées",
+          "sp": 1,
+          "desc": "+5% succès plat",
+          "effect": {
+            "successAdd": 0.05
+          }
+        },
+        {
+          "id": "dc_t2_sidechannel",
+          "tier": 2,
+          "name": "Canaux latéraux",
+          "sp": 2,
+          "req": [
+            "dc_t1_tables"
+          ],
+          "desc": "+10% crédits",
+          "effect": {
+            "rewardMul": 1.1
+          }
+        },
+        {
+          "id": "dc_t3_blackadapt",
+          "tier": 3,
+          "name": "Anti-Noire/Adapt.",
+          "sp": 2,
+          "req": [
+            "dc_t2_sidechannel"
+          ],
+          "desc": "+6% succès vs Noire/Adapt.",
+          "effect": {
+            "vsBlackAdaptAdd": 0.06
+          }
+        },
+        {
+          "id": "dc_t4_bypass",
+          "tier": 4,
+          "name": "Bypass unique",
+          "sp": 3,
+          "req": [
+            "dc_t3_blackadapt"
+          ],
+          "desc": "Ignore la 1re GLACE 1x/30s",
+          "effect": {
+            "bypassCooldownMs": 30000
+          }
+        },
+        {
+          "id": "dc_cap_quantum",
+          "tier": 5,
+          "name": "Facto quantique",
+          "sp": 3,
+          "req": [
+            "dc_t4_bypass"
+          ],
+          "desc": "Scan révèle chance exacte + scans +25% rapides",
+          "effect": {
+            "showScanExact": true,
+            "scanLatencyMul": 0.75
+          }
+        }
+      ]
+    },
+    "speed": {
+      "name": "Vitesse",
+      "nodes": [
+        {
+          "id": "sp_t1_threading",
+          "tier": 1,
+          "name": "Threading",
+          "sp": 1,
+          "desc": "Latence par CPU -10%",
+          "effect": {
+            "latencyCpuMul": 0.9
+          }
+        },
+        {
+          "id": "sp_t2_cooldown",
+          "tier": 2,
+          "name": "Surcharge froide",
+          "sp": 2,
+          "req": [
+            "sp_t1_threading"
+          ],
+          "desc": "Chaleur décroît +0.5/s",
+          "effect": {
+            "heatDecayPerSec": 0.5
+          }
+        },
+        {
+          "id": "sp_t3_parallel",
+          "tier": 3,
+          "name": "Parallélisme",
+          "sp": 2,
+          "req": [
+            "sp_t2_cooldown"
+          ],
+          "desc": "+1 slot programme",
+          "effect": {
+            "slotAdd": 1
+          }
+        },
+        {
+          "id": "sp_t4_overclock",
+          "tier": 4,
+          "name": "Overclock stable",
+          "sp": 3,
+          "req": [
+            "sp_t3_parallel"
+          ],
+          "desc": "Capacité CPU +2",
+          "effect": {
+            "cpuAdd": 2
+          }
+        },
+        {
+          "id": "sp_cap_hyper",
+          "tier": 5,
+          "name": "Hyperthread",
+          "sp": 3,
+          "req": [
+            "sp_t4_overclock"
+          ],
+          "desc": "25% chance de tentative bonus",
+          "effect": {
+            "extraAttemptPct": 25
+          }
+        }
+      ]
+    }
+  }
+}

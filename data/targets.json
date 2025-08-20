@@ -1,0 +1,316 @@
+{
+  "version": "1.0.0",
+  "targets": [
+    {
+      "id": "city",
+      "name": "Infra-Ville — Métropole",
+      "kind": "city",
+      "servers": [
+        {
+          "id": "grid01",
+          "name": "Nœud Énergie S-12",
+          "level": 1,
+          "ice": [
+            "GLACE Blanche"
+          ],
+          "reward": {
+            "cred": 35,
+            "rep": 0,
+            "loot": "Clés réseau"
+          }
+        },
+        {
+          "id": "traffic01",
+          "name": "Traffic Control L3",
+          "level": 2,
+          "ice": [
+            "Traceur",
+            "GLACE Goudron"
+          ],
+          "reward": {
+            "cred": 65,
+            "rep": 1,
+            "loot": "Algorithmes feux"
+          }
+        },
+        {
+          "id": "registry01",
+          "name": "Registres citoyens",
+          "level": 3,
+          "ice": [
+            "Adaptative"
+          ],
+          "reward": {
+            "cred": 120,
+            "rep": 1,
+            "loot": "Identifiants alt."
+          }
+        },
+        {
+          "id": "metro01",
+          "name": "Métro — Dispatch",
+          "level": 4,
+          "ice": [
+            "Noire",
+            "Traceur"
+          ],
+          "reward": {
+            "cred": 180,
+            "rep": 2,
+            "loot": "Cartes d’accès"
+          }
+        }
+      ]
+    },
+    {
+      "id": "neongate",
+      "name": "NeonGate Industries",
+      "kind": "corp",
+      "servers": [
+        {
+          "id": "ng_gate",
+          "name": "Gateway périmétrique",
+          "level": 1,
+          "ice": [
+            "GLACE Blanche",
+            "Traceur"
+          ],
+          "reward": {
+            "cred": 60,
+            "rep": 1,
+            "loot": "Codes d’essai"
+          }
+        },
+        {
+          "id": "ng_rnd",
+          "name": "R&D ProtoLab",
+          "level": 2,
+          "ice": [
+            "GLACE Goudron",
+            "Adaptative"
+          ],
+          "reward": {
+            "cred": 140,
+            "rep": 1,
+            "loot": "Plans proto"
+          }
+        },
+        {
+          "id": "ng_fin",
+          "name": "Serveur Finance",
+          "level": 3,
+          "ice": [
+            "Adaptative",
+            "Noire"
+          ],
+          "reward": {
+            "cred": 260,
+            "rep": 2,
+            "loot": "Clés multi-sig"
+          }
+        },
+        {
+          "id": "ng_core",
+          "name": "Noyau Q-Sec",
+          "level": 4,
+          "ice": [
+            "IA Q-Sec",
+            "Noire"
+          ],
+          "reward": {
+            "cred": 420,
+            "rep": 3,
+            "loot": "Shard quantique"
+          }
+        }
+      ]
+    },
+    {
+      "id": "blacksun",
+      "name": "BlackSun Security",
+      "kind": "corp",
+      "servers": [
+        {
+          "id": "bs_gate",
+          "name": "Portail Sécu",
+          "level": 1,
+          "ice": [
+            "Traceur"
+          ],
+          "reward": {
+            "cred": 55,
+            "rep": 1,
+            "loot": "Tokens SSO"
+          }
+        },
+        {
+          "id": "bs_logs",
+          "name": "SIEM & Logs",
+          "level": 2,
+          "ice": [
+            "GLACE Goudron",
+            "Traceur"
+          ],
+          "reward": {
+            "cred": 130,
+            "rep": 1,
+            "loot": "Fuites journaux"
+          }
+        },
+        {
+          "id": "bs_ops",
+          "name": "Ops SOC",
+          "level": 3,
+          "ice": [
+            "Adaptative",
+            "Noire"
+          ],
+          "reward": {
+            "cred": 240,
+            "rep": 2,
+            "loot": "Backdoor SOC"
+          }
+        },
+        {
+          "id": "bs_core",
+          "name": "Noyau Cerbère",
+          "level": 4,
+          "ice": [
+            "Noire",
+            "IA Q-Sec"
+          ],
+          "reward": {
+            "cred": 430,
+            "rep": 3,
+            "loot": "Clé maître Cerbère"
+          }
+        }
+      ]
+    },
+    {
+      "id": "axiom",
+      "name": "Axiom Bioware",
+      "kind": "corp",
+      "servers": [
+        {
+          "id": "ax_trials",
+          "name": "Essais cliniques",
+          "level": 1,
+          "ice": [
+            "GLACE Blanche"
+          ],
+          "reward": {
+            "cred": 70,
+            "rep": 1,
+            "loot": "Dossiers essais"
+          }
+        },
+        {
+          "id": "ax_gen",
+          "name": "Génétique",
+          "level": 2,
+          "ice": [
+            "Traceur",
+            "Adaptative"
+          ],
+          "reward": {
+            "cred": 150,
+            "rep": 1,
+            "loot": "Gènes synth."
+          }
+        },
+        {
+          "id": "ax_ip",
+          "name": "Propriété Intellectuelle",
+          "level": 3,
+          "ice": [
+            "GLACE Goudron",
+            "Noire"
+          ],
+          "reward": {
+            "cred": 280,
+            "rep": 2,
+            "loot": "Brevet crypte"
+          }
+        },
+        {
+          "id": "ax_core",
+          "name": "Bio-Nexus",
+          "level": 4,
+          "ice": [
+            "IA Q-Sec",
+            "Noire"
+          ],
+          "reward": {
+            "cred": 460,
+            "rep": 3,
+            "loot": "Seed biocode"
+          }
+        }
+      ]
+    },
+    {
+      "id": "orbital",
+      "name": "Orbital Nexus Group",
+      "kind": "corp",
+      "servers": [
+        {
+          "id": "on_sat",
+          "name": "Uplink Satellite",
+          "level": 1,
+          "ice": [
+            "GLACE Blanche",
+            "Traceur"
+          ],
+          "reward": {
+            "cred": 85,
+            "rep": 1,
+            "loot": "Fenêtre uplink"
+          }
+        },
+        {
+          "id": "on_cargo",
+          "name": "Cargo Orbital",
+          "level": 2,
+          "ice": [
+            "GLACE Goudron",
+            "Adaptative"
+          ],
+          "reward": {
+            "cred": 170,
+            "rep": 1,
+            "loot": "Manifest cargo"
+          }
+        },
+        {
+          "id": "on_fin",
+          "name": "Comptes Off-world",
+          "level": 3,
+          "ice": [
+            "Adaptative",
+            "Noire"
+          ],
+          "reward": {
+            "cred": 320,
+            "rep": 2,
+            "loot": "Accès offshore"
+          }
+        },
+        {
+          "id": "on_core",
+          "name": "Noyau Orbital",
+          "level": 4,
+          "ice": [
+            "IA Q-Sec",
+            "Noire"
+          ],
+          "reward": {
+            "cred": 520,
+            "rep": 3,
+            "loot": "Clé azur"
+          }
+        }
+      ]
+    }
+  ]
+}

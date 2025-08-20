@@ -1,0 +1,76 @@
+{
+  "version": "1.0.0",
+  "programs": [
+    {
+      "id": "brute",
+      "name": "BRUTEFORCE",
+      "cost": 60,
+      "cpu": 1,
+      "desc": "+10% succès",
+      "mods": {
+        "successMul": 1.1
+      }
+    },
+    {
+      "id": "cloak",
+      "name": "CLOAK",
+      "cost": 90,
+      "cpu": 1,
+      "desc": "-30% chaleur en échec",
+      "mods": {
+        "heatOnFailMul": 0.7
+      }
+    },
+    {
+      "id": "worm",
+      "name": "WORM",
+      "cost": 140,
+      "cpu": 2,
+      "desc": "+15% crédits",
+      "mods": {
+        "rewardMul": 1.15
+      }
+    },
+    {
+      "id": "backdoor",
+      "name": "BACKDOOR",
+      "cost": 220,
+      "cpu": 2,
+      "desc": "Tentative bonus après succès",
+      "mods": {
+        "extraAttemptOnSuccess": 1
+      }
+    },
+    {
+      "id": "icesaw",
+      "name": "ICE-SAW",
+      "cost": 260,
+      "cpu": 1,
+      "desc": "+12 vs Noire/Adaptative",
+      "mods": {
+        "vsBlackAdapt": 12
+      }
+    },
+    {
+      "id": "spoof",
+      "name": "SPOOF",
+      "cost": 180,
+      "cpu": 1,
+      "desc": "+8 succès & +1 Rep sur City",
+      "mods": {
+        "cityBonusSuccess": 8,
+        "cityRep": 1
+      }
+    },
+    {
+      "id": "miner",
+      "name": "ELECTRUM MINER",
+      "cost": 300,
+      "cpu": 1,
+      "desc": "+1₵/s passif",
+      "mods": {
+        "passiveIncome": 1
+      }
+    }
+  ]
+}
