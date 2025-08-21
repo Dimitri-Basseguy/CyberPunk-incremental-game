@@ -14,7 +14,7 @@
     {
       "id": "cloak",
       "name": "CLOAK",
-      "cost": 90,
+      "cost": 200,
       "cpu": 1,
       "desc": "-30% chaleur en échec",
       "mods": {
@@ -24,7 +24,7 @@
     {
       "id": "worm",
       "name": "WORM",
-      "cost": 140,
+      "cost": 350,
       "cpu": 2,
       "desc": "+15% crédits",
       "mods": {
@@ -44,7 +44,7 @@
     {
       "id": "icesaw",
       "name": "ICE-SAW",
-      "cost": 260,
+      "cost": 540,
       "cpu": 1,
       "desc": "+12 vs Noire/Adaptative",
       "mods": {
@@ -54,7 +54,7 @@
     {
       "id": "spoof",
       "name": "SPOOF",
-      "cost": 180,
+      "cost": 450,
       "cpu": 1,
       "desc": "+8 succès & +1 Rep sur City",
       "mods": {
@@ -65,7 +65,7 @@
     {
       "id": "miner",
       "name": "ELECTRUM MINER",
-      "cost": 300,
+      "cost": 999,
       "cpu": 1,
       "desc": "+1₵/s passif",
       "mods": {

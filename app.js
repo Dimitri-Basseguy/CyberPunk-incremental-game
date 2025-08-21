@@ -13,6 +13,19 @@ const OPEN_MISSIONS_KEY = 'open_missions_v1';
 const OPEN_UPGRADES_KEY = 'open_upgrades_v1';
 const SAVE_KEY = 'cyber_netrunner_save_v6';
 
+// — Économie globale (tunable sans toucher aux JSON)
+const ECONOMY = {
+  base: 0.60,             // ↓ multiplicateur de base (ex: 0.60 = -40% de gains)
+  heatTaxMax: 0.45,       // jusqu’à -45% de gains à 100% de chaleur
+  repeatWindowMs: 10*60*1000, // fenêtre anti-farm (10 min)
+  repeatDecay: 0.18,      // -18% par hack supplémentaire sur le même serveur dans la fenêtre
+  repeatMin: 0.35,        // plancher du malus (jamais < 35% du montant)
+  cityMul: 0.90,          // la ville paye un peu moins que les corpos
+  corpMul: 1.00,          // corpos neutre
+  missionMul: 0.85,       // missions un peu moins généreuses
+farmHistory: {},          // { serverId: [timestamps] }
+};
+
 // ====== State ======
 const state = {
   creds: 120,
@@ -30,6 +43,7 @@ const state = {
   missions: { active:null, progress:{} },
   upgrades: new Set(), // ids de nœuds débloqués
   _bypassReadyAt: 0,   // cooldown pour l'upgrade bypass
+  farmHistory: {},
 };
 
 // ====== Helpers ======
@@ -107,33 +121,44 @@ function programMods(){
 
 function activeEventMods(target){
   const now = Date.now();
-  // purge des events expirés
   state.events = state.events.filter(e => !e.ends || e.ends > now);
 
-  // agrégats par défaut reconnus par le jeu
   const mods = { iceBonus:0, heatFailAdd:0, rewardMul:1, chanceAdd:0, heatAttemptAdd:0 };
-
   const map = window.EVENT_DEFS_BY_ID || {};
-  for (const e of state.events){
-    const def = map[e.type] || map[e.id];            // compat (type ou id)
-    if(!def) continue;
 
+  // ✅ Fallback si pas de defs JSON
+  if (!Object.keys(map).length){
+    for (const e of state.events){
+      if(e.type==='audit' && (target.kind==='corp') && (!e.corp || e.corp===target.id)){
+        mods.iceBonus += 10;
+      }
+      if(e.type==='city_sweep' && target.kind==='city'){
+        mods.heatFailAdd += 6;
+      }
+      if(e.type==='bounty' && (target.kind==='corp') && (!e.corp || e.corp===target.id)){
+        mods.rewardMul *= 1.25;
+        mods.heatAttemptAdd += 2;
+      }
+    }
+    return mods;
+  }
+
+  // JSON-driven (ta version actuelle)
+  for (const e of state.events){
+    const def = map[e.type] || map[e.id]; if(!def) continue;
     const eff = def.effects || {};
     const scope = def.scope || 'any';
-
-    // filtrage par portée (city/corp/any) + liaison corpo éventuelle
     const match =
       scope === 'any' ||
       (scope === 'city' && target.kind === 'city') ||
       (scope === 'corp' && target.kind === 'corp' && (!e.corp || e.corp === target.id));
-
     if(!match) continue;
 
-    if (typeof eff.iceBonus === 'number')      mods.iceBonus      += eff.iceBonus;
-    if (typeof eff.heatFailAdd === 'number')   mods.heatFailAdd   += eff.heatFailAdd;
-    if (typeof eff.rewardMul === 'number')     mods.rewardMul     *= eff.rewardMul;
-    if (typeof eff.chanceAdd === 'number')     mods.chanceAdd     += eff.chanceAdd;
-    if (typeof eff.heatAttemptAdd === 'number')mods.heatAttemptAdd+= eff.heatAttemptAdd;
+    if (typeof eff.iceBonus === 'number')       mods.iceBonus      += eff.iceBonus;
+    if (typeof eff.heatFailAdd === 'number')    mods.heatFailAdd   += eff.heatFailAdd;
+    if (typeof eff.rewardMul === 'number')      mods.rewardMul     *= eff.rewardMul;
+    if (typeof eff.chanceAdd === 'number')      mods.chanceAdd     += eff.chanceAdd;
+    if (typeof eff.heatAttemptAdd === 'number') mods.heatAttemptAdd+= eff.heatAttemptAdd;
   }
   return mods;
 }
@@ -174,19 +199,145 @@ function heatOnFail(eventMods={}){
   return h;
 }
 
-function rewardMul(target){
+function rewardMul(target, server){
   const pm = programMods();
-  const g = gearBonuses();
+  const g  = gearBonuses();
   const um = upgradeMods();
-  let m = (pm.rewardMul||1) * (um.rewardMul||1) * (1 + (state.rep*0.02));
-  if(target.kind==='city' && pm.cityRep) m *= 1.0;
-  if(g.successAdd) m *= (1 + g.successAdd*0.2);
+
+  // base + différentiel ville/corpo
+  let m = ECONOMY.base * (target.kind === 'city' ? ECONOMY.cityMul : ECONOMY.corpMul);
+
+  // multiplicateurs existants (programmes/ups + réputation)
+  m *= (pm.rewardMul || 1) * (um.rewardMul || 1) * (1 + (state.rep * 0.02));
+  if (g.successAdd) m *= (1 + g.successAdd * 0.2);
+
+  // taxe de chaleur (linéaire selon la chaleur actuelle)
+  const heatTax = 1 - (state.heat / 100) * ECONOMY.heatTaxMax;
+  const minHeatFloor = 1 - ECONOMY.heatTaxMax; // ne descend jamais sous ce plancher via la taxe
+  m *= Math.max(minHeatFloor, heatTax);
+
+  // anti-farm : malus sur hacks répétés du même serveur dans la fenêtre
+  const now = Date.now();
+  const list = (state.farmHistory[server.id] || []).filter(ts => now - ts < ECONOMY.repeatWindowMs);
+  const count = list.length; // 1er = 0 malus, puis -18%, -36%, etc. (borné par repeatMin)
+  if (count > 0) {
+    const decay = 1 - (ECONOMY.repeatDecay * count);
+    m *= Math.max(ECONOMY.repeatMin, decay);
+  }
+
   return m;
 }
 
 function addLog(msg){
   const el = document.getElementById('log');
   const p = document.createElement('p'); p.innerHTML = msg; el.prepend(p);
+}
+
+// === Ticker d'événements (UI) ===
+function formatLeft(ms){
+  if (ms <= 0) return '0s';
+  const s = Math.ceil(ms/1000);
+  if (s < 60) return s+'s';
+  const m = Math.floor(s/60), r = s%60;
+  return m + ':' + String(r).padStart(2,'0');
+}
+function eventStart(e){
+  if (e.start) return e.start;
+  const defs = window.EVENT_DEFS_BY_ID || {};
+  const d = defs[e.type] || defs[e.id];
+  if (d && d.duration_ms) return e.ends - d.duration_ms;
+  if (e.type === 'city_sweep') return e.ends - 25000;
+  return e.ends - 30000;
+}
+function eventMeta(e){
+  const defs = window.EVENT_DEFS_BY_ID || {};
+  const d = defs[e.type] || defs[e.id];
+  const name = d?.name || (e.type==='audit' ? 'Audit sécurité'
+                    : e.type==='city_sweep' ? 'Sweep réseau municipal'
+                    : e.type==='bounty' ? 'Prime temporaire'
+                    : 'Événement');
+  const icon = d?.icon || (e.type==='audit' ? '📊'
+                    : e.type==='city_sweep' ? '🚨'
+                    : e.type==='bounty' ? '💰'
+                    : '🛰️');
+  const scope = d?.scope || 'any';
+  let who = '';
+  if (scope==='corp' || e.corp){
+    const corp = (window.TARGETS||[]).find(t=>t.id===e.corp);
+    if (corp) who = ' — ' + corp.name;
+  }
+  return { name: name + who, icon };
+}
+function renderEventTicker(){
+  const root = document.getElementById('eventsTicker');
+  if (!root) return;
+
+  const now = Date.now();
+  // purge visuelle (activeEventMods purge déjà logiquement)
+  state.events = state.events.filter(e => !e.ends || e.ends > now);
+
+  root.innerHTML = '';
+  if (!state.events.length){
+    const p = document.createElement('p');
+    p.className = 'text-slate-400 text-sm';
+    p.textContent = '— Aucun événement en cours —';
+    root.appendChild(p);
+    return;
+  }
+
+  const list = [...state.events].sort((a,b)=> (a.ends||0) - (b.ends||0));
+  for (const e of list){
+    const { icon, name } = eventMeta(e);
+    const start = eventStart(e);
+    const total = Math.max(1, (e.ends - start));
+    const left  = Math.max(0, (e.ends - now));
+    const pct   = Math.max(0, Math.min(100, Math.round((left/total)*100)));
+
+    const row = document.createElement('div');
+    row.className = 'rounded-lg border border-white/10 bg-white/5 p-2';
+    row.setAttribute('data-ev-ends', String(e.ends));
+    row.setAttribute('data-ev-start', String(start));
+
+    row.innerHTML = `
+      <div class="flex items-center justify-between mb-1">
+        <div class="font-medium">${icon} ${name}</div>
+        <div class="text-slate-400 text-sm font-mono" data-left>${formatLeft(left)}</div>
+      </div>
+      <div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
+        <span class="block h-full bg-gradient-to-r from-neon-cyan to-neon-fuchsia" data-bar style="width:${pct}%"></span>
+      </div>
+    `;
+    root.appendChild(row);
+  }
+}
+// Tick léger (anime le temps restant & la barre; redessine si expiré)
+function tickEventTicker(){
+  const root = document.getElementById('eventsTicker');
+  if (!root) return;
+
+  // Si des events existent mais aucune carte n'est affichée → construire une fois
+  if (state.events.length && !root.querySelector('[data-ev-ends]')){
+    renderEventTicker();
+    return;
+  }
+
+  const now = Date.now();
+  let needsRerender = false;
+  root.querySelectorAll('[data-ev-ends]').forEach(card=>{
+    const ends  = Number(card.getAttribute('data-ev-ends'));
+    const start = Number(card.getAttribute('data-ev-start')) || (ends - 30000);
+    const total = Math.max(1, ends - start);
+    const left  = Math.max(0, ends - now);
+    const pct   = Math.max(0, Math.min(100, Math.round((left/total)*100)));
+
+    const timeEl = card.querySelector('[data-left]');
+    const barEl  = card.querySelector('[data-bar]');
+    if (timeEl) timeEl.textContent = formatLeft(left);
+    if (barEl)  barEl.style.width = pct + '%';
+    if (left <= 0) needsRerender = true;
+  });
+
+  if (needsRerender) renderEventTicker();
 }
 
 // ====== Actions ======
@@ -240,15 +391,20 @@ function doHack(t, s){
   if(tmods.heatAttemptAdd) state.heat = clamp(state.heat + tmods.heatAttemptAdd, 0, 100);
 
   if(roll <= chance){
-    const rm = rewardMul(t) * (tmods.rewardMul||1);
+    const rm = rewardMul(t, s) * (tmods.rewardMul || 1);
     const cred = Math.round(s.reward.cred*rm);
     const repGain = s.reward.rep + (programMods().cityRep && t.kind==='city' ? programMods().cityRep : 0);
     state.creds += cred;
     state.rep += repGain;
     state.xp += 8 + s.level*3;
     // tentative bonus (programme ou upgrade)
-    const extra = (programMods().extraAttemptOnSuccess ? 1 : 0) || (Math.random()*100 < (um.extraAttemptPct||0) ? 1 : 0);
-    addLog(`✅ Succès: <b>${t.name} › ${s.name}</b> +<b>${cred}₵</b>, +<b>${repGain} Rep</b>, <span class="text-slate-400">${s.reward.loot}</span>${extra? ' — tentative bonus':''}`);
+    const nowTs = Date.now();
+    (state.farmHistory[s.id] ||= []).push(nowTs);
+    state.farmHistory[s.id] = state.farmHistory[s.id].filter(ts => nowTs - ts < ECONOMY.repeatWindowMs);
+
+    const extra = (programMods().extraAttemptOnSuccess ? 1 : 0) || (Math.random()*100 < (upgradeMods().extraAttemptPct||0) ? 1 : 0);
+    addLog(`✔️ Succès: <b>${t.name} › ${s.name}</b> +<b>${cred}₵</b>, +<b>${repGain} Rep</b>, <span class="text-slate-400">${s.reward.loot}</span>${extra? ' — tentative bonus':''}`);
+
     if(Math.random()<0.5){ state.skills.netrun += 0.02; state.skills.decrypt += 0.015; state.skills.speed += 0.01; }
     if(state.xp>=100){ state.xp-=100; state.sp++; addLog('⬆️ Point de compétence obtenu'); }
     onHackSuccess(t.id, s.id);
@@ -259,11 +415,11 @@ function doHack(t, s){
     const heatCap = 100 - (upgradeMods().heatCapMinus||0);
     state.heat = Math.min(heatCap, state.heat + h);
     state.creds = Math.max(0, state.creds - loss);
-    addLog(`❌ Échec: <b>${t.name} › ${s.name}</b> — chaleur +${h}%${loss?`, perte ${loss}₵`:''}`);
+    addLog(`💀 Échec: <b>${t.name} › ${s.name}</b> — chaleur +${h}%${loss?`, perte ${loss}₵`:''}`);
   }
   if(state.heat>=100 - (upgradeMods().heatCapMinus||0)){
     const ms = 10000 * (upgradeMods().lockoutMul || 1);
-    addLog(`🔒 Surcharge sécurité — verrou de ${Math.round(ms/1000)}s`);
+    addLog(`🔥 Surcharge de chaleur — 🔒 verrou de ${Math.round(ms/1000)}s`);
     lockout(ms);
   }
   renderAll();
@@ -330,6 +486,9 @@ setInterval(()=>{
   }
 }, 1500);
 
+// Ticker UI (événements actifs)
+setInterval(tickEventTicker, 300);
+
 // Events
 const EVENT_PERIOD = 12000;
 setInterval(()=>{
@@ -347,15 +506,21 @@ function spawnSecurityEvent(){
     const corps = (window.TARGETS||[]).filter(t=>t.kind==='corp');
     if(roll<0.34){
       const c = corps[Math.floor(Math.random()*corps.length)];
-      state.events.push({ type:'audit', corp:c.id, ends: now + 30000 });
-      addLog(`📊 Audit sécurité chez <b>${c.name}</b> — GLACE renforcée (+10) pendant 30s`);
+      pushEvent(
+        { type:'audit', corp:c.id, ends: now + 30000 },
+        `📊 Audit sécurité chez <b>${c.name}</b> — GLACE renforcée (+10) pendant 30s`
+      );
     } else if(roll<0.67){
-      state.events.push({ type:'city_sweep', ends: now + 25000 });
-      addLog('🚨 Sweep réseau municipal — chaleur en cas d’échec +6 pendant 25s');
+      pushEvent(
+        { type:'city_sweep', ends: now + 25000 },
+        '🚨 Sweep réseau municipal — chaleur en cas d’échec +6 pendant 25s'
+      );
     } else {
       const c = corps[Math.floor(Math.random()*corps.length)];
-      state.events.push({ type:'bounty', corp:c.id, ends: now + 30000 });
-      addLog(`💰 Prime temporaire sur <b>${c.name}</b> — récompenses x1.25, +2 chaleur par tentative, 30s`);
+      pushEvent(
+        { type:'bounty', corp:c.id, ends: now + 30000 },
+        `💰 Prime temporaire sur <b>${c.name}</b> — récompenses x1.25, +2 chaleur par tentative, 30s`
+      );
     }
     return;
   }
@@ -378,12 +543,11 @@ function spawnSecurityEvent(){
     if(corps.length){
       const c = corps[Math.floor(Math.random()*corps.length)];
       ev.corp = c.id;
-      state.events.push(ev);
-      const msg = (chosen.log && chosen.log.corp)
-        ? chosen.log.corp.replace('{corp}', c.name)
-        : `Événement ${chosen.name} chez ${c.name}`;
-      addLog(msg);
-      return;
+      const msg = (chosen.scope === 'corp')
+      ? ((chosen.log && chosen.log.corp) ? chosen.log.corp.replace('{corp}', c.name) : `Événement ${chosen.name} chez ${c.name}`)
+      : ((chosen.log && chosen.log.default) ? chosen.log.default : `Événement ${chosen.name}`);
+    pushEvent(ev, msg); // ✅
+    return;
     }
   }
 
@@ -400,12 +564,32 @@ function currentMission(){ return state.missions.active || null; }
 function acceptChain(corpId){ state.missions.active = { corp: corpId, index:0 }; addLog(`📝 Mission acceptée — <b>${(window.TARGETS||[]).find(t=>t.id===corpId)?.name}</b>: ${(window.MISSION_CHAINS||{})[corpId][0].name}`); renderMissions(); persist(); }
 function abandonMission(){ if(state.missions.active){ addLog('🗑️ Mission abandonnée'); state.missions.active=null; renderMissions(); persist(); } }
 function missionStep(){ const m=currentMission(); if(!m) return null; return (window.MISSION_CHAINS||{})[m.corp][m.index]||null; }
-function onHackSuccess(tid, sid){ const step = missionStep(); if(!step) return; if(step.objective.target===tid && step.objective.server===sid){
-    const rw = step.reward; state.creds += rw.cred; state.rep += rw.rep; addLog(`🏁 Mission accomplie: <b>${step.name}</b> +${rw.cred}₵, +${rw.rep} Rep`);
+function onHackSuccess(tid, sid){
+  const step = missionStep(); 
+  if(!step) return;
+  if(step.objective.target===tid && step.objective.server===sid){
+    const rw = step.reward;
+
+    // ↓ multiplicateur missions (réglable via ECONOMY.missionMul)
+    const missionMul = (typeof ECONOMY !== 'undefined' && ECONOMY.missionMul != null) ? ECONOMY.missionMul : 0.85;
+    const credGain = Math.max(0, Math.round(rw.cred * missionMul));
+    const repGain  = rw.rep;
+
+    state.creds += credGain;
+    state.rep   += repGain;
+
+    addLog(`🏁 Mission accomplie: <b>${step.name}</b> +<b>${credGain}₵</b> <span class="text-slate-400 text-xs">×${missionMul}</span> (+${repGain} Rep)`);
+
     state.missions.active.index++;
-    if(state.missions.active.index>=(window.MISSION_CHAINS||{})[state.missions.active.corp].length){ addLog('🎖️ Chaîne terminée — toutes les missions complétées !'); state.missions.active=null; }
-    renderMissions(); persist();
-  } }
+    const chain = (window.MISSION_CHAINS||{})[state.missions.active.corp] || [];
+    if(state.missions.active.index >= chain.length){
+      addLog('🎖️ Chaîne terminée — toutes les missions complétées !');
+      state.missions.active = null;
+    }
+    renderMissions();
+    persist();
+  }
+}
 
 // ====== Upgrades UI ======
 function hasAllReq(node){
@@ -746,7 +930,8 @@ function updateStoreAffordability(){
       : (affordable ? BTN_SUCCESS : BTN_PRIMARY);
 
     // synchro de l’anneau de l’image si présente
-    const img = btn.closest('div').previousElementSibling?.querySelector(`[data-itemimg="${id}"]`);
+    const cardEl = btn.closest('.rounded-xl') || btn.closest('[data-card]') || btn.closest('div')?.parentElement;
+    const img = cardEl?.querySelector(`[data-itemimg="${id}"]`);
     if(img){
       img.classList.remove('ring-emerald-500','ring-emerald-400/60','ring-cyan-400/40');
       img.classList.add( owned ? 'ring-emerald-500' : (affordable ? 'ring-emerald-400/60' : 'ring-cyan-400/40') );
@@ -795,7 +980,12 @@ function renderStore(){
   });
 }
 
-function renderAll(){ renderKPIs(); renderSkills(); renderPrograms(); renderGearInstalled(); renderStore(); renderTargets(); renderMissions(); renderUpgrades(); persist(); }
+function renderAll(){
+  renderKPIs(); renderSkills(); renderPrograms(); renderGearInstalled();
+  renderStore(); renderTargets(); renderMissions(); renderUpgrades();
+  renderEventTicker(); // ✅ AJOUT
+  persist();
+}
 
 // ====== Save/Load ======
 function persist(){
@@ -816,6 +1006,7 @@ function restore(){
     state.missions=o.missions||{active:null,progress:{}};
     state.upgrades=new Set(o.upgrades||[]);
     state._bypassReadyAt=o._bypassReadyAt||0;
+    state.farmHistory    = o.farmHistory || {};
     addLog('💾 Sauvegarde chargée');
   }catch(e){ console.warn(e); }
 }

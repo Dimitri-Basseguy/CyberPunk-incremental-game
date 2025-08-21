@@ -8,6 +8,7 @@
   <script>
     tailwind.config = { theme: { extend: { colors: { neon: { cyan: '#00f0ff', fuchsia: '#ff00e6' }}}}};
   </script>
+  <link rel="stylesheet" href="./assets/style/styles.css">
   <style>
     :root{ --bg:#0b0f14; }
     html,body{height:100%}
@@ -120,18 +121,29 @@
     </section>
 
     <section class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner mt-4">
-      <h2 class="text-cyan-300 font-semibold mb-2">Missions — contrats corpos</h2>
-      <div id="missions" class="mt-2"></div>
+      <div class="flex items-center gap-2 mb-2">
+        <img src="./assets/imgs/fixer.jpg" alt="fixers" class="w-24 h-24 rounded mb-2 ring ring-1 ring-cyan-400/40"">
+        <div>
+          <h2 class="text-cyan-300 font-semibold mb-2">Fixers — contrats corpos</h2>
+          <p class="text-xs italic">Art by <a href="https://www.deviantart.com/ehran-the-scribe/gallery/52308640/featured" class="hover:text-lime-500 ease-in-out transition">Ehran-the-Scribe</a> ©2025</p>
+        </div>
+      </div>
+      <div id="missions" class="mt-2 grid lg:grid-cols-2 gap-4"></div>
     </section>
 
     <section class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner mt-4">
       <h2 class="text-cyan-300 font-semibold mb-2">Cibles — serveurs de la ville & corpos</h2>
-      <div id="targets" class="mt-2"></div>
+      <div id="targets" class="mt-2 grid lg:grid-cols-2 gap-4"></div>
+    </section>
+
+    <section class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner mt-4">
+      <h2 class="text-cyan-300 font-semibold mb-2">Événements actifs</h2>
+      <div id="eventsTicker" class="flex flex-col gap-2"></div>
     </section>
 
     <section class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner mt-4">
       <h2 class="text-cyan-300 font-semibold mb-2">Console</h2>
-      <div id="log" class="h-52 overflow-auto text-sm bg-gradient-to-br from-cyan-400/5 to-fuchsia-400/5 rounded-xl p-2 border border-white/10"></div>
+      <div id="log" class="h-52 overflow-auto text-sm bg-gradient-to-br from-slate-800 to-slate-950 rounded-xl p-2 border border-white/10 font-mono text-xs text-lime-400 scrollbar-neon"></div>
     </section>
   </div>
 
