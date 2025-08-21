@@ -1,6 +1,7 @@
 // app_json.js — data-driven version + Upgrades UI/effects
-const BTN = 'inline-flex items-center px-2 py-1 rounded-lg border border-white/15 bg-white/10 hover:bg-white/15 font-semibold';
+const BTN = 'inline-flex items-center px-2 py-1 rounded-lg border border-white/15  hover:bg-white/15 font-semibold';
 const BTN_PRIMARY = BTN + ' ring-1 ring-cyan-400/40 hover:ring-cyan-300/60';
+const BTN_SUCCESS = BTN + ' ring-1 ring-emerald-400/60 hover:ring-emerald-300/70 bg-emerald-500/20'; // ✅ vert si achetable
 const CARD = 'rounded-xl border border-white/10 bg-white/5 p-3';
 const PILL = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 text-sm';
 const PROGRESS_OUTER = 'h-2 bg-white/10 rounded-full overflow-hidden mt-1.5';
@@ -106,12 +107,33 @@ function programMods(){
 
 function activeEventMods(target){
   const now = Date.now();
-  state.events = state.events.filter(e=>!e.ends || e.ends>now);
+  // purge des events expirés
+  state.events = state.events.filter(e => !e.ends || e.ends > now);
+
+  // agrégats par défaut reconnus par le jeu
   const mods = { iceBonus:0, heatFailAdd:0, rewardMul:1, chanceAdd:0, heatAttemptAdd:0 };
-  for(const e of state.events){
-    if(e.type==='audit' && (target.kind==='corp' && (!e.corp || e.corp===target.id))){ mods.iceBonus += 10; }
-    if(e.type==='city_sweep' && target.kind==='city'){ mods.heatFailAdd += 6; }
-    if(e.type==='bounty' && (target.kind==='corp' && (!e.corp || e.corp===target.id))){ mods.rewardMul *= 1.25; mods.heatAttemptAdd += 2; }
+
+  const map = window.EVENT_DEFS_BY_ID || {};
+  for (const e of state.events){
+    const def = map[e.type] || map[e.id];            // compat (type ou id)
+    if(!def) continue;
+
+    const eff = def.effects || {};
+    const scope = def.scope || 'any';
+
+    // filtrage par portée (city/corp/any) + liaison corpo éventuelle
+    const match =
+      scope === 'any' ||
+      (scope === 'city' && target.kind === 'city') ||
+      (scope === 'corp' && target.kind === 'corp' && (!e.corp || e.corp === target.id));
+
+    if(!match) continue;
+
+    if (typeof eff.iceBonus === 'number')      mods.iceBonus      += eff.iceBonus;
+    if (typeof eff.heatFailAdd === 'number')   mods.heatFailAdd   += eff.heatFailAdd;
+    if (typeof eff.rewardMul === 'number')     mods.rewardMul     *= eff.rewardMul;
+    if (typeof eff.chanceAdd === 'number')     mods.chanceAdd     += eff.chanceAdd;
+    if (typeof eff.heatAttemptAdd === 'number')mods.heatAttemptAdd+= eff.heatAttemptAdd;
   }
   return mods;
 }
@@ -316,21 +338,61 @@ setInterval(()=>{
   if(Math.random()<p){ spawnSecurityEvent(); }
 }, EVENT_PERIOD);
 function spawnSecurityEvent(){
-  const now = Date.now();
-  const roll = Math.random();
-  const corps = (window.TARGETS||[]).filter(t=>t.kind==='corp');
-  if(roll<0.34){
-    const c = corps[Math.floor(Math.random()*corps.length)];
-    state.events.push({ type:'audit', corp:c.id, ends: now + 30000 });
-    addLog(`📊 Audit sécurité chez <b>${c.name}</b> — GLACE renforcée (+10) pendant 30s`);
-  } else if(roll<0.67){
-    state.events.push({ type:'city_sweep', ends: now + 25000 });
-    addLog('🚨 Sweep réseau municipal — chaleur en cas d’échec +6 pendant 25s');
-  } else {
-    const c = corps[Math.floor(Math.random()*corps.length)];
-    state.events.push({ type:'bounty', corp:c.id, ends: now + 30000 });
-    addLog(`💰 Prime temporaire sur <b>${c.name}</b> — récompenses x1.25, +2 chaleur par tentative, 30s`);
+  const defs = window.EVENT_DEFS || [];
+  const now  = Date.now();
+
+  // Fallback : ancien comportement si pas de JSON chargé
+  if(!defs.length){
+    const roll = Math.random();
+    const corps = (window.TARGETS||[]).filter(t=>t.kind==='corp');
+    if(roll<0.34){
+      const c = corps[Math.floor(Math.random()*corps.length)];
+      state.events.push({ type:'audit', corp:c.id, ends: now + 30000 });
+      addLog(`📊 Audit sécurité chez <b>${c.name}</b> — GLACE renforcée (+10) pendant 30s`);
+    } else if(roll<0.67){
+      state.events.push({ type:'city_sweep', ends: now + 25000 });
+      addLog('🚨 Sweep réseau municipal — chaleur en cas d’échec +6 pendant 25s');
+    } else {
+      const c = corps[Math.floor(Math.random()*corps.length)];
+      state.events.push({ type:'bounty', corp:c.id, ends: now + 30000 });
+      addLog(`💰 Prime temporaire sur <b>${c.name}</b> — récompenses x1.25, +2 chaleur par tentative, 30s`);
+    }
+    return;
   }
+
+  // Tirage pondéré par "weight"
+  let totalW = 0;
+  for(const d of defs) totalW += Math.max(1, d.weight || 1);
+  let r = Math.random() * totalW, chosen = defs[0];
+  for (const d of defs){
+    r -= Math.max(1, d.weight || 1);
+    if(r <= 0){ chosen = d; break; }
+  }
+
+  const ends = now + (chosen.duration_ms || 30000);
+  const ev = { id: chosen.id, type: chosen.id, ends };
+
+  // Si scope "corp", lier une corpo et logger le message {corp}
+  if(chosen.scope === 'corp'){
+    const corps = (window.TARGETS||[]).filter(t=>t.kind==='corp');
+    if(corps.length){
+      const c = corps[Math.floor(Math.random()*corps.length)];
+      ev.corp = c.id;
+      state.events.push(ev);
+      const msg = (chosen.log && chosen.log.corp)
+        ? chosen.log.corp.replace('{corp}', c.name)
+        : `Événement ${chosen.name} chez ${c.name}`;
+      addLog(msg);
+      return;
+    }
+  }
+
+  // Sinon (city/any)
+  state.events.push(ev);
+  const msg = (chosen.log && chosen.log.default)
+    ? chosen.log.default
+    : `Événement ${chosen.name}`;
+  addLog(msg);
 }
 
 // Missions
@@ -427,6 +489,28 @@ function renderKPIs(){
   document.getElementById('kpi-heat').textContent = Math.round(state.heat)+'%';
   document.getElementById('kpi-sp').textContent = state.sp;
   renderSystemLoad();
+  // refresh anneaux verts sans rerender complet
+  updateStoreAffordability?.();
+  updateProgramAffordability?.();
+
+  // === Barre de chaleur animée ===
+  const hb = document.getElementById('kpi-heatbar');
+  if (hb) {
+    const pct = clamp(Math.round(state.heat), 0, 100);
+    hb.style.width = pct + '%';
+
+    // Effet visuel selon seuils (glow/pulse quand c’est chaud)
+    if (pct >= 90) {
+      hb.style.boxShadow = '0 0 14px 4px rgba(239,68,68,.55)'; // rouge fort
+      hb.classList.add('animate-pulse');
+    } else if (pct >= 70) {
+      hb.style.boxShadow = '0 0 10px 2px rgba(234,179,8,.45)'; // jaune
+      hb.classList.remove('animate-pulse');
+    } else {
+      hb.style.boxShadow = 'none';
+      hb.classList.remove('animate-pulse');
+    }
+  }
 }
 
 function renderSkills(){
@@ -459,6 +543,16 @@ function renderSkills(){
     card.querySelector('button').onclick = ()=>{ if(canSpend) spendPoint(k); };
     root.appendChild(card);
   }
+}
+
+function updateProgramAffordability(){
+  document.querySelectorAll('#programs [data-buyprog]').forEach(btn=>{
+    const pid = btn.getAttribute('data-buyprog');
+    const p = (window.PROGRAMS||[]).find(x=>x.id===pid);
+    if(!p) return;
+    const affordable = state.creds >= (p.cost||0);
+    btn.className = affordable ? BTN_SUCCESS : BTN_PRIMARY;
+  });
 }
 
 function renderPrograms(){
@@ -637,24 +731,65 @@ function renderMissions(){
   }
 }
 
+function updateStoreAffordability(){
+  document.querySelectorAll('#store [data-buy]').forEach(btn=>{
+    const id = btn.getAttribute('data-buy');
+    const it = itemById(id); if(!it) return;
+    const owned   = state.gearOwned.has(id);
+    const blocked = it.requires && !it.requires.every(r=>state.gearOwned.has(r));
+    const affordable = !owned && !blocked && state.creds >= (it.cost||0);
+
+    btn.className = owned
+      ? BTN + ' opacity-60 cursor-default'
+      : blocked
+      ? BTN + ' opacity-60 cursor-not-allowed'
+      : (affordable ? BTN_SUCCESS : BTN_PRIMARY);
+
+    // synchro de l’anneau de l’image si présente
+    const img = btn.closest('div').previousElementSibling?.querySelector(`[data-itemimg="${id}"]`);
+    if(img){
+      img.classList.remove('ring-emerald-500','ring-emerald-400/60','ring-cyan-400/40');
+      img.classList.add( owned ? 'ring-emerald-500' : (affordable ? 'ring-emerald-400/60' : 'ring-cyan-400/40') );
+    }
+  });
+}
+
 function renderStore(){
   const root = document.getElementById('store'); root.innerHTML='';
   (window.STORE_ITEMS||[]).forEach(it=>{
     const owned = state.gearOwned.has(it.id);
     const blocked = it.requires && !it.requires.every(r=>state.gearOwned.has(r));
-    const card = document.createElement('div'); card.className=CARD;
+    const affordable = !owned && !blocked && state.creds >= (it.cost||0);
+
+    const card = document.createElement('div'); card.className = CARD;
     const bonuses = Object.entries(it.bonuses||{}).map(([k,v])=>`${k}${v>=0?'+':''}${v}`).join(' · ');
     const type = it.type.toUpperCase();
+
+    const imgRing = owned
+      ? 'ring-emerald-500'
+      : (affordable ? 'ring-emerald-400/60' : 'ring-cyan-400/40');
+
+    const btnClass = owned
+      ? BTN + ' opacity-60 cursor-default'
+      : blocked
+      ? BTN + ' opacity-60 cursor-not-allowed'
+      : (affordable ? BTN_SUCCESS : BTN_PRIMARY);
+
+    const btnLabel = owned ? '✅' : (blocked ? 'Requis' : '💰');
+
     card.innerHTML = `<div class="text-slate-400 text-sm">${type}</div>
       <div class="flex items-center justify-between">
         <p>${it.name}</p>
-        ${it.image ? `<img src="${it.image}" alt="${it.name}" class="max-w-[64px] rounded ring-1 mx-2 ${owned ? 'ring-emerald-500' : 'ring-cyan-400/40'}">` : ''}
+        ${it.image ? `<img src="${it.image}" alt="${it.name}"
+             class="max-w-[64px] rounded ring-1 mx-2 ${imgRing}" data-itemimg="${it.id}">` : ''}
       </div>
       <div class="text-slate-400 text-sm">${bonuses||'—'}</div>
       <div class="flex items-center justify-between mt-2">
         <span class="font-mono">${it.cost||0}₵</span>
-        <button class="${owned? BTN : BTN_PRIMARY}" ${owned||blocked? 'disabled':''} data-buy="${it.id}">${owned? '✅': (blocked? 'Requis': '💰')}</button>
+        <button class="${btnClass}" ${owned||blocked? 'disabled':''}
+                data-buy="${it.id}" data-cost="${it.cost||0}">${btnLabel}</button>
       </div>`;
+
     card.querySelector('[data-buy]')?.addEventListener('click',()=>buy(it.id));
     root.appendChild(card);
   });
