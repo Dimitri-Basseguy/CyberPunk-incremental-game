@@ -32,15 +32,24 @@
 
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
       <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner">
-        <div class="text-cyan-300/80 text-sm">Crédits</div>
+        <div class="flex items-center">
+          <img src="./assets/imgs/icon_credit.svg" alt="CRT" class="w-12 h-12" />
+          <p class="text-cyan-300/80 text-sm">Crédits</p>
+        </div>
         <div id="kpi-creds" class="font-mono text-lg">0₵</div>
       </div>
       <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner">
-        <div class="text-cyan-300/80 text-sm">Réputation</div>
-        <div id="kpi-rep" class="font-mono text-lg">0</div>
+        <div class="flex items-center">
+          <img src="./assets/imgs/icon_rep.svg" alt="REP" class="w-12 h-12" />
+          <p class="text-cyan-300/80 text-sm">Réputation</>
+        </div>
+        <p id="kpi-rep" class="font-mono text-lg">0</>
       </div>
       <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner">
-        <div class="text-cyan-300/80 text-sm">Chaleur</div>
+        <div class="flex items-center">
+          <img src="./assets/imgs/icon_heat.svg" alt="HEAT" class="w-12 h-12" />
+          <p class="text-cyan-300/80 text-sm">Chaleur</p>
+        </div>
         <div id="kpi-heat" class="font-mono text-lg">0%</div>
       </div>
       <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner">
@@ -48,8 +57,11 @@
         <div id="kpi-sp" class="font-mono text-lg">0</div>
       </div>
       <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner">
-        <div class="text-cyan-300/80 text-sm">Charge système</div>
-        <div id="kpi-load" class="font-mono text-lg">0 / 0 CPU</div>
+        <div class="flex items-center">
+          <img src="./assets/imgs/icon_cpu.svg" alt="CPU" class="w-12 h-12" />
+          <div class="text-cyan-300/80 text-sm">Charge système</div>
+        </div>
+        <p id="kpi-load" class="font-mono text-lg">0 / 0 CPU</>
         <div class="h-2 bg-white/10 rounded-full overflow-hidden mt-1.5">
           <span id="kpi-loadbar" class="block h-full bg-gradient-to-r from-neon-cyan to-neon-fuchsia" style="width:0%"></span>
         </div>
@@ -79,7 +91,7 @@
 
       <section class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner">
         <h2 class="text-cyan-300 font-semibold mb-2">Marché noir — matériel & mods</h2>
-        <div id="store" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"></div>
+        <div id="store" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2"></div>
       </section>
     </div>
 

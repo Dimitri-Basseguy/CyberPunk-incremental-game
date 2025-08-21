@@ -11,13 +11,15 @@
   }
 
   const base = 'data';
-  const [items, programs, targets, missions, ice, upgrades] = await Promise.all([
+  const [items, programs, targets, missions, ice, upgrades, events] = await Promise.all([
     getJSON(`${base}/items.json`),
     getJSON(`${base}/programs.json`),
     getJSON(`${base}/targets.json`),
     getJSON(`${base}/missions.json`),
     getJSON(`${base}/ice.json`),
     getJSON(`${base}/upgrades.json`),
+    getJSON(`${base}/events.json`),
+    
   ]);
 
   // Aplatit les items par type pour coller à l’API interne existante
@@ -36,6 +38,11 @@
   window.TARGETS = targets.targets;
   window.MISSION_CHAINS = missions.missions;
   window.UPGRADES = upgrades.branches;
+
+  // ⬇️ Normalisation + exposition des events (supporte array direct OU { events: [...] })
+  const ev = Array.isArray(events?.events) ? events.events : (Array.isArray(events) ? events : []);
+  window.EVENT_DEFS = ev;
+  window.EVENT_DEFS_BY_ID = Object.fromEntries(ev.map(e => [e.id, e]));
 
   // Indices rapides
   window.ITEM_BY_ID = Object.fromEntries(window.STORE_ITEMS.map(i=>[i.id, i]));

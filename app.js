@@ -1,5 +1,5 @@
 // app_json.js — data-driven version + Upgrades UI/effects
-const BTN = 'inline-flex items-center px-3 py-2 rounded-lg border border-white/15 bg-white/10 hover:bg-white/15 font-semibold';
+const BTN = 'inline-flex items-center px-2 py-1 rounded-lg border border-white/15 bg-white/10 hover:bg-white/15 font-semibold';
 const BTN_PRIMARY = BTN + ' ring-1 ring-cyan-400/40 hover:ring-cyan-300/60';
 const CARD = 'rounded-xl border border-white/10 bg-white/5 p-3';
 const PILL = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 text-sm';
@@ -226,7 +226,7 @@ function doHack(t, s){
     state.xp += 8 + s.level*3;
     // tentative bonus (programme ou upgrade)
     const extra = (programMods().extraAttemptOnSuccess ? 1 : 0) || (Math.random()*100 < (um.extraAttemptPct||0) ? 1 : 0);
-    addLog(`✔️ Succès: <b>${t.name} › ${s.name}</b> +<b>${cred}₵</b>, +<b>${repGain} Rep</b>, <span class="text-slate-400">${s.reward.loot}</span>${extra? ' — tentative bonus':''}`);
+    addLog(`✅ Succès: <b>${t.name} › ${s.name}</b> +<b>${cred}₵</b>, +<b>${repGain} Rep</b>, <span class="text-slate-400">${s.reward.loot}</span>${extra? ' — tentative bonus':''}`);
     if(Math.random()<0.5){ state.skills.netrun += 0.02; state.skills.decrypt += 0.015; state.skills.speed += 0.01; }
     if(state.xp>=100){ state.xp-=100; state.sp++; addLog('⬆️ Point de compétence obtenu'); }
     onHackSuccess(t.id, s.id);
@@ -252,12 +252,12 @@ function lockout(ms){
   const buttons = document.querySelectorAll('[data-action="hack"]');
   buttons.forEach(b=>b.disabled=true);
   clearTimeout(lockTimer);
-  lockTimer = setTimeout(()=>{ buttons.forEach(b=>b.disabled=false); state.heat = Math.max(0, state.heat-30); renderAll(); addLog('🧊 Verrou levé, chaleur ‑30%'); }, ms);
+  lockTimer = setTimeout(()=>{ buttons.forEach(b=>b.disabled=false); state.heat = Math.max(0, state.heat-30); renderAll(); addLog('🧊 Verrou levé, chaleur -30%'); }, ms);
 }
 
 function buy(itemId){
   const it = itemById(itemId); if(!it) return;
-  if(it.requires && !it.requires.every(r=>state.gearOwned.has(r))){ addLog('⛔ Pré‑requises manquantes.'); return; }
+  if(it.requires && !it.requires.every(r=>state.gearOwned.has(r))){ addLog('⛔ Pré-requises manquantes.'); return; }
   if(state.creds < it.cost){ addLog('⛔ Crédits insuffisants.'); return; }
   state.creds -= it.cost; state.gearOwned.add(it.id);
   const type = it.type;
@@ -399,13 +399,13 @@ function renderUpgrades(){
         right.appendChild(cost);
         const btn = document.createElement('button');
         btn.className = unlockable ? BTN_PRIMARY : BTN + ' opacity-60';
-        btn.textContent = owned ? 'Débloqué' : (locked ? 'Lock' : 'Débloquer');
+        btn.textContent = owned ? '✅' : (locked ? '🔐' : '💰');
         btn.disabled = !unlockable || owned;
         btn.onclick = ()=> unlock(n.id);
         right.appendChild(btn);
         row.appendChild(left); row.appendChild(right);
 
-        if(owned){ row.classList.add('ring-1','ring-cyan-400/40'); }
+        if(owned){ row.classList.add('ring-1','ring-emerald-500'); }
         if(locked && !owned){ row.classList.add('opacity-70'); }
         box.appendChild(row);
       });
@@ -492,7 +492,7 @@ function renderPrograms(){
           equipped
             ? `<button class="${BTN}" data-un="${p.id}">Retirer</button>`
             : `<button class="${BTN_PRIMARY}" ${(full|| (cpuUsed()+p.cpu>cpuCapacity()))? 'disabled':''} data-eq="${p.id}">Charger</button>`
-        ) : `<button class="${BTN_PRIMARY}" data-buyprog="${p.id}">Acheter (${p.cost}₵)</button>`}
+        ) : `<button class="${BTN_PRIMARY}" data-buyprog="${p.id}">💰 (${p.cost}₵)</button>`}
       </div>`;
     if(owned){
       if(equipped) el.querySelector('[data-un]')?.addEventListener('click',()=>unequipProgram(p.id));
@@ -612,7 +612,7 @@ function renderMissions(){
     const chain = (window.MISSION_CHAINS||{})[cid];
     const li = document.createElement('div'); li.className='space-y-1';
     chain.forEach((step,i)=>{
-      const status = m && m.corp===cid && m.index>i ? '✔️' : (m && m.corp===cid && m.index===i ? '▶️' : '•');
+      const status = m && m.corp===cid && m.index>i ? '✅' : (m && m.corp===cid && m.index===i ? '▶️' : '•');
       const row = document.createElement('div'); row.className='flex gap-2';
       row.innerHTML = `<div>${status} <b>${step.name}</b> — <span class="text-slate-400 text-sm">objectif: ${step.objective.server}</span> <span class="${PILL}">${step.reward.cred}₵ · +${step.reward.rep} Rep</span></div>`;
       li.appendChild(row);
@@ -646,11 +646,14 @@ function renderStore(){
     const bonuses = Object.entries(it.bonuses||{}).map(([k,v])=>`${k}${v>=0?'+':''}${v}`).join(' · ');
     const type = it.type.toUpperCase();
     card.innerHTML = `<div class="text-slate-400 text-sm">${type}</div>
-      <b class="block">${it.name}</b>
+      <div class="flex items-center justify-between">
+        <p>${it.name}</p>
+        ${it.image ? `<img src="${it.image}" alt="${it.name}" class="max-w-[64px] rounded ring-1 mx-2 ${owned ? 'ring-emerald-500' : 'ring-cyan-400/40'}">` : ''}
+      </div>
       <div class="text-slate-400 text-sm">${bonuses||'—'}</div>
       <div class="flex items-center justify-between mt-2">
         <span class="font-mono">${it.cost||0}₵</span>
-        <button class="${owned? BTN : BTN_PRIMARY}" ${owned||blocked? 'disabled':''} data-buy="${it.id}">${owned? 'Acheté': (blocked? 'Requis': 'Acheter')}</button>
+        <button class="${owned? BTN : BTN_PRIMARY}" ${owned||blocked? 'disabled':''} data-buy="${it.id}">${owned? '✅': (blocked? 'Requis': '💰')}</button>
       </div>`;
     card.querySelector('[data-buy]')?.addEventListener('click',()=>buy(it.id));
     root.appendChild(card);

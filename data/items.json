@@ -4,6 +4,7 @@
     {
       "id": "deck_mk1",
       "name": "Cyberdeck Mk.I",
+      "image": "./assets/imgs/deck-mk-I.png",
       "slots": 1,
       "cpu": 4,
       "cost": 120,
@@ -15,6 +16,7 @@
     {
       "id": "deck_mk2",
       "name": "Cyberdeck Mk.II",
+      "image": "./assets/imgs/deck-mk-II.png",
       "slots": 2,
       "cpu": 7,
       "cost": 380,
@@ -29,6 +31,7 @@
     {
       "id": "deck_mk3",
       "name": "Cyberdeck Mk.III",
+      "image": "./assets/imgs/deck-mk-III.png",
       "slots": 3,
       "cpu": 10,
       "cost": 1200,
@@ -44,7 +47,8 @@
   "consoles": [
     {
       "id": "console_neo",
-      "name": "Console NEO‑Link",
+      "name": "Console NEO-Link",
+      "image": "./assets/imgs/console_neo.png",
       "slots": 1,
       "cpu": 2,
       "cost": 160,
@@ -54,7 +58,8 @@
     },
     {
       "id": "console_quantum",
-      "name": "Console Q‑Nexus",
+      "name": "Console Q-Nexus",
+      "image": "./assets/imgs/console_quantum.png",
       "slots": 2,
       "cpu": 5,
       "cost": 660,
@@ -100,7 +105,7 @@
     },
     {
       "id": "mod_stealth",
-      "name": "Mod camo‑réseau",
+      "name": "Mod camo-réseau",
       "cost": 260,
       "bonuses": {
         "stealth": 1
