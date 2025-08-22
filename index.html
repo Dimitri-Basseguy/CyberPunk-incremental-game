@@ -32,14 +32,14 @@
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-      <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner">
+      <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner flex justify-between flex-col">
         <div class="flex items-center">
           <img src="./assets/imgs/icon_credit.svg" alt="CRT" class="w-12 h-12" />
           <p class="text-cyan-300/80 text-sm">Crédits</p>
         </div>
         <div id="kpi-creds" class="font-mono text-lg">0₵</div>
       </div>
-      <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner">
+      <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner flex justify-between flex-col">
         <div class="flex items-center">
           <img src="./assets/imgs/icon_rep.svg" alt="REP" class="w-12 h-12" />
           <p class="text-cyan-300/80 text-sm">Réputation</p>
@@ -47,7 +47,7 @@
         <p id="kpi-rep" class="font-mono text-lg">0</p>
       </div>
       
-      <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner">
+      <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner flex justify-between flex-col">
         <div class="flex items-center">
           <img src="./assets/imgs/icon_heat.svg" alt="HEAT" class="w-12 h-12" />
           <p class="text-cyan-300/80 text-sm">Chaleur</p>
@@ -72,11 +72,25 @@
         </div>
       </div>
 
-      <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner">
-        <div class="text-cyan-300/80 text-sm">Points de compétence</div>
-        <div id="kpi-sp" class="font-mono text-lg">0</div>
+      <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner flex justify-between flex-col">
+        <div class="flex items-center">
+          <img src="./assets/imgs/sp_token_plus.svg" alt="XP" class="w-12 h-12" />
+          <p class="text-cyan-300/80 text-sm">Points de compétence</p>
+        </div>
+        <p id="kpi-sp" class="font-mono text-lg">0</p>
+        <!-- Progression vers le prochain point de compétence -->
+        <div class="mt-2">
+          <div class="text-slate-400 text-xs">
+            Prochain point&nbsp;: <span id="kpi-xptext">0 / 100</span>
+          </div>
+          <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+            <span id="kpi-xpbar"
+                  class="block h-full bg-gradient-to-r from-neon-cyan to-neon-fuchsia"
+                  style="width:0%"></span>
+          </div>
+        </div>
       </div>
-      <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner">
+      <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner flex justify-between flex-col">
         <div class="flex items-center">
           <img src="./assets/imgs/icon_cpu.svg" alt="CPU" class="w-12 h-12" />
           <div class="text-cyan-300/80 text-sm">Charge système</div>

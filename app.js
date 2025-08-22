@@ -11,7 +11,32 @@ const PROGRESS_INNER = 'block h-full bg-gradient-to-r from-neon-cyan to-neon-fuc
 const OPEN_TARGETS_KEY = 'open_targets_v1';
 const OPEN_MISSIONS_KEY = 'open_missions_v1';
 const OPEN_UPGRADES_KEY = 'open_upgrades_v1';
-const SAVE_KEY = 'cyber_netrunner_save_v6';
+
+// — Représailles (chance + dégâts)
+const RETALIATION = {
+  // Probabilité de base
+  base: 0.20,            // 20% de base
+  perLevel: 0.04,        // +4% par niveau de serveur
+  heatBonusFrom: 30,     // bonus si chaleur > 30%
+  heatBonusPer20: 0.06,  // +6% par tranche de 20% au-dessus du seuil
+  corpMul: 1.15,         // corpos +15%
+  cityMul: 1.00,         // ville neutre
+  stealthMitigationPerLvl: 0.008, // -0.8% par point de Stealth
+  min: 0.08,             // plancher 8%
+  max: 0.75,             // plafond 75%
+
+  // Dégâts
+  heatDmg: { base: 8, perLevel: 3, cityMul: 1.10, corpMul: 1.00 },
+  credDmg: { asPctOfGainMin: 0.35, asPctOfGainMax: 0.65, floor: 15, capPctOfWallet: 0.20 },
+  repDmg:  { city: 2, corpMin: 3 }, // corpMin + floor(level/3)
+
+  // Pression d’activité (augmente chance & dégâts selon le SPAM récent)
+  pressureWindowMs: 12*60*1000,   // regarde les tentatives de hack des 12 dernières minutes
+  pressurePerAttempt: 0.02,       // +2% de chance par tentative récente sur la même cible
+  streakThreshold: 5,             // à partir de 5 tentatives dans la fenêtre…
+  streakBonus: 0.10,              // …+10% de chance en plus (one-shot)
+  dmgPressureMulPerAttempt: 0.03  // dégâts ×(1 + 3% * nb tentatives récentes) (capé plus bas)
+};
 
 // — Économie globale (tunable sans toucher aux JSON)
 const ECONOMY = {
@@ -24,6 +49,36 @@ const ECONOMY = {
   corpMul: 1.00,          // corpos neutre
   missionMul: 0.85,       // missions un peu moins généreuses
 farmHistory: {},          // { serverId: [timestamps] }
+};
+
+// — Traceur (représailles liées aux SCANS répétés)
+const TRACE = {
+  windowMs: 8*60*1000,     // on observe les scans sur 8 min
+  base: 0.10,              // 10% de base
+  perScan: 0.06,           // +6% par scan récent (même cible)
+  heatBonusFrom: 35,       // bonus de proba au-dessus de 35% chaleur
+  heatPer20Bonus: 0.05,    // +5% par tranche de 20% au-dessus du seuil
+  corpMul: 1.10,           // corpos un peu + agressives
+  cityMul: 0.90,           // ville un peu – agressive
+  maxP: 0.80,              // plafonné à 80%
+
+  // sévérité par volume de scans récents (≈ escalade)
+  levelByAttempts: [0,1,1,2,2,3,3,3], // indexé par nb de scans récents
+  durationsMs: {1:45000, 2:70000, 3:100000}, // durée par niveau
+
+  // effets de trace (appliqués via activeEventMods)
+  effects: {
+    icePerLevel: 5,               // +5 GLACE par niveau
+    chanceMinusPerLevel: 0.05,    // -5 pts de % par niveau
+    heatAttemptAddPerLevel: 2     // +2% chaleur par tentative par niveau
+  },
+
+  // “contre-mesure” immédiate quand on scanne sous trace
+  scanPanic: {
+    p: 0.20,                       // 20% de chance
+    heatSpike: {1:6, 2:10, 3:14},  // pic de chaleur
+    lockoutMs: {1:2000, 2:3500, 3:5000} // mini-verrou
+  }
 };
 
 // ====== State ======
@@ -44,6 +99,8 @@ const state = {
   upgrades: new Set(), // ids de nœuds débloqués
   _bypassReadyAt: 0,   // cooldown pour l'upgrade bypass
   farmHistory: {},
+  attemptHistory: {}, // { targetId: [timestamps] }
+  scanHistory: {}, // { targetId: [timestamps] }
 };
 
 // ====== Helpers ======
@@ -139,6 +196,16 @@ function activeEventMods(target){
         mods.rewardMul *= 1.25;
         mods.heatAttemptAdd += 2;
       }
+      if (e.type === 'trace') {
+        // scope: corp ciblée OU ville
+        const match = (target.kind==='corp' && e.corp===target.id) || (target.kind==='city' && !e.corp);
+        if (match){
+          const L = e.level || 1;
+          mods.iceBonus       += (TRACE.effects.icePerLevel||0) * L;
+          mods.chanceAdd      -= (TRACE.effects.chanceMinusPerLevel||0) * L;
+          mods.heatAttemptAdd += (TRACE.effects.heatAttemptAddPerLevel||0) * L;
+        }
+      }
     }
     return mods;
   }
@@ -233,6 +300,169 @@ function addLog(msg){
   const p = document.createElement('p'); p.innerHTML = msg; el.prepend(p);
 }
 
+// Pression des événements (audit/sweep/bounty) sur représailles
+function maybeTraceOnScan(target){
+  const now = Date.now();
+  // mémoriser le scan et purger la fenêtre
+  (state.scanHistory[target.id] ||= []).push(now);
+  state.scanHistory[target.id] = state.scanHistory[target.id].filter(ts => now - ts < TRACE.windowMs);
+
+  const attempts = state.scanHistory[target.id].length;
+  // probabilité d’armement du traceur
+  let p = TRACE.base + Math.max(0, attempts-1) * TRACE.perScan;
+  if(state.heat > TRACE.heatBonusFrom){
+    const blocks = Math.floor((state.heat - TRACE.heatBonusFrom)/20)+1;
+    p += blocks * TRACE.heatPer20Bonus;
+  }
+  p *= (target.kind==='corp') ? TRACE.corpMul : TRACE.cityMul;
+  p = clamp(p, 0, TRACE.maxP);
+
+  if(Math.random() < p){
+    // déterminer/mettre à jour le niveau et la durée
+    const lvl = Math.min(3, TRACE.levelByAttempts[Math.min(attempts, TRACE.levelByAttempts.length-1)] || 1);
+    const ends = now + (TRACE.durationsMs[lvl] || 60000);
+
+    // chercher un traceur existant pour cette cible
+    const existing = state.events.find(e =>
+      e.type==='trace' && (
+        (target.kind==='corp' && e.corp===target.id) ||
+        (target.kind==='city' && !e.corp)
+      )
+    );
+
+    if(existing){
+      existing.level = Math.max(existing.level||1, lvl);
+      existing.start = existing.start || now;
+      existing.ends  = Math.max(existing.ends, ends);
+    } else {
+      const ev = { type:'trace', start: now, ends, level: lvl };
+      if(target.kind==='corp') ev.corp = target.id;
+      state.events.push(ev);
+    }
+
+    addLog(`🎯 Traceur activé sur <b>${target.name}</b> — niveau ${lvl}. Scans/hacks plus risqués temporairement.`);
+    renderEventTicker?.();
+
+    // contre-mesure instantanée (pic de chaleur + mini-verrou) : conditionnelle
+    const panic = TRACE.scanPanic;
+    if(Math.random() < panic.p){
+      const L = (existing?.level) || lvl;
+      const spike = panic.heatSpike[L] || 6;
+      const heatCap = 100 - (upgradeMods().heatCapMinus||0);
+      state.heat = Math.min(heatCap, state.heat + spike);
+      addLog(`⚡ Contre-mesure détectée — +${spike}% chaleur`);
+      if(typeof lockout === 'function'){ lockout(panic.lockoutMs[L] || 2000); }
+    }
+  }
+}
+
+function _retaliationEventPressure(target){
+  const now = Date.now();
+  let chanceAdd = 0, heatMul = 1, credMul = 1;
+
+  for (const e of state.events){
+    if (e.ends && e.ends <= now) continue;
+    if (e.type === 'audit' && target.kind==='corp' && (!e.corp || e.corp===target.id)){
+      chanceAdd += 0.12; heatMul *= 1.15;
+    }
+    if (e.type === 'city_sweep' && target.kind==='city'){
+      chanceAdd += 0.12; heatMul *= 1.40;
+    }
+    if (e.type === 'bounty' && target.kind==='corp' && (!e.corp || e.corp===target.id)){
+      chanceAdd += 0.10; credMul *= 1.20;
+    }
+  }
+  return { chanceAdd, heatMul, credMul };
+}
+
+// Probabilité de représailles (inclut pression d’activité)
+function _retaliationChance(target, server){
+  const R = RETALIATION;
+  const um = upgradeMods?.() || {};
+  let p = R.base + server.level * R.perLevel;
+
+  // bonus si chaleur élevée
+  if (state.heat > R.heatBonusFrom){
+    const blocks = Math.floor((state.heat - R.heatBonusFrom)/20) + 1;
+    p += blocks * R.heatBonusPer20;
+  }
+
+  // ville/corpo
+  p *= (target.kind === 'corp') ? R.corpMul : R.cityMul;
+
+  // mitigation par Stealth
+  p -= (state.skills.stealth || 0) * R.stealthMitigationPerLvl;
+
+  // pression d’événements
+  const ev = _retaliationEventPressure(target);
+  p += ev.chanceAdd;
+
+  // pression d’activité (tentatives récentes sur CETTE cible)
+  const now = Date.now();
+  const attempts = (state.attemptHistory[target.id] || []).filter(ts => now - ts < R.pressureWindowMs).length;
+  p += attempts * R.pressurePerAttempt;
+  if (attempts >= R.streakThreshold) p += R.streakBonus;
+
+  // hook upgrade futur (si tu ajoutes un mod : retaliationChanceMul)
+  p *= (um.retaliationChanceMul || 1);
+
+  return clamp(p, R.min, R.max);
+}
+
+// Dégâts des représailles (échelle avec pression d’activité)
+function _retaliationDamage(target, server, lastCredGain){
+  const R = RETALIATION;
+  const um = upgradeMods?.() || {};
+  const ev = _retaliationEventPressure(target);
+
+  // base heat
+  let heat = Math.round((R.heatDmg.base + server.level * R.heatDmg.perLevel) *
+    (target.kind === 'city' ? R.heatDmg.cityMul : R.heatDmg.corpMul) *
+    ev.heatMul);
+
+  // base credits
+  const pct = R.credDmg.asPctOfGainMin + Math.random()*(R.credDmg.asPctOfGainMax - R.credDmg.asPctOfGainMin);
+  let credLoss = Math.round(lastCredGain * pct * ev.credMul);
+  credLoss = Math.max(R.credDmg.floor, credLoss);
+  credLoss = Math.min( Math.round(state.creds * R.credDmg.capPctOfWallet), credLoss, state.creds );
+
+  // base reputation
+  let repLoss = (target.kind==='city') ? R.repDmg.city : (R.repDmg.corpMin + Math.floor(server.level/3));
+
+  // pression d’activité → multiplier dégâts (cap 8 tentatives pour éviter l’explosion)
+  const now = Date.now();
+  const attempts = Math.min(8, (state.attemptHistory[target.id] || []).filter(ts => now - ts < R.pressureWindowMs).length);
+  const pressMul = 1 + attempts * R.dmgPressureMulPerAttempt;
+
+  heat     = Math.round(heat * pressMul);
+  credLoss = Math.round(credLoss * pressMul);
+  // la réputation peut rester non-scalée pour éviter de descendre trop vite
+  // repLoss = Math.round(repLoss * (1 + attempts*0.01));
+
+  // hook upgrade futur (si tu ajoutes : retaliationDmgMul)
+  const dmgMul = (um.retaliationDmgMul || 1);
+  heat     = Math.round(heat * dmgMul);
+  credLoss = Math.round(credLoss * dmgMul);
+  // repLoss = Math.round(repLoss * dmgMul);
+
+  return { heat, credLoss, repLoss, attempts };
+}
+
+// Appliquer potentiellement des représailles après un succès
+function maybeRetaliation(target, server, lastCredGain){
+  const p = _retaliationChance(target, server);
+  if (Math.random() < p){
+    const { heat, credLoss, repLoss, attempts } = _retaliationDamage(target, server, lastCredGain);
+    const heatCap = 100 - (upgradeMods().heatCapMinus || 0);
+
+    state.heat = Math.min(heatCap, state.heat + heat);
+    state.creds = Math.max(0, state.creds - credLoss);
+    state.rep   = Math.max(0, state.rep   - repLoss);
+
+    addLog(`⚠️ Représailles: <b>${target.name}</b> — +${heat}% chaleur, -${credLoss}₵, -${repLoss} Rep <span class="text-slate-400 text-xs">(p≈${Math.round(p*100)}% • ${attempts} tentatives/12min)</span>`);
+  }
+}
+
 // === Ticker d'événements (UI) ===
 function formatLeft(ms){
   if (ms <= 0) return '0s';
@@ -247,6 +477,13 @@ function eventStart(e){
   const d = defs[e.type] || defs[e.id];
   if (d && d.duration_ms) return e.ends - d.duration_ms;
   if (e.type === 'city_sweep') return e.ends - 25000;
+  // ➋ eventStart(e) — fallback si jamais "start" manquait
+  if (e.type === 'lockout') return e.ends - 10000; // 10s par défaut
+  if (e.type === 'trace') {
+    const L = e.level || 1;
+    const d = (TRACE.durationsMs && TRACE.durationsMs[L]) || 60000;
+    return (e.start ? e.start : (e.ends - d));
+  }
   return e.ends - 30000;
 }
 function eventMeta(e){
@@ -266,8 +503,25 @@ function eventMeta(e){
     const corp = (window.TARGETS||[]).find(t=>t.id===e.corp);
     if (corp) who = ' — ' + corp.name;
   }
+  // ➊ eventMeta(e) — ajouter ce bloc dans les switch/cases existants
+  if (e.type === 'lockout') {
+    return { name: 'Surcharge de chaleur — 🔒 verrou', icon: '🔥' };
+  }
+  if (e.type === 'trace') {
+    const L = e.level || 1;
+    // suffixe corpo si présent
+    let who = '';
+    if (e.corp){
+      const corp = (window.TARGETS||[]).find(t=>t.id===e.corp);
+      if (corp) who = ' — ' + corp.name;
+    } else {
+      who = ' — Réseau municipal';
+    }
+    return { name: `Traceur actif L${L}${who}`, icon: '🎯' };
+  }
   return { name: name + who, icon };
 }
+
 function renderEventTicker(){
   const root = document.getElementById('eventsTicker');
   if (!root) return;
@@ -353,6 +607,10 @@ function scan(targetId, serverId){
     state.discovered[serverId] = c;
     addLog(`Scan <span class="text-slate-400">${t.name} › ${s.name}</span> → chance ${Math.round(c*100)}%`);
     renderTargets();
+
+    // ✅ AJOUT : pression de scan & éventuel "trace"
+    maybeTraceOnScan(t);
+
     btns.forEach(b=>b.disabled=false);
   }, delay);
 }
@@ -380,6 +638,9 @@ function hack(targetId, serverId){
   setTimeout(()=>{ doHack(t,s); buttons.forEach(b=>b.disabled=false); }, delay);
 }
 function doHack(t, s){
+  const nowTs = Date.now();
+  (state.attemptHistory[t.id] ||= []).push(nowTs);
+  state.attemptHistory[t.id] = state.attemptHistory[t.id].filter(ts => nowTs - ts < RETALIATION.pressureWindowMs);
   const tmods = activeEventMods(t);
   // appliquer bypass éventuel
   const bypass = maybeBypass(s);
@@ -408,6 +669,8 @@ function doHack(t, s){
     if(Math.random()<0.5){ state.skills.netrun += 0.02; state.skills.decrypt += 0.015; state.skills.speed += 0.01; }
     if(state.xp>=100){ state.xp-=100; state.sp++; addLog('⬆️ Point de compétence obtenu'); }
     onHackSuccess(t.id, s.id);
+    // ⬇️ nouveau : chance de représailles
+    maybeRetaliation(t, s, cred);
     if(extra){ renderAll(); return; }
   } else {
     const h = heatOnFail(tmods);
@@ -429,8 +692,27 @@ let lockTimer=null;
 function lockout(ms){
   const buttons = document.querySelectorAll('[data-action="hack"]');
   buttons.forEach(b=>b.disabled=true);
+
+  // 🔥 Ajout/MAJ de l’événement "lockout"
+  const now = Date.now();
+  const existing = state.events.find(e => e.type === 'lockout');
+  if (existing){
+    existing.start = existing.start || now;
+    existing.ends  = now + ms;            // prolonge si déjà présent
+  } else {
+    state.events.push({ type:'lockout', start: now, ends: now + ms });
+  }
+  // log plus explicite + rafraîchit le panneau
+  addLog(`🔥 Surcharge de chaleur — 🔒 verrou de ${Math.round(ms/1000)}s`);
+  renderEventTicker?.();
+
   clearTimeout(lockTimer);
-  lockTimer = setTimeout(()=>{ buttons.forEach(b=>b.disabled=false); state.heat = Math.max(0, state.heat-30); renderAll(); addLog('🧊 Verrou levé, chaleur -30%'); }, ms);
+  lockTimer = setTimeout(()=>{
+    buttons.forEach(b=>b.disabled=false);
+    state.heat = Math.max(0, state.heat-30);
+    renderAll();
+    addLog('🧊 Verrou levé, chaleur -30%');
+  }, ms);
 }
 
 function buy(itemId){
@@ -693,6 +975,26 @@ function renderKPIs(){
     } else {
       hb.style.boxShadow = 'none';
       hb.classList.remove('animate-pulse');
+    }
+  }
+  // === Progression vers le prochain SP (100 XP) ===
+  const XP_NEED = 100;
+  const cur = Math.max(0, Math.min(XP_NEED, state.xp % XP_NEED));
+  const xpText = document.getElementById('kpi-xptext');
+  const xpBar  = document.getElementById('kpi-xpbar');
+  if (xpText) xpText.textContent = `${Math.floor(cur)} / ${XP_NEED}`;
+
+  if (xpBar) {
+    const pct = Math.round((cur / XP_NEED) * 100);
+    xpBar.style.width = pct + '%';
+
+    // petit feedback visuel quand on est proche
+    if (pct >= 90) {
+      xpBar.style.boxShadow = '0 0 10px 3px rgba(34,211,238,.45)';
+      xpBar.classList.add('animate-pulse');
+    } else {
+      xpBar.style.boxShadow = 'none';
+      xpBar.classList.remove('animate-pulse');
     }
   }
 }
@@ -990,11 +1292,13 @@ function renderAll(){
 // ====== Save/Load ======
 function persist(){
   const o = { ...state, gearOwned:[...state.gearOwned], programsOwned:[...state.programsOwned], upgrades:[...state.upgrades] };
-  localStorage.setItem(SAVE_KEY, JSON.stringify(o));
+  const KEY = (typeof SAVE_KEY !== 'undefined' ? SAVE_KEY : (window.SAVE_KEY || 'cyber_netrunner_save_v6'));
+  localStorage.setItem(KEY, JSON.stringify(o));
 }
 function restore(){
   try{
-    const raw = localStorage.getItem(SAVE_KEY); if(!raw) return;
+    const KEY = (typeof SAVE_KEY !== 'undefined' ? SAVE_KEY : (window.SAVE_KEY || 'cyber_netrunner_save_v6'));
+    const raw = localStorage.getItem(KEY); if(!raw) return;
     const o = JSON.parse(raw);
     state.creds=o.creds; state.rep=o.rep; state.heat=o.heat; state.xp=o.xp; state.sp=o.sp; state.skills=o.skills;
     state.gearOwned=new Set(o.gearOwned||[]);
@@ -1006,7 +1310,9 @@ function restore(){
     state.missions=o.missions||{active:null,progress:{}};
     state.upgrades=new Set(o.upgrades||[]);
     state._bypassReadyAt=o._bypassReadyAt||0;
-    state.farmHistory    = o.farmHistory || {};
+    state.farmHistory = o.farmHistory || {};
+    state.attemptHistory = o.attemptHistory || {};
+    state.scanHistory = o.scanHistory || {};
     addLog('💾 Sauvegarde chargée');
   }catch(e){ console.warn(e); }
 }
@@ -1014,7 +1320,12 @@ function restore(){
 // ====== Boot (attend DATA_READY) ======
 window.addEventListener('DATA_READY', ()=>{
   document.getElementById('saveBtn').onclick=()=>{ persist(); addLog('💾 Sauvegardé'); };
-  document.getElementById('resetBtn').onclick=()=>{ ['cyber_netrunner_save_v4','cyber_netrunner_save_v5', SAVE_KEY, OPEN_TARGETS_KEY, OPEN_MISSIONS_KEY, OPEN_UPGRADES_KEY].forEach(k=>localStorage.removeItem(k)); location.reload(); };
+  document.getElementById('resetBtn').onclick=()=>{
+    const KEY = (typeof SAVE_KEY !== 'undefined' ? SAVE_KEY : (window.SAVE_KEY || 'cyber_netrunner_save_v6'));
+    ['cyber_netrunner_save_v4','cyber_netrunner_save_v5', KEY, OPEN_TARGETS_KEY, OPEN_MISSIONS_KEY, OPEN_UPGRADES_KEY]
+      .forEach(k=>localStorage.removeItem(k));
+    location.reload();
+  };
   restore();
   renderAll();
   addLog('Bienvenue, runner. Upgrades disponibles dans le nouveau panneau.');

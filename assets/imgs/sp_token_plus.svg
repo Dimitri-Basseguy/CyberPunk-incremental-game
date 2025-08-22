@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128"
+  fill="none" stroke="url(#neon)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <linearGradient id="neon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#D946EF"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#glow)">
+    <!-- outer token (octagon coin) -->
+    <path d="M48 12h32l28 16v32l-28 16H48L20 60V28z"/>
+    <!-- inner ring -->
+    <circle cx="64" cy="64" r="28"/>
+    <!-- star burst notches -->
+    <path d="M64 18v8M64 102v8M18 64h8M102 64h8M32 32l6 6M90 90l6 6M96 32l-6 6M32 96l6-6"/>
+    <!-- plus sign -->
+    <path d="M64 50v28M50 64h28"/>
+  </g>
+</svg>
