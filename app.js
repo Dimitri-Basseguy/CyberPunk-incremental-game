@@ -28,7 +28,7 @@ const RETALIATION = {
   // Dégâts
   heatDmg: { base: 8, perLevel: 3, cityMul: 1.10, corpMul: 1.00 },
   credDmg: { asPctOfGainMin: 0.35, asPctOfGainMax: 0.65, floor: 15, capPctOfWallet: 0.20 },
-  repDmg:  { city: 2, corpMin: 3 }, // corpMin + floor(level/3)
+  repDmg:  { city: 1, corpMin: 2 }, // corpMin + floor(level/3)
 
   // Pression d’activité (augmente chance & dégâts selon le SPAM récent)
   pressureWindowMs: 12*60*1000,   // regarde les tentatives de hack des 12 dernières minutes
