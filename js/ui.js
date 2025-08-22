@@ -1,8 +1,15 @@
 import { state, ensureSkillsState } from './state.js';
-import { BTN, BTN_PRIMARY, BTN_SUCCESS, CARD, PILL, PROGRESS_OUTER, PROGRESS_INNER,
-         OPEN_TARGETS_KEY, OPEN_MISSIONS_KEY, OPEN_UPGRADES_KEY, ADAPTIVE } from './config.js';
+import {
+  BTN, BTN_PRIMARY, BTN_SUCCESS, CARD, PILL, PROGRESS_OUTER, PROGRESS_INNER,
+  OPEN_TARGETS_KEY, OPEN_MISSIONS_KEY, ADAPTIVE
+} from './config.js';
 import { clamp, addLog, itemById } from './utils.js';
-import { gearBonuses, programSlots, cpuCapacity, cpuUsed, renderSystemLoad, upgradeMods } from './compute.js';
+import { currentMission } from './actions.js';
+import {
+  computeSuccess, gearBonuses,
+  programSlots, cpuCapacity, cpuUsed, renderSystemLoad,
+  upgradeMods // ← keep this here
+} from './compute.js';
 
 // ====== Upgrades UI helpers + action ======
 function hasAllReq(node){

@@ -161,7 +161,10 @@
     </section>
   </div>
 
-  <script src="data-loader.js" defer></script>
-  <script type="module" src="js/main.js"></script>  
+  <!-- Charge les données globales (non module) -->
+  <script defer src="data-loader.js"></script>
+
+  <!-- Charge ton entrypoint en MODE MODULE -->
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
