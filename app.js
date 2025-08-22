@@ -81,6 +81,19 @@ const TRACE = {
   }
 };
 
+// — Fortification adaptative (quand on frôle 95 %)
+const ADAPTIVE = {
+  triggerAt: 0.95,          // seuil pour fortifier (chance observée)
+  scanTriggerAt: 0.95,      // seuil via scan
+  onScanChance: 0.60,       // 60% de chances de fortifier dès un scan à 95%
+  icePerLevel: 6,           // +GLACE par niveau de fortification
+  cooldownMs: 5*60*1000,    // au max 1 up toutes les 5 min par serveur
+  maxLevels: 5,             // plafond
+  minDrop: 0.02,            // viser au moins -2 pts en sortie de rafale
+  maxBurstLevels: 3,       // max niveaux d'un coup
+  log: true
+};
+
 // ====== State ======
 const state = {
   creds: 120,
@@ -101,11 +114,50 @@ const state = {
   farmHistory: {},
   attemptHistory: {}, // { targetId: [timestamps] }
   scanHistory: {}, // { targetId: [timestamps] }
+  hardening: {}, // { serverId: { lvl:number, last:timestamp } }
 };
 
 // ====== Helpers ======
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const itemById=(id)=> (window.ITEM_BY_ID||{})[id] || null;
+
+function getHardeningLvl(serverId){
+  const h = state.hardening?.[serverId];
+  return h ? (h.lvl||0) : 0;
+}
+
+function bumpHardeningIfNeeded(target, server, observedChance, reason='mise à jour'){
+  const now = Date.now();
+  const id  = server.id;
+  const h   = state.hardening[id] || { lvl:0, last:0 };
+
+  if (observedChance < (ADAPTIVE.triggerAt - 1e-6)) return false;
+  if (h.lvl >= ADAPTIVE.maxLevels)                 return false;
+  if (now - h.last < ADAPTIVE.cooldownMs)          return false;
+
+  let applied = 0;
+  do {
+    h.lvl += 1;
+    applied += 1;
+    state.hardening[id] = h; // appliquer temporairement pour mesurer l'effet réel
+    const newChance = computeSuccess(server, target);
+    // on arrête si on est passé sous (95% - minDrop) ou si on a atteint les limites
+    if (newChance < (ADAPTIVE.triggerAt - (ADAPTIVE.minDrop||0.02))) break;
+  } while (applied < (ADAPTIVE.maxBurstLevels||1) && h.lvl < ADAPTIVE.maxLevels);
+
+  h.last = now;
+
+  if (ADAPTIVE.log){
+    addLog(`🛡️ <b>${target.name} › ${server.name}</b> — fortification ${reason} (GLACE +${ADAPTIVE.icePerLevel*applied}, L${h.lvl})`);
+  }
+
+  // re-calcul immédiat de la chance connue (si scannée)
+  if (server.id in state.discovered){
+    state.discovered[server.id] = computeSuccess(server, target);
+  }
+  renderTargets?.();
+  return true;
+}
 
 function ensureSkillsState(){
   const defs = (window.SKILLS && window.SKILLS.skills) || [];
@@ -267,7 +319,9 @@ function computeSuccess(server, target, bypassStrength=0){
   const iceBaseNoBypass = server.level*12 + server.ice.reduce((s,n)=>s+(ICE[n]?.strength||0),0);
   const iceBase = Math.max(0, iceBaseNoBypass - (bypassStrength||0));
   const ev = activeEventMods(target);
-  const iceScore = iceBase + (ev.iceBonus||0);
+  const hardLvl   = (state.hardening[server.id]?.lvl || 0);
+  const extraHard = hardLvl * (ADAPTIVE.icePerLevel || 0);
+  const iceScore  = iceBase + (ev.iceBonus||0) + extraHard;
 
   let diff = base + gearScore - iceScore;
   let chance = 0.5 + diff / denom;
@@ -329,6 +383,13 @@ function rewardMul(target, server){
 function addLog(msg){
   const el = document.getElementById('log');
   const p = document.createElement('p'); p.innerHTML = msg; el.prepend(p);
+}
+
+function pushEvent(ev, logMsg){
+  state.events.push(ev);
+  if (logMsg) addLog(logMsg);
+  // force un refresh immédiat du ticker pour éviter le libellé générique
+  if (typeof renderEventTicker === 'function') renderEventTicker();
 }
 
 // Pression des événements (audit/sweep/bounty) sur représailles
@@ -518,40 +579,48 @@ function eventStart(e){
   return e.ends - 30000;
 }
 function eventMeta(e){
-  const defs = window.EVENT_DEFS_BY_ID || {};
-  const d = defs[e.type] || defs[e.id];
-  const name = d?.name || (e.type==='audit' ? 'Audit sécurité'
-                    : e.type==='city_sweep' ? 'Sweep réseau municipal'
-                    : e.type==='bounty' ? 'Prime temporaire'
-                    : 'Événement');
+  // lookup robuste
+  const byId = window.EVENT_DEFS_BY_ID || {};
+  let d = byId[e.type] || byId[e.id];
+  if(!d && Array.isArray(window.EVENT_DEFS)){
+    d = window.EVENT_DEFS.find(x => x.id === e.type || x.id === e.id) || null;
+  }
+
+  const nameFallback =
+      (e.type==='audit' ? 'Audit sécurité'
+    : e.type==='city_sweep' ? 'Sweep réseau municipal'
+    : e.type==='bounty' ? 'Prime temporaire'
+    : 'Événement');
+
+  const name = d?.name || nameFallback;
   const icon = d?.icon || (e.type==='audit' ? '📊'
-                    : e.type==='city_sweep' ? '🚨'
-                    : e.type==='bounty' ? '💰'
-                    : '🛰️');
+                     : e.type==='city_sweep' ? '🚨'
+                     : e.type==='bounty' ? '💰'
+                     : '🛰️');
+
   const scope = d?.scope || 'any';
   let who = '';
   if (scope==='corp' || e.corp){
     const corp = (window.TARGETS||[]).find(t=>t.id===e.corp);
     if (corp) who = ' — ' + corp.name;
   }
-  // ➊ eventMeta(e) — ajouter ce bloc dans les switch/cases existants
   if (e.type === 'lockout') {
     return { name: 'Surcharge de chaleur — 🔒 verrou', icon: '🔥' };
   }
   if (e.type === 'trace') {
     const L = e.level || 1;
-    // suffixe corpo si présent
-    let who = '';
+    let who2 = '';
     if (e.corp){
       const corp = (window.TARGETS||[]).find(t=>t.id===e.corp);
-      if (corp) who = ' — ' + corp.name;
+      if (corp) who2 = ' — ' + corp.name;
     } else {
-      who = ' — Réseau municipal';
+      who2 = ' — Réseau municipal';
     }
-    return { name: `Traceur actif L${L}${who}`, icon: '🎯' };
+    return { name: `Traceur actif L${L}${who2}`, icon: '🎯' };
   }
   return { name: name + who, icon };
 }
+
 
 function renderEventTicker(){
   const root = document.getElementById('eventsTicker');
@@ -638,6 +707,10 @@ function scan(targetId, serverId){
     state.discovered[serverId] = c;
     addLog(`Scan <span class="text-slate-400">${t.name} › ${s.name}</span> → chance ${Math.round(c*100)}%`);
     renderTargets();
+    // Si le scan révèle ≥95 %, chance de fortifier immédiatement
+    if (c >= ADAPTIVE.scanTriggerAt && Math.random() < ADAPTIVE.onScanChance){
+      bumpHardeningIfNeeded(t, s, c, 'suite au scan');
+    }
 
     // ✅ AJOUT : pression de scan & éventuel "trace"
     maybeTraceOnScan(t);
@@ -675,7 +748,7 @@ function doHack(t, s){
   const tmods = activeEventMods(t);
   // appliquer bypass éventuel
   const bypass = maybeBypass(s);
-  const baseChance = state.discovered[s.id] ?? computeSuccess(s,t,bypass);
+  const baseChance = computeSuccess(s, t, bypass);
   let chance = baseChance + (tmods.chanceAdd||0);
   chance = clamp(chance, 0.05, 0.95);
   const roll = Math.random();
@@ -690,12 +763,19 @@ function doHack(t, s){
     state.rep += repGain;
     state.xp += 8 + s.level*3;
     // tentative bonus (programme ou upgrade)
-    const nowTs = Date.now();
     (state.farmHistory[s.id] ||= []).push(nowTs);
     state.farmHistory[s.id] = state.farmHistory[s.id].filter(ts => nowTs - ts < ECONOMY.repeatWindowMs);
 
     const extra = (programMods().extraAttemptOnSuccess ? 1 : 0) || (Math.random()*100 < (upgradeMods().extraAttemptPct||0) ? 1 : 0);
     addLog(`✔️ Succès: <b>${t.name} › ${s.name}</b> +<b>${cred}₵</b>, +<b>${repGain} Rep</b>, <span class="text-slate-400">${s.reward.loot}</span>${extra? ' — tentative bonus':''}`);
+
+    // --- FORTIFICATION ADAPTATIVE ---
+    // Si la chance observée frôle 95 %, la cible se "renforce" (GLACE virtuelle +L)
+    // Utilise la meilleure des deux valeurs (chance affichée vs. base du calcul)
+    if (typeof bumpHardeningIfNeeded === 'function') {
+      const observed = Math.max(chance, baseChance);
+      bumpHardeningIfNeeded(t, s, observed, 'après succès');
+    }
 
     // Gains data-driven depuis data/skills.json
     const defs = (window.SKILLS && window.SKILLS.skills) || [];
@@ -721,7 +801,6 @@ function doHack(t, s){
   }
   if(state.heat>=100 - (upgradeMods().heatCapMinus||0)){
     const ms = 10000 * (upgradeMods().lockoutMul || 1);
-    addLog(`🔥 Surcharge de chaleur — 🔒 verrou de ${Math.round(ms/1000)}s`);
     lockout(ms);
   }
   renderAll();
@@ -821,7 +900,7 @@ function spawnSecurityEvent(){
   const defs = window.EVENT_DEFS || [];
   const now  = Date.now();
 
-  // Fallback : ancien comportement si pas de JSON chargé
+  // Fallback si pas de JSON
   if(!defs.length){
     const roll = Math.random();
     const corps = (window.TARGETS||[]).filter(t=>t.kind==='corp');
@@ -846,7 +925,7 @@ function spawnSecurityEvent(){
     return;
   }
 
-  // Tirage pondéré par "weight"
+  // Tirage pondéré
   let totalW = 0;
   for(const d of defs) totalW += Math.max(1, d.weight || 1);
   let r = Math.random() * totalW, chosen = defs[0];
@@ -858,27 +937,28 @@ function spawnSecurityEvent(){
   const ends = now + (chosen.duration_ms || 30000);
   const ev = { id: chosen.id, type: chosen.id, ends };
 
-  // Si scope "corp", lier une corpo et logger le message {corp}
-  if(chosen.scope === 'corp'){
+  // Message de log depuis JSON (corp vs défaut)
+  let msg = '';
+  if (chosen.scope === 'corp'){
     const corps = (window.TARGETS||[]).filter(t=>t.kind==='corp');
     if(corps.length){
       const c = corps[Math.floor(Math.random()*corps.length)];
       ev.corp = c.id;
-      const msg = (chosen.scope === 'corp')
-      ? ((chosen.log && chosen.log.corp) ? chosen.log.corp.replace('{corp}', c.name) : `Événement ${chosen.name} chez ${c.name}`)
-      : ((chosen.log && chosen.log.default) ? chosen.log.default : `Événement ${chosen.name}`);
-    pushEvent(ev, msg); // ✅
-    return;
+      msg = (chosen.log && chosen.log.corp)
+        ? chosen.log.corp.replace('{corp}', c.name)
+        : `Événement ${chosen.name} chez ${c.name}`;
+    } else {
+      msg = `Événement ${chosen.name}`;
     }
+  } else {
+    msg = (chosen.log && chosen.log.default)
+      ? chosen.log.default
+      : `Événement ${chosen.name}`;
   }
 
-  // Sinon (city/any)
-  state.events.push(ev);
-  const msg = (chosen.log && chosen.log.default)
-    ? chosen.log.default
-    : `Événement ${chosen.name}`;
-  addLog(msg);
+  pushEvent(ev, msg);
 }
+
 
 // Missions
 function currentMission(){ return state.missions.active || null; }
@@ -1182,11 +1262,18 @@ function serverLine(t, s){
   const wrap = document.createElement('div');
   wrap.className = 'grid grid-cols-[1fr_auto] gap-2 items-center';
   const known = state.discovered[s.id];
+  // si connu, on recalcule live pour intégrer hardening & events récents
   const um = upgradeMods();
-  const pct = known? (um.showScanExact? ( (known*100).toFixed(1) + '%' ) : (Math.round(known*100)+'%') ) : '?';
+  const live = known ? computeSuccess(s, t) : null;
+  const pct = known
+    ? (um.showScanExact ? ((live*100).toFixed(1) + '%') : (Math.round(live*100) + '%'))
+    : '?';
+  
+  const hardLv = getHardeningLvl(s.id);
+  const fortBadge = hardLv ? ` <span class="ml-1 text-fuchsia-300">Fortifié L${hardLv}</span>` : '';
   wrap.innerHTML = `<div>
       <div><b>${s.name}</b> <span class="text-slate-400 text-sm">lvl ${s.level}</span></div>
-      <div class="text-slate-400 text-sm">GLACE: ${s.ice.join(', ')}</div>
+      <div class="text-slate-400 text-sm">GLACE: ${s.ice.join(', ')}${fortBadge}</div>
       <div class="${PROGRESS_OUTER}"><span class="${PROGRESS_INNER}" style="width:${known? Math.round(known*100):0}%"></span></div>
     </div>
     <div class="flex gap-2">
@@ -1379,7 +1466,7 @@ function renderAll(){
 
 // ====== Save/Load ======
 function persist(){
-  const o = { ...state, gearOwned:[...state.gearOwned], programsOwned:[...state.programsOwned], upgrades:[...state.upgrades] };
+  const o = { ...state, gearOwned:[...state.gearOwned], programsOwned:[...state.programsOwned], upgrades:[...state.upgrades], hardening: state.hardening };
   const KEY = (typeof SAVE_KEY !== 'undefined' ? SAVE_KEY : (window.SAVE_KEY || 'cyber_netrunner_save_v6'));
   localStorage.setItem(KEY, JSON.stringify(o));
 }
@@ -1401,6 +1488,7 @@ function restore(){
     state.farmHistory = o.farmHistory || {};
     state.attemptHistory = o.attemptHistory || {};
     state.scanHistory = o.scanHistory || {};
+    state.hardening   = o.hardening || {};
     addLog('💾 Sauvegarde chargée');
   }catch(e){ console.warn(e); }
 }
