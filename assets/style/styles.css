@@ -30,3 +30,29 @@
 .scrollbar-neon::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+/* Masquer le marqueur natif */
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+summary::marker { content: ''; }
+
+/* Triangle custom */
+.summary-head{
+  position: relative;
+  padding-left: 1.25rem; /* place pour la flèche */
+}
+.summary-head::before{
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  width: 12px; height: 12px; display: block;
+  background: currentColor;                  /* même couleur que le texte */
+  /* ▶ triangle pointant à DROITE */
+  clip-path: polygon(20% 15%, 20% 85%, 80% 50%);
+  transform: translateY(-50%) rotate(0deg);
+  transition: transform .2s ease;
+}
+/* Ouvert → ▼ (rotation 90°) */
+details[open] > summary .summary-head::before{
+  transform: translateY(-50%) rotate(90deg);
+}}

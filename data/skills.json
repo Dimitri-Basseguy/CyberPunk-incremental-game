@@ -1,0 +1,63 @@
+{
+  "compute": { "denominator": 120 },
+  "skills": [
+    {
+      "id": "netrun",
+      "name": "Netrun",
+      "weight": 8,
+      "gearWeight": 6,
+      "start": 1,
+      "gainOnSuccess": 0.02,
+      "gainChance": 0.5,
+      "desc": [
+        "Ta maîtrise des intrusions et de l’OS du deck.",
+        "Impact majeur sur la réussite (poids ×8 dans le calcul).",
+        "S’applique au scan et au piratage.",
+        "Petits gains après succès possibles (+0.02)."
+      ]
+    },
+    {
+      "id": "decrypt",
+      "name": "Decrypt",
+      "weight": 7,
+      "gearWeight": 5,
+      "start": 1,
+      "gainOnSuccess": 0.015,
+      "gainChance": 0.5,
+      "desc": [
+        "Cassage de chiffrements, attaques par dictionnaire, heuristiques.",
+        "Impact fort sur la réussite (poids ×7).",
+        "S’applique au scan et au piratage.",
+        "Légers gains après succès (+0.015)."
+      ]
+    },
+    {
+      "id": "stealth",
+      "name": "Stealth",
+      "weight": 5,
+      "gearWeight": 4,
+      "start": 1,
+      "gainOnSuccess": 0,
+      "gainChance": 0.0,
+      "desc": [
+        "Furtivité réseau, obfuscation et réduction des signatures.",
+        "Améliore la réussite (poids ×5).",
+        "[Optionnel] Si tu as intégré mon patch Représailles: diminue un peu la proba de représailles."
+      ]
+    },
+    {
+      "id": "speed",
+      "name": "Speed",
+      "weight": 4,
+      "gearWeight": 3,
+      "start": 1,
+      "gainOnSuccess": 0.01,
+      "gainChance": 0.5,
+      "desc": [
+        "Vitesse d’exécution, macros et réactivité.",
+        "Améliore la réussite (poids ×4).",
+        "N’influe pas la latence par défaut (à moins d’un patch dédié)."
+      ]
+    }
+  ]
+}

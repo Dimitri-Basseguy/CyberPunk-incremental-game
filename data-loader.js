@@ -11,7 +11,7 @@
   }
 
   const base = 'data';
-  const [items, programs, targets, missions, ice, upgrades, events] = await Promise.all([
+  const [items, programs, targets, missions, ice, upgrades, events, skills] = await Promise.all([
     getJSON(`${base}/items.json`),
     getJSON(`${base}/programs.json`),
     getJSON(`${base}/targets.json`),
@@ -19,7 +19,7 @@
     getJSON(`${base}/ice.json`),
     getJSON(`${base}/upgrades.json`),
     getJSON(`${base}/events.json`),
-    
+    getJSON(`${base}/skills.json`).catch(()=>null),
   ]);
 
   // Aplatit les items par type pour coller à l’API interne existante
@@ -42,7 +42,17 @@
   // ⬇️ Normalisation + exposition des events (supporte array direct OU { events: [...] })
   const ev = Array.isArray(events?.events) ? events.events : (Array.isArray(events) ? events : []);
   window.EVENT_DEFS = ev;
-  window.EVENT_DEFS_BY_ID = Object.fromEntries(ev.map(e => [e.id, e]));
+  
+  // Compétences (optionnel)
+  const skillsObj = skills && (skills.skills || skills.SKILLS || skills); // tolérant
+  window.SKILLS = skillsObj
+    ? (Array.isArray(skillsObj)
+        ? { compute:{ denominator:120 }, skills: skillsObj }
+        : { compute:{ denominator: (skills.compute?.denominator ?? 120) }, skills: skills.skills })
+    : { compute:{ denominator:120 }, skills: [] };
+
+  window.SKILL_BY_ID = Object.fromEntries((window.SKILLS.skills||[]).map(s=>[s.id, s]));
+  window.SKILL_ORDER = (window.SKILLS.skills||[]).map(s=>s.id);
 
   // Indices rapides
   window.ITEM_BY_ID = Object.fromEntries(window.STORE_ITEMS.map(i=>[i.id, i]));

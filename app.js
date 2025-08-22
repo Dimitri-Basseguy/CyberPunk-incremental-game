@@ -2,7 +2,7 @@
 const BTN = 'inline-flex items-center px-2 py-1 rounded-lg border border-white/15  hover:bg-white/15 font-semibold';
 const BTN_PRIMARY = BTN + ' ring-1 ring-cyan-400/40 hover:ring-cyan-300/60';
 const BTN_SUCCESS = BTN + ' ring-1 ring-emerald-400/60 hover:ring-emerald-300/70 bg-emerald-500/20'; // ✅ vert si achetable
-const CARD = 'rounded-xl border border-white/10 bg-white/5 p-3';
+const CARD = 'rounded-xl border border-white/10 bg-white/5 p-2';
 const PILL = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 text-sm';
 const PROGRESS_OUTER = 'h-2 bg-white/10 rounded-full overflow-hidden mt-1.5';
 const PROGRESS_INNER = 'block h-full bg-gradient-to-r from-neon-cyan to-neon-fuchsia';
@@ -106,6 +106,17 @@ const state = {
 // ====== Helpers ======
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const itemById=(id)=> (window.ITEM_BY_ID||{})[id] || null;
+
+function ensureSkillsState(){
+  const defs = (window.SKILLS && window.SKILLS.skills) || [];
+  if (!defs.length) return;
+  const next = {};
+  defs.forEach(s=>{
+    const start = (typeof s.start === 'number') ? s.start : 1;
+    next[s.id] = (state.skills && typeof state.skills[s.id]==='number') ? state.skills[s.id] : start;
+  });
+  state.skills = next;
+}
 
 // ---- Upgrades aggregation
 function upgradeMods(){
@@ -234,23 +245,43 @@ function computeSuccess(server, target, bypassStrength=0){
   const ICE = window.ICE||{};
   const g = gearBonuses();
   const um = upgradeMods();
-  const base = state.skills.netrun*8 + state.skills.decrypt*7 + state.skills.stealth*5 + state.skills.speed*4;
-  const gearScore = (g.netrun||0)*6 + (g.decrypt||0)*5 + (g.stealth||0)*4 + (g.speed||0)*3;
+
+  // ==== Skills depuis JSON ====
+  const defs = (window.SKILLS && window.SKILLS.skills) || null;
+  const denom = (window.SKILLS && window.SKILLS.compute && window.SKILLS.compute.denominator) || 120;
+
+  let base=0, gearScore=0;
+  if (defs && defs.length){
+    for (const s of defs){
+      const w  = (typeof s.weight==='number') ? s.weight : 0;
+      const gw = (typeof s.gearWeight==='number') ? s.gearWeight : 0;
+      base      += (state.skills[s.id] || 0) * w;
+      gearScore += (g[s.id] || 0) * gw;
+    }
+  } else {
+    // fallback (ta formule d’origine)
+    base = state.skills.netrun*8 + state.skills.decrypt*7 + state.skills.stealth*5 + state.skills.speed*4;
+    gearScore = (g.netrun||0)*6 + (g.decrypt||0)*5 + (g.stealth||0)*4 + (g.speed||0)*3;
+  }
+
   const iceBaseNoBypass = server.level*12 + server.ice.reduce((s,n)=>s+(ICE[n]?.strength||0),0);
   const iceBase = Math.max(0, iceBaseNoBypass - (bypassStrength||0));
   const ev = activeEventMods(target);
   const iceScore = iceBase + (ev.iceBonus||0);
+
   let diff = base + gearScore - iceScore;
-  let chance = 0.5 + diff/120;
+  let chance = 0.5 + diff / denom;
+
   const pm = programMods();
   if(pm.successMul) chance *= pm.successMul;
   if(pm.successAdd) chance += pm.successAdd;
   if(um.successAdd) chance += um.successAdd;
+
   const vsBlackAdaptTotal = (pm.vsBlackAdapt||0)/100 + (um.vsBlackAdaptAdd||0);
   if(vsBlackAdaptTotal && server.ice.some(n=>n==='Noire' || n==='Adaptative')) chance += vsBlackAdaptTotal;
   if(pm.cityBonusSuccess && target.kind==='city') chance += (pm.cityBonusSuccess/100);
-  chance = clamp(chance, 0.05, 0.95);
-  return chance;
+
+  return clamp(chance, 0.05, 0.95);
 }
 
 function heatOnFail(eventMods={}){
@@ -666,7 +697,15 @@ function doHack(t, s){
     const extra = (programMods().extraAttemptOnSuccess ? 1 : 0) || (Math.random()*100 < (upgradeMods().extraAttemptPct||0) ? 1 : 0);
     addLog(`✔️ Succès: <b>${t.name} › ${s.name}</b> +<b>${cred}₵</b>, +<b>${repGain} Rep</b>, <span class="text-slate-400">${s.reward.loot}</span>${extra? ' — tentative bonus':''}`);
 
-    if(Math.random()<0.5){ state.skills.netrun += 0.02; state.skills.decrypt += 0.015; state.skills.speed += 0.01; }
+    // Gains data-driven depuis data/skills.json
+    const defs = (window.SKILLS && window.SKILLS.skills) || [];
+    for (const s of defs){
+      const delta = Number(s.gainOnSuccess||0);
+      const p     = Number(s.gainChance||0);
+      if(delta > 0 && Math.random() < p){
+        state.skills[s.id] = (state.skills[s.id]||0) + delta;
+      }
+    }
     if(state.xp>=100){ state.xp-=100; state.sp++; addLog('⬆️ Point de compétence obtenu'); }
     onHackSuccess(t.id, s.id);
     // ⬇️ nouveau : chance de représailles
@@ -1003,30 +1042,69 @@ function renderSkills(){
   const root = document.getElementById('skills');
   root.innerHTML='';
   const canSpend = state.sp > 0;
+  const g = gearBonuses();
 
-  for (const [k,v] of Object.entries(state.skills)){
-    const title = k.charAt(0).toUpperCase()+k.slice(1);
+  const order = (window.SKILL_ORDER && window.SKILL_ORDER.length)
+    ? window.SKILL_ORDER
+    : Object.keys(state.skills);
+
+  for (const id of order){
+    const meta = (window.SKILL_BY_ID && window.SKILL_BY_ID[id]) || { name:id, desc:[] };
+    const title = meta.name || id.charAt(0).toUpperCase()+id.slice(1);
+    const baseVal = Number(state.skills[id]||0);
+    const gear = Number(g[id]||0);
+    const total = baseVal + gear;
+
+    const infoLines = (meta.desc||[]).map(l=>`<li>${l}</li>`).join('');
 
     const card = document.createElement('div');
-    // carte “clippe” tout ce qui dépasse et sert d’ancre au bouton
-    card.className = 'relative rounded-xl border border-white/10 bg-white/5 p-3 overflow-hidden min-h-[80px]';
+    card.className = 'relative rounded-xl border border-white/10 bg-white/5 p-3 overflow-visible min-h-[88px]';
 
-    // contenu avec padding à droite pour laisser la place au +1 absolu
     card.innerHTML = `
       <div class="pr-16 min-w-0">
-        <b class="block">${title}</b>
-        <div class="text-slate-400 text-sm">lvl <span class="font-mono">${v.toFixed(2)}</span></div>
+        <div class="flex items-center gap-2">
+          <b class="block">${title}</b>
+          <button class="shrink-0 w-5 h-5 inline-flex items-center justify-center rounded-full
+                         border border-cyan-400/40 text-cyan-300 hover:bg-white/10 text-[11px] leading-none"
+                  title="Infos" aria-label="Infos ${title}" data-infobtn="${id}">i</button>
+        </div>
+
+        <div class="text-slate-300">
+          lvl <span class="font-mono text-base">${total.toFixed(2)}</span>
+        </div>
+
+        <div class="text-slate-500 text-xs mt-0.5">
+          base <span class="font-mono">${baseVal.toFixed(2)}</span>
+          ${gear ? ` · équipement <span class="font-mono ${gear>0?'text-emerald-400':'text-rose-400'}">${gear>=0?'+':''}${Number.isInteger(gear)?gear:gear.toFixed(2)}</span>` : ''}
+        </div>
       </div>
+
       <button
         class="inline-flex items-center px-3 py-2 rounded-lg border border-white/15 bg-white/10 hover:bg-white/15 font-semibold whitespace-nowrap
                absolute right-2 top-1/2 -translate-y-1/2 ${canSpend ? '' : 'opacity-50 cursor-not-allowed'}"
         ${canSpend ? '' : 'disabled'}
         title="${canSpend ? '+1 point' : '0 point de compétence disponible'}"
-        data-skill="${k}"
+        data-skill="${id}"
       >+1</button>
+
+      <!-- panneau d’infos -->
+      <div class="hidden absolute z-20 left-2 top-2 mt-8 max-w-xs border border-white/15 bg-slate-900/95 backdrop-blur-sm
+                  rounded-lg p-3 shadow-lg text-sm" data-infopanel="${id}">
+        <div class="text-cyan-300 font-semibold mb-1">${title}</div>
+        ${infoLines ? `<ul class="list-disc pl-4 space-y-1 text-slate-200">${infoLines}</ul>` : '<div class="text-slate-400">Aucune description.</div>'}
+      </div>
     `;
 
-    card.querySelector('button').onclick = ()=>{ if(canSpend) spendPoint(k); };
+    card.querySelector('[data-skill]').onclick = ()=>{ if(canSpend) spendPoint(id); };
+
+    // tooltip (hover + clic)
+    const btn = card.querySelector(`[data-infobtn="${id}"]`);
+    const panel = card.querySelector(`[data-infopanel="${id}"]`);
+    let hideTimer=null, show=()=>{clearTimeout(hideTimer);panel.classList.remove('hidden');}, hide=()=>{hideTimer=setTimeout(()=>panel.classList.add('hidden'),150);};
+    btn.addEventListener('click', e=>{e.stopPropagation(); panel.classList.toggle('hidden');});
+    btn.addEventListener('mouseenter', show); btn.addEventListener('mouseleave', hide);
+    panel.addEventListener('mouseenter', ()=>clearTimeout(hideTimer)); panel.addEventListener('mouseleave', hide);
+
     root.appendChild(card);
   }
 }
@@ -1144,8 +1222,18 @@ function renderTargets(){
     const det = document.createElement('details');
     det.dataset.id = t.id;
     det.open = baseOpen.size ? baseOpen.has(t.id) : (t.id==='city');
-    det.className = CARD + ' [&_summary]:cursor-pointer [&_summary]:text-cyan-300 [&_summary]:font-semibold';
-    const sum = document.createElement('summary'); sum.textContent = `${t.name}`; det.appendChild(sum);
+    det.className = CARD + ' [&_summary]:cursor-pointer [&_summary]:text-cyan-300 [&_summary]:font-semibold transition ease-in-out hover:ring-1 hover:ring-cyan-400/50';
+    const sum = document.createElement('summary');
+    sum.className = 'flex items-center justify-between gap-2 text-cyan-300 font-semibold';
+
+    sum.innerHTML = `
+      <span class="summary-head">${t.name}${t.kind==='city' ? ' — Métropole' : ''}</span>
+      ${t.image ? `
+        <img src="${t.image}" alt="${t.name}"
+            class="w-12 h-12 object-cover rounded ring-1 ring-cyan-400/40">
+      ` : ''}
+    `;
+    det.appendChild(sum);
     const box = document.createElement('div'); box.className='mt-2 space-y-2';
     t.servers.forEach(s=> box.appendChild( serverLine(t,s) ));
     det.appendChild(box);
@@ -1327,6 +1415,7 @@ window.addEventListener('DATA_READY', ()=>{
     location.reload();
   };
   restore();
+  ensureSkillsState();
   renderAll();
   addLog('Bienvenue, runner. Upgrades disponibles dans le nouveau panneau.');
 });

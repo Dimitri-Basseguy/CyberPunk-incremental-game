@@ -4,6 +4,7 @@
     {
       "id": "city",
       "name": "Neo Aurora — Métropole",
+      "image" : "./assets/imgs/Neo-Aurora-128.webp",
       "kind": "city",
       "servers": [
         {
@@ -65,6 +66,7 @@
     {
       "id": "neongate",
       "name": "NeonGate Industries",
+      "image" : "./assets/imgs/neon-gate-logo.webp",
       "kind": "corp",
       "servers": [
         {
@@ -128,6 +130,7 @@
     {
       "id": "blacksun",
       "name": "BlackSun Security",
+      "image" : "./assets/imgs/black-sun-128.webp",
       "kind": "corp",
       "servers": [
         {
@@ -190,6 +193,7 @@
     {
       "id": "axiom",
       "name": "Axiom Bioware",
+      "image" : "./assets/imgs/axiom-bioware-128.webp",
       "kind": "corp",
       "servers": [
         {
