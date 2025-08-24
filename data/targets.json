@@ -4,61 +4,75 @@
     {
       "id": "city",
       "name": "Neo Aurora — Métropole",
-      "image" : "./assets/imgs/Neo-Aurora-128.webp",
+      "image": "./assets/imgs/Neo-Aurora-128.webp",
       "kind": "city",
       "servers": [
         {
           "id": "grid01",
           "name": "Nœud Énergie S-12",
           "level": 1,
-          "ice": [
-            "GLACE Blanche"
-          ],
+          "ice": ["GLACE Blanche"],
           "reward": {
             "cred": 35,
             "rep": 0,
-            "loot": "Clés réseau"
+            "loot": [
+              { "id": "energy_readouts",   "name": "Lectures réseau",            "base": 2, "p": 0.60, "q": [1, 3] },
+              { "id": "smart_meter_keys",  "name": "Clés compteurs",             "base": 3, "p": 0.35, "q": [1, 2] },
+              { "id": "substation_layout", "name": "Plan sous-station",          "base": 4, "p": 0.22, "q": [1, 1] },
+              { "id": "grid_credentials",  "name": "Identifiants réseau",        "base": 3, "p": 0.18, "q": [1, 2] },
+              { "id": "load_forecasts",    "name": "Prévisions de charge",       "base": 2, "p": 0.28, "q": [1, 2] }
+            ]
           }
         },
         {
           "id": "traffic01",
           "name": "Traffic Control L3",
           "level": 2,
-          "ice": [
-            "Traceur",
-            "GLACE Goudron"
-          ],
+          "ice": ["Traceur", "GLACE Goudron"],
           "reward": {
             "cred": 65,
             "rep": 1,
-            "loot": "Algorithmes feux"
+            "loot": [
+              { "id": "signal_algos",       "name": "Algorithmes feux",         "base": 4, "p": 0.50, "q": [1, 2] },
+              { "id": "greenwave_profiles", "name": "Profils onde verte",       "base": 4, "p": 0.35, "q": [1, 2] },
+              { "id": "cam_plate_cache",    "name": "Cache plaques LPR",        "base": 5, "p": 0.22, "q": [1, 2] },
+              { "id": "ticket_void_token",  "name": "Jetons annulation PV",     "base": 6, "p": 0.12, "q": [1, 1] },
+              { "id": "drone_route_map",    "name": "Routes drones urbains",    "base": 4, "p": 0.18, "q": [1, 1] }
+            ]
           }
         },
         {
           "id": "registry01",
           "name": "Registres citoyens",
           "level": 3,
-          "ice": [
-            "Adaptative"
-          ],
+          "ice": ["Adaptative"],
           "reward": {
             "cred": 120,
             "rep": 1,
-            "loot": "Identifiants alt."
+            "loot": [
+              { "id": "citizen_hashes",   "name": "Hashes biométriques",         "base": 6, "p": 0.35, "q": [1, 2] },
+              { "id": "synthetic_ids",    "name": "Identifiants synthétiques",   "base": 8, "p": 0.18, "q": [1, 1] },
+              { "id": "addr_histories",   "name": "Historiques d’adresse",       "base": 5, "p": 0.28, "q": [1, 2] },
+              { "id": "birth_records",    "name": "Extraits d’état civil",       "base": 7, "p": 0.14, "q": [1, 1] },
+              { "id": "taxpayer_tokens",  "name": "Jetons contribuable",         "base": 6, "p": 0.18, "q": [1, 1] }
+            ]
           }
         },
         {
           "id": "metro01",
           "name": "Métro — Dispatch",
           "level": 4,
-          "ice": [
-            "Noire",
-            "Traceur"
-          ],
+          "ice": ["Noire", "Traceur"],
           "reward": {
             "cred": 180,
             "rep": 2,
-            "loot": "Cartes d’accès"
+            "loot": [
+              { "id": "metro_access_cards",  "name": "Cartes d’accès",            "base": 6, "p": 0.35, "q": [1, 2] },
+              { "id": "maintenance_windows", "name": "Fenêtres maintenance",      "base": 7, "p": 0.22, "q": [1, 1] },
+              { "id": "turnstile_keys",      "name": "Clés tourniquets",          "base": 6, "p": 0.25, "q": [1, 2] },
+              { "id": "route_timings",       "name": "Timings de lignes",         "base": 5, "p": 0.30, "q": [1, 2] },
+              { "id": "control_room_codes",  "name": "Codes salle contrôle",      "base": 8, "p": 0.12, "q": [1, 1] }
+            ]
           }
         }
       ]
@@ -66,63 +80,75 @@
     {
       "id": "neongate",
       "name": "NeonGate Industries",
-      "image" : "./assets/imgs/neon-gate-logo.webp",
+      "image": "./assets/imgs/neon-gate-logo.webp",
       "kind": "corp",
       "servers": [
         {
           "id": "ng_gate",
           "name": "Gateway périmétrique",
           "level": 1,
-          "ice": [
-            "GLACE Blanche",
-            "Traceur"
-          ],
+          "ice": ["GLACE Blanche", "Traceur"],
           "reward": {
             "cred": 60,
             "rep": 1,
-            "loot": "Codes d’essai"
+            "loot": [
+              { "id": "trial_codes",      "name": "Codes d’essai",               "base": 4,  "p": 0.50, "q": [1, 2] },
+              { "id": "whitelist_frag",   "name": "Fragments whitelist",         "base": 3,  "p": 0.35, "q": [1, 2] },
+              { "id": "otp_seed",         "name": "Seeds OTP jetables",          "base": 3,  "p": 0.28, "q": [1, 2] },
+              { "id": "honeypot_sigs",    "name": "Signatures honeypot",         "base": 2,  "p": 0.45, "q": [2, 4] },
+              { "id": "vpn_creds_temp",   "name": "Accès VPN temporaires",       "base": 4,  "p": 0.18, "q": [1, 1] }
+            ]
           }
         },
         {
           "id": "ng_rnd",
           "name": "R&D ProtoLab",
           "level": 2,
-          "ice": [
-            "GLACE Goudron",
-            "Adaptative"
-          ],
+          "ice": ["GLACE Goudron", "Adaptative"],
           "reward": {
             "cred": 140,
             "rep": 1,
-            "loot": "Plans proto"
+            "loot": [
+              { "id": "proto_cad",        "name": "Fichiers CAD proto",          "base": 7, "p": 0.28, "q": [1, 2] },
+              { "id": "lab_notes",        "name": "Notes de labo",               "base": 5, "p": 0.40, "q": [1, 3] },
+              { "id": "sim_models",       "name": "Modèles de simulation",       "base": 6, "p": 0.25, "q": [1, 2] },
+              { "id": "benchmarks",       "name": "Benchmarks internes",         "base": 5, "p": 0.30, "q": [1, 2] },
+              { "id": "proto_blueprints", "name": "Plans proto",                 "base": 8, "p": 0.12, "q": [1, 1] }
+            ]
           }
         },
         {
           "id": "ng_fin",
           "name": "Serveur Finance",
           "level": 3,
-          "ice": [
-            "Adaptative",
-            "Noire"
-          ],
+          "ice": ["Adaptative", "Noire"],
           "reward": {
             "cred": 260,
             "rep": 2,
-            "loot": "Clés multi-sig"
+            "loot": [
+              { "id": "multisig_shard",     "name": "Fragment multi-sig",          "base": 9,  "p": 0.18, "q": [1, 1] },
+              { "id": "cold_wallet_index",  "name": "Index portefeuille froid",    "base": 10, "p": 0.14, "q": [1, 1] },
+              { "id": "invoice_ledgers",    "name": "Grands livres factures",      "base": 7,  "p": 0.30, "q": [1, 2] },
+              { "id": "aml_flags",          "name": "Flags AML internes",          "base": 8,  "p": 0.22, "q": [1, 1] },
+              { "id": "premium_client_list","name": "Liste clients premium",       "base": 11, "p": 0.10, "q": [1, 1] }
+            ]
           }
         },
         {
           "id": "ng_core",
           "name": "Noyau Q-Sec",
           "level": 4,
-          "ice": [
-            "IA Q-Sec",
-            "Noire"
-          ],
+          "ice": ["IA Q-Sec", "Noire"],
           "reward": {
             "cred": 420,
             "rep": 3,
-            "loot": "Shard quantique"
+            "loot": [
+              { "id": "qshard",           "name": "Shard quantique",              "base": 14, "p": 0.08, "q": [1, 1] },
+              { "id": "firmware_keys",    "name": "Clés firmware bas niveau",     "base": 13, "p": 0.10, "q": [1, 1] },
+              { "id": "sec_arch_docs",    "name": "Docs archi sécurité",          "base": 12, "p": 0.18, "q": [1, 1] },
+              { "id": "priv_cert_chain",  "name": "Chaîne de certif. privée",     "base": 12, "p": 0.15, "q": [1, 1] },
+              { "id": "zero_day_notes",   "name": "Notes zero-day internes",      "base": 15, "p": 0.05, "q": [1, 1] }
+            ]
           }
         }
       ]
@@ -130,62 +156,75 @@
     {
       "id": "blacksun",
       "name": "BlackSun Security",
-      "image" : "./assets/imgs/black-sun-128.webp",
+      "image": "./assets/imgs/black-sun-128.webp",
       "kind": "corp",
       "servers": [
         {
           "id": "bs_gate",
           "name": "Portail Sécu",
           "level": 1,
-          "ice": [
-            "Traceur"
-          ],
+          "ice": ["Traceur"],
           "reward": {
             "cred": 55,
             "rep": 1,
-            "loot": "Tokens SSO"
+            "loot": [
+              { "id": "sso_tokens",       "name": "Tokens SSO",                   "base": 3, "p": 0.50, "q": [1, 3] },
+              { "id": "mfa_backup_codes", "name": "Codes secours MFA",            "base": 4, "p": 0.35, "q": [1, 2] },
+              { "id": "vpn_cfg",          "name": "Configs VPN",                  "base": 3, "p": 0.40, "q": [1, 2] },
+              { "id": "revoked_list",     "name": "Listes révocation",            "base": 2, "p": 0.45, "q": [1, 2] },
+              { "id": "audit_badges",     "name": "Badges visiteurs",             "base": 2, "p": 0.30, "q": [1, 2] }
+            ]
           }
         },
         {
           "id": "bs_logs",
           "name": "SIEM & Logs",
           "level": 2,
-          "ice": [
-            "GLACE Goudron",
-            "Traceur"
-          ],
+          "ice": ["GLACE Goudron", "Traceur"],
           "reward": {
             "cred": 130,
             "rep": 1,
-            "loot": "Fuites journaux"
+            "loot": [
+              { "id": "siem_dumps",      "name": "Dumps SIEM",                    "base": 5, "p": 0.45, "q": [1, 3] },
+              { "id": "ioc_packs",       "name": "Packs IOC",                     "base": 6, "p": 0.30, "q": [1, 2] },
+              { "id": "netflow_spans",   "name": "Trames NetFlow",                "base": 5, "p": 0.35, "q": [1, 3] },
+              { "id": "alert_rules",     "name": "Règles d’alerte",               "base": 6, "p": 0.25, "q": [1, 2] },
+              { "id": "log_forgery_kit", "name": "Kits falsif. logs",             "base": 7, "p": 0.12, "q": [1, 1] }
+            ]
           }
         },
         {
           "id": "bs_ops",
           "name": "Ops SOC",
           "level": 3,
-          "ice": [
-            "Adaptative",
-            "Noire"
-          ],
+          "ice": ["Adaptative", "Noire"],
           "reward": {
             "cred": 240,
             "rep": 2,
-            "loot": "Backdoor SOC"
+            "loot": [
+              { "id": "soc_playbooks",  "name": "Playbooks SOC",                  "base": 8,  "p": 0.28, "q": [1, 2] },
+              { "id": "ops_backdoor",   "name": "Backdoor SOC",                   "base": 10, "p": 0.10, "q": [1, 1] },
+              { "id": "pager_rotas",    "name": "Rotas d’astreinte",              "base": 7,  "p": 0.22, "q": [1, 2] },
+              { "id": "ir_reports",     "name": "Rapports IR internes",           "base": 9,  "p": 0.16, "q": [1, 1] },
+              { "id": "c2_endpoints",   "name": "Endpoints C2 test",              "base": 8,  "p": 0.20, "q": [1, 1] }
+            ]
           }
         },
         {
           "id": "bs_core",
           "name": "Noyau Cerbère",
           "level": 4,
-          "ice": [
-            "Noire",
-            "IA Q-Sec"
-          ],
+          "ice": ["Noire", "IA Q-Sec"],
           "reward": {
             "cred": 430,
             "rep": 3,
-            "loot": "Clé maître Cerbère"
+            "loot": [
+              { "id": "cerberus_master",  "name": "Clé maître Cerbère",           "base": 15, "p": 0.05, "q": [1, 1] },
+              { "id": "root_of_trust",    "name": "Ancrages de confiance",        "base": 14, "p": 0.08, "q": [1, 1] },
+              { "id": "sensor_signers",   "name": "Signataires capteurs",         "base": 12, "p": 0.12, "q": [1, 1] },
+              { "id": "vault_maps",       "name": "Cartes coffres HSM",           "base": 13, "p": 0.10, "q": [1, 1] },
+              { "id": "redteam_artifacts","name": "Artefacts RedTeam",            "base": 11, "p": 0.20, "q": [1, 2] }
+            ]
           }
         }
       ]
@@ -193,62 +232,75 @@
     {
       "id": "axiom",
       "name": "Axiom Bioware",
-      "image" : "./assets/imgs/axiom-bioware-128.webp",
+      "image": "./assets/imgs/axiom-bioware-128.webp",
       "kind": "corp",
       "servers": [
         {
           "id": "ax_trials",
           "name": "Essais cliniques",
           "level": 1,
-          "ice": [
-            "GLACE Blanche"
-          ],
+          "ice": ["GLACE Blanche"],
           "reward": {
             "cred": 70,
             "rep": 1,
-            "loot": "Dossiers essais"
+            "loot": [
+              { "id": "trial_records",   "name": "Dossiers essais",               "base": 4, "p": 0.50, "q": [1, 3] },
+              { "id": "adverse_events",  "name": "Événements indésirables",       "base": 4, "p": 0.35, "q": [1, 2] },
+              { "id": "placebo_batches", "name": "Lots placebo",                  "base": 3, "p": 0.40, "q": [1, 3] },
+              { "id": "patient_aliases", "name": "Alias patients",                "base": 3, "p": 0.30, "q": [1, 2] },
+              { "id": "drug_stability",  "name": "Rapports stabilité",            "base": 4, "p": 0.25, "q": [1, 2] }
+            ]
           }
         },
         {
           "id": "ax_gen",
           "name": "Génétique",
           "level": 2,
-          "ice": [
-            "Traceur",
-            "Adaptative"
-          ],
+          "ice": ["Traceur", "Adaptative"],
           "reward": {
             "cred": 150,
             "rep": 1,
-            "loot": "Gènes synth."
+            "loot": [
+              { "id": "gene_synth",       "name": "Gènes synth.",                 "base": 7, "p": 0.25, "q": [1, 2] },
+              { "id": "crispr_guides",    "name": "Guides CRISPR",                "base": 6, "p": 0.30, "q": [1, 2] },
+              { "id": "cell_line_maps",   "name": "Maps lignées cellulaires",     "base": 5, "p": 0.35, "q": [1, 2] },
+              { "id": "biohazard_permits","name": "Permis biohazard",             "base": 6, "p": 0.20, "q": [1, 1] },
+              { "id": "ethics_waivers",   "name": "Dérogations éthiques",         "base": 5, "p": 0.22, "q": [1, 1] }
+            ]
           }
         },
         {
           "id": "ax_ip",
           "name": "Propriété Intellectuelle",
           "level": 3,
-          "ice": [
-            "GLACE Goudron",
-            "Noire"
-          ],
+          "ice": ["GLACE Goudron", "Noire"],
           "reward": {
             "cred": 280,
             "rep": 2,
-            "loot": "Brevet crypte"
+            "loot": [
+              { "id": "patent_drafts",     "name": "Brouillons de brevet",        "base": 9,  "p": 0.22, "q": [1, 2] },
+              { "id": "licensing_terms",   "name": "Baux/licences",                "base": 8,  "p": 0.26, "q": [1, 2] },
+              { "id": "ciphered_prior_art","name": "Art antérieur chiffré",       "base": 10, "p": 0.14, "q": [1, 1] },
+              { "id": "lawyer_memos",      "name": "Mémos juridiques",             "base": 7,  "p": 0.28, "q": [1, 2] },
+              { "id": "tech_transfer",     "name": "Dossiers tech transfer",       "base": 9,  "p": 0.18, "q": [1, 1] }
+            ]
           }
         },
         {
           "id": "ax_core",
           "name": "Bio-Nexus",
           "level": 4,
-          "ice": [
-            "IA Q-Sec",
-            "Noire"
-          ],
+          "ice": ["IA Q-Sec", "Noire"],
           "reward": {
             "cred": 460,
             "rep": 3,
-            "loot": "Seed biocode"
+            "loot": [
+              { "id": "biocode_seed",     "name": "Seed biocode",                 "base": 15, "p": 0.06, "q": [1, 1] },
+              { "id": "implant_firmware", "name": "FW implants",                  "base": 13, "p": 0.10, "q": [1, 1] },
+              { "id": "wetware_maps",     "name": "Plans wetware",                "base": 12, "p": 0.14, "q": [1, 1] },
+              { "id": "trial_keyring",    "name": "Trousseau essais",             "base": 11, "p": 0.16, "q": [1, 1] },
+              { "id": "xenograft_data",   "name": "Données xénogreffes",          "base": 12, "p": 0.12, "q": [1, 1] }
+            ]
           }
         }
       ]
@@ -262,56 +314,68 @@
           "id": "on_sat",
           "name": "Uplink Satellite",
           "level": 1,
-          "ice": [
-            "GLACE Blanche",
-            "Traceur"
-          ],
+          "ice": ["GLACE Blanche", "Traceur"],
           "reward": {
             "cred": 85,
             "rep": 1,
-            "loot": "Fenêtre uplink"
+            "loot": [
+              { "id": "uplink_window",    "name": "Fenêtre uplink",               "base": 4, "p": 0.45, "q": [1, 2] },
+              { "id": "sat_ephemeris",    "name": "Éphémérides",                  "base": 3, "p": 0.50, "q": [1, 3] },
+              { "id": "antenna_whitelist","name": "Whitelist antennes",           "base": 3, "p": 0.35, "q": [1, 2] },
+              { "id": "downlink_keys",    "name": "Clés downlink",                "base": 4, "p": 0.25, "q": [1, 1] },
+              { "id": "telemetry_cache",  "name": "Cache télémétrie",             "base": 3, "p": 0.40, "q": [2, 4] }
+            ]
           }
         },
         {
           "id": "on_cargo",
           "name": "Cargo Orbital",
           "level": 2,
-          "ice": [
-            "GLACE Goudron",
-            "Adaptative"
-          ],
+          "ice": ["GLACE Goudron", "Adaptative"],
           "reward": {
             "cred": 170,
             "rep": 1,
-            "loot": "Manifest cargo"
+            "loot": [
+              { "id": "cargo_manifest",  "name": "Manifest cargo",                "base": 6, "p": 0.40, "q": [1, 2] },
+              { "id": "customs_override","name": "Override douanes",              "base": 7, "p": 0.18, "q": [1, 1] },
+              { "id": "dock_schedules",  "name": "Horaires quais",                "base": 5, "p": 0.35, "q": [1, 2] },
+              { "id": "crew_id_alias",   "name": "Alias équipage",                "base": 5, "p": 0.28, "q": [1, 2] },
+              { "id": "hazmat_routes",   "name": "Routes HAZMAT",                 "base": 6, "p": 0.22, "q": [1, 1] }
+            ]
           }
         },
         {
           "id": "on_fin",
           "name": "Comptes Off-world",
           "level": 3,
-          "ice": [
-            "Adaptative",
-            "Noire"
-          ],
+          "ice": ["Adaptative", "Noire"],
           "reward": {
             "cred": 320,
             "rep": 2,
-            "loot": "Accès offshore"
+            "loot": [
+              { "id": "offworld_accounts", "name": "Accès offshore",              "base": 11, "p": 0.12, "q": [1, 1] },
+              { "id": "tax_haven_map",     "name": "Carte paradis fiscaux",       "base": 9,  "p": 0.18, "q": [1, 1] },
+              { "id": "credit_lines",      "name": "Lignes de crédit",            "base": 8,  "p": 0.24, "q": [1, 2] },
+              { "id": "escrow_keys",       "name": "Clés escrow",                 "base": 10, "p": 0.14, "q": [1, 1] },
+              { "id": "bond_ledgers",      "name": "Registres obligations",       "base": 8,  "p": 0.28, "q": [1, 2] }
+            ]
           }
         },
         {
           "id": "on_core",
           "name": "Noyau Orbital",
           "level": 4,
-          "ice": [
-            "IA Q-Sec",
-            "Noire"
-          ],
+          "ice": ["IA Q-Sec", "Noire"],
           "reward": {
             "cred": 520,
             "rep": 3,
-            "loot": "Clé azur"
+            "loot": [
+              { "id": "azure_core_key",   "name": "Clé azur",                     "base": 15, "p": 0.06, "q": [1, 1] },
+              { "id": "orbital_root",     "name": "Racine orbitale",              "base": 14, "p": 0.08, "q": [1, 1] },
+              { "id": "station_layouts",  "name": "Plans stations",               "base": 12, "p": 0.16, "q": [1, 1] },
+              { "id": "deep_space_routes","name": "Routes deep space",            "base": 11, "p": 0.20, "q": [1, 1] },
+              { "id": "gravity_sim",      "name": "Simulateurs gravité",          "base": 12, "p": 0.14, "q": [1, 1] }
+            ]
           }
         }
       ]

@@ -94,6 +94,12 @@ const ADAPTIVE = {
   log: true
 };
 
+// — Marché noir (prix = base × (1 + rep*coef), plafonné)
+const BLACK_MARKET = {
+  repBonusPerPoint: 0.02,   // +2% par point de Réputation
+  repBonusCap: 1.00         // bonus max +100%
+};
+
 // ====== State ======
 const state = {
   creds: 120,
@@ -115,6 +121,7 @@ const state = {
   attemptHistory: {}, // { targetId: [timestamps] }
   scanHistory: {}, // { targetId: [timestamps] }
   hardening: {}, // { serverId: { lvl:number, last:timestamp } }
+  loot: {}, // { lootId: { name:string, base:number, qty:number } }
 };
 
 // ====== Helpers ======
@@ -168,6 +175,12 @@ function ensureSkillsState(){
     next[s.id] = (state.skills && typeof state.skills[s.id]==='number') ? state.skills[s.id] : start;
   });
   state.skills = next;
+}
+
+function repSellMultiplier(){
+  const b = BLACK_MARKET;
+  const bonus = Math.min(b.repBonusCap, (state.rep || 0) * b.repBonusPerPoint);
+  return 1 + Math.max(0, bonus);
 }
 
 // ---- Upgrades aggregation
@@ -378,6 +391,119 @@ function rewardMul(target, server){
   }
 
   return m;
+}
+
+// ====== LOOT ======
+function rollLoot(target, server){
+  const table = (server?.reward?.loot) || [];
+  const out = [];
+  for (const e of table){
+    const p = (typeof e.p === 'number') ? e.p : 1;
+    if (Math.random() < p){
+      const q = Array.isArray(e.q) ? e.q : [1,1];
+      const min = Math.max(0, Math.floor(q[0]||1));
+      const max = Math.max(min, Math.floor(q[1]||min));
+      const qty = min === max ? min : (min + Math.floor(Math.random()*(max-min+1)));
+      out.push({ id:e.id, name:e.name, base:e.base||1, qty });
+    }
+  }
+  return out;
+}
+
+function addLootItem(id, name, base, qty){
+  if(!state.loot) state.loot = {};
+  const cur = state.loot[id] || { id, name, base: Number(base)||1, qty:0 };
+  cur.qty += qty;
+  state.loot[id] = cur;
+}
+
+function lootUnitPrice(base){
+  // prix unitaire augmente avec la réputation (aligné sur 2%/pt comme tes gains)
+  const repMul = 1 + Math.max(0, state.rep)*0.02;
+  return Math.max(1, Math.round((Number(base)||1) * repMul));
+}
+
+function sellLoot(id, qty=null){
+  const it = state.loot?.[id]; if(!it) return;
+  const n = (qty==null) ? it.qty : Math.max(0, Math.min(it.qty, qty));
+  if(n<=0) return;
+  const unit = lootUnitPrice(it.base);
+  const gain = unit * n;
+  state.creds += gain;
+  it.qty -= n;
+  if(it.qty<=0) delete state.loot[id];
+  addLog(`🧾 Vente: ${n}× <b>${it.name}</b> → <b>${gain}₵</b>`);
+  renderAll();
+}
+
+function sellAllLoot(){
+  if(!state.loot) return;
+  let gain=0, parts=[];
+  for (const [id,it] of Object.entries(state.loot)){
+    const unit = lootUnitPrice(it.base);
+    gain += unit * it.qty;
+    parts.push(`${it.qty}× ${it.name}`);
+  }
+  if(gain<=0){ addLog('— Rien à vendre —'); return; }
+  state.creds += gain;
+  state.loot = {};
+  addLog(`🧾 Vente totale: ${parts.join(', ')} → <b>${gain}₵</b>`);
+  renderAll();
+}
+
+function renderLoot(){
+  const root = document.getElementById('loot');
+  if(!root) return; // si le conteneur n’existe pas dans le HTML, on ne fait rien
+  root.innerHTML = '';
+
+  const items = Object.values(state.loot||{});
+  const card = document.createElement('div');
+  card.className = 'rounded-xl border border-white/10 bg-white/5 p-2';
+
+  const head = document.createElement('div');
+  head.className = 'flex items-center justify-between mb-1';
+  head.innerHTML = `<b class="text-cyan-300">Loot</b>
+    <div class="flex gap-2">
+      <button class="${BTN}" data-sellall>Tout vendre</button>
+    </div>`;
+  card.appendChild(head);
+
+  if(items.length===0){
+    const p = document.createElement('p');
+    p.className = 'text-slate-400 text-xs';
+    p.textContent = '— Vide —';
+    card.appendChild(p);
+  } else {
+    const list = document.createElement('div');
+    // Grille responsive + toutes les rangées ont la même hauteur
+    list.className = 'grid grid-cols-3 md:grid-cols-6 gap-2 auto-rows-[minmax(0,1fr)] text-xs';
+    // Fallback au cas où ta version de Tailwind n’accepte pas l’arbitrary value
+    list.style.gridAutoRows = 'minmax(0,1fr)';
+
+    for (const it of items){
+      const unit = lootUnitPrice(it.base);
+      const row = document.createElement('div');
+      // Tuile qui occupe toute la hauteur de sa rangée
+      row.className = 'h-full flex flex-col justify-between items-center rounded border border-white/10 bg-white/5 p-2';
+
+      row.innerHTML = `
+        <div class="flex-1 min-h-0">
+          <b class="block leading-tight">${it.name}</b>
+          <div class="text-slate-400 text-sm">x${it.qty} · ${unit}₵/u</div>
+        </div>
+        <div class="mt-2">
+          <button class="${BTN} w-full" data-sell="${it.id}">Vendre</button>
+        </div>
+      `;
+
+      row.querySelector('[data-sell]')?.addEventListener('click',()=>sellLoot(it.id, it.qty));
+      list.appendChild(row);
+    }
+    card.appendChild(list);
+  }
+
+  card.querySelector('[data-sellall]')?.addEventListener('click', sellAllLoot);
+  root.appendChild(card);
 }
 
 function addLog(msg){
@@ -767,7 +893,21 @@ function doHack(t, s){
     state.farmHistory[s.id] = state.farmHistory[s.id].filter(ts => nowTs - ts < ECONOMY.repeatWindowMs);
 
     const extra = (programMods().extraAttemptOnSuccess ? 1 : 0) || (Math.random()*100 < (upgradeMods().extraAttemptPct||0) ? 1 : 0);
-    addLog(`✔️ Succès: <b>${t.name} › ${s.name}</b> +<b>${cred}₵</b>, +<b>${repGain} Rep</b>, <span class="text-slate-400">${s.reward.loot}</span>${extra? ' — tentative bonus':''}`);
+    const lootHint = (s.reward && typeof s.reward.loot === 'string')
+    ? `, <span class="text-slate-400">${s.reward.loot}</span>`
+    : '';
+
+    addLog(`✔️ Succès: <b>${t.name} › ${s.name}</b> +<b>${cred}₵</b>, +<b>${repGain} Rep</b>${extra? ' — tentative bonus':''}`);
+    // 🎁 LOOT (succès)
+    const loot = rollLoot(t, s);
+    if (loot.length){
+      const parts = [];
+      for (const d of loot){
+        addLootItem(d.id, d.name, d.base, d.qty);
+        parts.push(`${d.qty}× ${d.name}`);
+      }
+      addLog(`🎁 Butin: <span class="text-slate-300">${parts.join(', ')}</span>`);
+    }
 
     // --- FORTIFICATION ADAPTATIVE ---
     // Si la chance observée frôle 95 %, la cible se "renforce" (GLACE virtuelle +L)
@@ -1458,7 +1598,7 @@ function renderStore(){
 }
 
 function renderAll(){
-  renderKPIs(); renderSkills(); renderPrograms(); renderGearInstalled();
+  renderKPIs(); renderSkills(); renderPrograms(); renderGearInstalled(); renderLoot();
   renderStore(); renderTargets(); renderMissions(); renderUpgrades();
   renderEventTicker(); // ✅ AJOUT
   persist();
@@ -1466,7 +1606,7 @@ function renderAll(){
 
 // ====== Save/Load ======
 function persist(){
-  const o = { ...state, gearOwned:[...state.gearOwned], programsOwned:[...state.programsOwned], upgrades:[...state.upgrades], hardening: state.hardening };
+  const o = { ...state, gearOwned:[...state.gearOwned], programsOwned:[...state.programsOwned], upgrades:[...state.upgrades], hardening: state.hardening, loot: state.loot };
   const KEY = (typeof SAVE_KEY !== 'undefined' ? SAVE_KEY : (window.SAVE_KEY || 'cyber_netrunner_save_v6'));
   localStorage.setItem(KEY, JSON.stringify(o));
 }
@@ -1489,6 +1629,7 @@ function restore(){
     state.attemptHistory = o.attemptHistory || {};
     state.scanHistory = o.scanHistory || {};
     state.hardening   = o.hardening || {};
+    state.loot = o.loot || {};
     addLog('💾 Sauvegarde chargée');
   }catch(e){ console.warn(e); }
 }
