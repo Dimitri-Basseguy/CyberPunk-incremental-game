@@ -118,6 +118,47 @@
       "bonuses": {
         "successAdd": 0.05
       }
+    },
+    {
+      "id": "mod_qubit_decryptor",
+      "name": "Mod décrypteur Qubit",
+      "cost": 680,
+      "bonuses": {
+        "decrypt": 2,
+        "successAdd": 0.02
+      }
+    },
+    {
+      "id": "mod_ghost_cloak",
+      "name": "Mod camouflage spectral",
+      "cost": 560,
+      "bonuses": {
+        "stealth": 2
+      }
+    },
+    {
+      "id": "mod_synapse_tuner",
+      "name": "Mod amplificateur synaptique",
+      "cost": 520,
+      "bonuses": {
+        "speed": 2
+      }
+    },
+    {
+      "id": "mod_overclock_mk2",
+      "name": "Mod overclock Mk.II",
+      "cost": 640,
+      "bonuses": {
+        "successAdd": 0.10
+      }
+    },
+    {
+      "id": "mod_thermal_baffle",
+      "name": "Mod pare-chaleur",
+      "cost": 480,
+      "bonuses": {
+        "heatReduce": 0.15
+      }
     }
   ],
   "tools": [
@@ -135,6 +176,47 @@
       "cost": 190,
       "bonuses": {
         "stealth": 1
+      }
+    },
+    {
+      "id": "tool_packet_injector",
+      "name": "Injecteur de paquets",
+      "cost": 350,
+      "bonuses": {
+        "successAdd": 0.05
+      }
+    },
+    {
+      "id": "tool_trace_scrubber",
+      "name": "Nettoyeur de trace",
+      "cost": 320,
+      "bonuses": {
+        "heatReduce": 0.20
+      }
+    },
+    {
+      "id": "tool_proto_decrypt",
+      "name": "Décrypteur portable",
+      "cost": 220,
+      "bonuses": {
+        "decrypt": 1
+      }
+    },
+    {
+      "id": "tool_shadowmask",
+      "name": "Masque d'ombre",
+      "cost": 220,
+      "bonuses": {
+        "stealth": 1
+      }
+    },
+    {
+      "id": "tool_adrenaline_boost",
+      "name": "Boost adrénaline neurale",
+      "cost": 280,
+      "bonuses": {
+        "speed": 1,
+        "successAdd": 0.02
       }
     }
   ]
