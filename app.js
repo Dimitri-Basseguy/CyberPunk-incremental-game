@@ -1,7 +1,7 @@
 // app_json.js — data-driven version + Upgrades UI/effects
 const BTN = 'inline-flex items-center px-2 py-1 rounded-lg border border-white/15  hover:bg-white/15 font-semibold cursor-pointer transition ease-in-out';
 const BTN_PRIMARY = BTN + ' ring-1 ring-cyan-400/40 hover:ring-cyan-300/60';
-const BTN_SUCCESS = BTN + ' ring-1 ring-emerald-400/60 hover:ring-green-400/70 bg-emerald-500/20 hover:ring-2 shadow-lg shadow-green-400'; // ✅ vert si achetable
+const BTN_SUCCESS = BTN + ' ring-1 ring-emerald-400/60 hover:ring-green-400/70 bg-emerald-500/20 hover:ring-2 shadow-lg shadow-green-400/80'; // ✅ vert si achetable
 const CARD = 'rounded-xl border border-white/10 bg-white/5 p-2';
 const PILL = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 text-sm';
 const PROGRESS_OUTER = 'h-2 bg-white/10 rounded-full overflow-hidden mt-1.5';

@@ -14,7 +14,9 @@
 @layer base {
   html { font-family: var(--font-mono); }
 
-  
+  body {
+    @apply  bg-[#0b0f14];
+  }
 }
 
 @layer utilities {
