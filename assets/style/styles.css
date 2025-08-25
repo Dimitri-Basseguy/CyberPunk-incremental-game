@@ -31,6 +31,10 @@
   background: transparent;
 }
 
+.text-glowing {
+  text-shadow: 0 0 5px rgba(34,211,238,.6);
+}
+
 /* Masquer le marqueur natif */
 details > summary { list-style: none; }
 details > summary::-webkit-details-marker { display: none; }

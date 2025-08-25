@@ -1,5 +1,5 @@
 // app_json.js — data-driven version + Upgrades UI/effects
-const BTN = 'inline-flex items-center px-2 py-1 rounded-lg border border-white/15  hover:bg-white/15 font-semibold';
+const BTN = 'inline-flex items-center px-2 py-1 rounded-lg border border-white/15  hover:bg-white/15 font-semibold cursor-pointer';
 const BTN_PRIMARY = BTN + ' ring-1 ring-cyan-400/40 hover:ring-cyan-300/60';
 const BTN_SUCCESS = BTN + ' ring-1 ring-emerald-400/60 hover:ring-emerald-300/70 bg-emerald-500/20'; // ✅ vert si achetable
 const CARD = 'rounded-xl border border-white/10 bg-white/5 p-2';
