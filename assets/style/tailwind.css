@@ -1,0 +1,30 @@
+/* FICHIER D'ENTRÉE TAILWIND v4 */
+@import "tailwindcss" source("../..");
+
+/* Définir la police mono (Share Tech Mono) via les theme variables v4 */
+@theme {
+  --font-mono: "Share Tech Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  /* Couleurs équivalentes à ton ancienne config CDN */
+  --color-neon-cyan:    #00f0ff;
+  --color-neon-fuchsia: #ff00e6;
+}
+
+/* (Optionnel) Appliquer globalement la mono */
+@layer base {
+  html { font-family: var(--font-mono); }
+}
+
+@layer utilities {
+  .shadow-neon-cyan {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-neon-cyan) 55%, transparent),
+      0 0 12px var(--color-neon-cyan),
+      0 0 24px color-mix(in srgb, var(--color-neon-cyan) 45%, transparent);
+  }
+  .shadow-neon-fuchsia {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-neon-fuchsia) 55%, transparent),
+      0 0 12px var(--color-neon-fuchsia),
+      0 0 24px color-mix(in srgb, var(--color-neon-fuchsia) 45%, transparent);
+  }
+}
