@@ -83,15 +83,18 @@ const TRACE = {
 
 // — Fortification adaptative (quand on frôle 95 %)
 const ADAPTIVE = {
-  triggerAt: 0.95,          // seuil pour fortifier (chance observée)
+  triggerAt: 0.90,          // seuil pour fortifier (chance observée)
   scanTriggerAt: 0.95,      // seuil via scan
-  onScanChance: 0.60,       // 60% de chances de fortifier dès un scan à 95%
-  icePerLevel: 6,           // +GLACE par niveau de fortification
+  onScanChance: 0.70,       // 60% de chances de fortifier dès un scan à 95%
+  icePerLevel: 10,          // +GLACE par niveau de fortification
   cooldownMs: 5*60*1000,    // au max 1 up toutes les 5 min par serveur
-  maxLevels: 5,             // plafond
-  minDrop: 0.02,            // viser au moins -2 pts en sortie de rafale
-  maxBurstLevels: 3,       // max niveaux d'un coup
-  log: true
+  maxLevels: 10,            // plafond
+  minDrop: 0.05,            // viser au moins -2 pts en sortie de rafale
+  maxBurstLevels: 3,        // max niveaux d'un coup
+  maxBurstLevels: 4,        // rafales possibles plus longues
+  mulPerLevel: 0.94,        // pénalité multiplicative sur la réussite par niveau
+  capDropPerLevel: 0.03,    // baisse du plafond max par niveau (ex: L5 => -15 pts)
+  log: true,
 };
 
 // — Marché noir (prix = base × (1 + rep*coef), plafonné)
@@ -329,10 +332,10 @@ function computeSuccess(server, target, bypassStrength=0){
     gearScore = (g.netrun||0)*6 + (g.decrypt||0)*5 + (g.stealth||0)*4 + (g.speed||0)*3;
   }
 
+  const hardLvl = getHardeningLvl(server.id);
   const iceBaseNoBypass = server.level*12 + server.ice.reduce((s,n)=>s+(ICE[n]?.strength||0),0);
   const iceBase = Math.max(0, iceBaseNoBypass - (bypassStrength||0));
   const ev = activeEventMods(target);
-  const hardLvl   = (state.hardening[server.id]?.lvl || 0);
   const extraHard = hardLvl * (ADAPTIVE.icePerLevel || 0);
   const iceScore  = iceBase + (ev.iceBonus||0) + extraHard;
 
@@ -348,7 +351,13 @@ function computeSuccess(server, target, bypassStrength=0){
   if(vsBlackAdaptTotal && server.ice.some(n=>n==='Noire' || n==='Adaptative')) chance += vsBlackAdaptTotal;
   if(pm.cityBonusSuccess && target.kind==='city') chance += (pm.cityBonusSuccess/100);
 
-  return clamp(chance, 0.05, 0.95);
+  
+  if (ADAPTIVE.mulPerLevel) {
+    chance *= Math.pow(ADAPTIVE.mulPerLevel, hardLvl);
+  }
+  const maxCap = 0.95 - (hardLvl * (ADAPTIVE.capDropPerLevel || 0));
+  const cap = Math.max(0.65, (isFinite(maxCap) ? maxCap : 0.95));
+  return clamp(chance, 0.05, cap);
 }
 
 function heatOnFail(eventMods={}){
@@ -624,6 +633,10 @@ function _retaliationChance(target, server){
   // hook upgrade futur (si tu ajoutes un mod : retaliationChanceMul)
   p *= (um.retaliationChanceMul || 1);
 
+  // bonus via fortification
+  const hardLvl = getHardeningLvl(server.id);
+  p *= (1 + hardLvl*0.05);
+
   return clamp(p, R.min, R.max);
 }
 
@@ -661,6 +674,10 @@ function _retaliationDamage(target, server, lastCredGain){
   const dmgMul = (um.retaliationDmgMul || 1);
   heat     = Math.round(heat * dmgMul);
   credLoss = Math.round(credLoss * dmgMul);
+  const hardLvl = getHardeningLvl(server.id);
+  const hardMul = 1 + hardLvl*0.10;
+  heat     = Math.round(heat * hardMul);
+  credLoss = Math.round(credLoss * hardMul);
   // repLoss = Math.round(repLoss * dmgMul);
 
   return { heat, credLoss, repLoss, attempts };
@@ -876,7 +893,10 @@ function doHack(t, s){
   const bypass = maybeBypass(s);
   const baseChance = computeSuccess(s, t, bypass);
   let chance = baseChance + (tmods.chanceAdd||0);
-  chance = clamp(chance, 0.05, 0.95);
+  const hardLvl = getHardeningLvl(s.id);
+  const maxCap = 0.95 - (hardLvl * (ADAPTIVE.capDropPerLevel || 0));
+  const cap = Math.max(0.65, (isFinite(maxCap) ? maxCap : 0.95));
+  chance = clamp(chance, 0.05, cap);
   const roll = Math.random();
   const um = upgradeMods();
   if(tmods.heatAttemptAdd) state.heat = clamp(state.heat + tmods.heatAttemptAdd, 0, 100);
@@ -932,7 +952,8 @@ function doHack(t, s){
     maybeRetaliation(t, s, cred);
     if(extra){ renderAll(); return; }
   } else {
-    const h = heatOnFail(tmods);
+    const hardLvl = getHardeningLvl(s.id);
+    const h = Math.round(heatOnFail(tmods) * (1 + hardLvl*0.25));
     const loss = s.ice.includes('Noire') ? Math.min( Math.round(state.creds*0.05), 120) : 0;
     const heatCap = 100 - (upgradeMods().heatCapMinus||0);
     state.heat = Math.min(heatCap, state.heat + h);
@@ -1439,16 +1460,32 @@ function renderTargets(){
     bar.appendChild(openBtn); bar.appendChild(closeBtn);
   }
 
+  // --- préférences d’ouverture : DOM courant + localStorage (même si vide)
   const prevOpen = new Set();
-  root.querySelectorAll('details[data-id]')?.forEach(det=>{ if(det.open) prevOpen.add(det.dataset.id); });
-  const stored = (()=>{ try { return new Set(JSON.parse(localStorage.getItem(OPEN_TARGETS_KEY)||'[]')); } catch(e){ return new Set(); } })();
-  const baseOpen = prevOpen.size ? prevOpen : stored;
+  root.querySelectorAll('details[data-id]')?.forEach(det=>{
+    if(det.open) prevOpen.add(det.dataset.id);
+  });
+
+  let storedSet = new Set();
+  let hasStored = false;
+  try {
+    const raw = localStorage.getItem(OPEN_TARGETS_KEY);
+    if (raw !== null) {               // <- clé présente, même si "[]"
+      storedSet = new Set(JSON.parse(raw));
+      hasStored = true;
+    }
+  } catch(e){ /* ignore */ }
+
+  const prefer = prevOpen.size ? prevOpen : storedSet;
+  const havePreference = (prevOpen.size > 0) || hasStored;
 
   root.innerHTML='';
   (window.TARGETS||[]).forEach(t=>{
     const det = document.createElement('details');
     det.dataset.id = t.id;
-    det.open = baseOpen.size ? baseOpen.has(t.id) : (t.id==='city');
+    // si une préférence existe, on l’applique; sinon on garde ton défaut (ville ouverte)
+    det.open = havePreference ? prefer.has(t.id) : (t.id==='city');
+
     det.className = CARD + ' [&_summary]:cursor-pointer [&_summary]:text-cyan-300 [&_summary]:font-semibold transition ease-in-out hover:ring-1 hover:ring-cyan-400/50';
     const sum = document.createElement('summary');
     sum.className = 'flex items-center justify-between gap-2 text-cyan-300 font-semibold';
@@ -1461,19 +1498,25 @@ function renderTargets(){
       ` : ''}
     `;
     det.appendChild(sum);
+
     const box = document.createElement('div'); box.className='mt-2 space-y-2';
     t.servers.forEach(s=> box.appendChild( serverLine(t,s) ));
     det.appendChild(box);
+
     det.addEventListener('toggle', saveOpenTargets);
     root.appendChild(det);
   });
+
   saveOpenTargets();
 
   function saveOpenTargets(){
-    const ids=[...root.querySelectorAll('details[data-id]')].filter(d=>d.open).map(d=>d.dataset.id);
+    const ids=[...root.querySelectorAll('details[data-id]')]
+      .filter(d=>d.open)
+      .map(d=>d.dataset.id);
     localStorage.setItem(OPEN_TARGETS_KEY, JSON.stringify(ids));
   }
 }
+
 
 function renderMissions(){
   const root = document.getElementById('missions'); if(!root) return;
@@ -1490,16 +1533,28 @@ function renderMissions(){
   }
 
   const prevOpen = new Set();
-  root.querySelectorAll('details[data-id]')?.forEach(det=>{ if(det.open) prevOpen.add(det.dataset.id); });
-  const stored = (()=>{ try { return new Set(JSON.parse(localStorage.getItem(OPEN_MISSIONS_KEY)||'[]')); } catch(e){ return new Set(); } })();
-  const baseOpen = prevOpen.size ? prevOpen : stored;
+  root.querySelectorAll('details[data-id]')?.forEach(det=>{
+    if (det.open) prevOpen.add(det.dataset.id);
+  });
+
+  let stored = new Set();
+  let hasStored = false;
+  try {
+    const raw = localStorage.getItem(OPEN_MISSIONS_KEY);
+    if (raw !== null) { stored = new Set(JSON.parse(raw)); hasStored = true; }
+  } catch(e){}
+
+  const prefer = prevOpen.size ? prevOpen : stored;
+  const havePreference = (prevOpen.size > 0) || hasStored;
 
   root.innerHTML='';
   const m = currentMission();
   for (const cid of Object.keys(window.MISSION_CHAINS||{})){
     const det = document.createElement('details');
     det.dataset.id = cid;
-    det.open = baseOpen.size ? baseOpen.has(cid) : (!m || (m && m.corp===cid));
+    det.open = havePreference
+      ? prefer.has(cid)
+      : (!m || (m && m.corp === cid));
     det.className = CARD + ' [&_summary]:cursor-pointer [&_summary]:text-cyan-300 [&_summary]:font-semibold';
     const corp = (window.TARGETS||[]).find(t=>t.id===cid);
     const sum = document.createElement('summary'); sum.textContent = corp?.name || cid; det.appendChild(sum);

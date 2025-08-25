@@ -8,7 +8,21 @@
   <script>
     tailwind.config = { theme: { extend: { colors: { neon: { cyan: '#00f0ff', fuchsia: '#ff00e6' }}}}};
   </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./assets/style/styles.css">
+  <style>
+    /* Police globale */
+    html {
+      font-family: 'Share Tech Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    /* Si tu utilises Tailwind .font-mono quelque part, on l'aligne sur Share Tech Mono */
+    .font-mono {
+      font-family: 'Share Tech Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    }
+  </style>
   <style>
     :root{ --bg:#0b0f14; }
     html,body{height:100%}
@@ -21,7 +35,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen text-sky-50 selection:bg-cyan-500/30 selection:text-white">
+<body class="min-h-screen text-sky-50  bg-[#26004b] selection:bg-cyan-500/30 selection:text-white">
   <div class="max-w-[1180px] mx-auto p-4">
     <div class="grid grid-cols-[1fr_auto] gap-3 items-center mb-3">
       <h1 class="text-xl tracking-wider font-semibold">CYBERNETRUNNER <span class="text-cyan-300/80 text-sm">— Go Net running now !</span></h1>

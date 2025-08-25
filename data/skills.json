@@ -41,8 +41,7 @@
       "gainChance": 0.0,
       "desc": [
         "Furtivité réseau, obfuscation et réduction des signatures.",
-        "Améliore la réussite (poids ×5).",
-        "[Optionnel] Si tu as intégré mon patch Représailles: diminue un peu la proba de représailles."
+        "Améliore la réussite (poids ×5)."
       ]
     },
     {
