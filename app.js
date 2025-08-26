@@ -97,6 +97,24 @@ const ADAPTIVE = {
   log: true,
 };
 
+// === INCREMENTAL: config des générateurs “ticks” ===
+const INC = {
+  gens: [
+    { id:'cron',    name:'Cron job',                base: 10,     mul: 1.15, tps: 0.10 },
+    { id:'microbot',name:'Micro-bot',               base: 60,     mul: 1.15, tps: 0.50 },
+    { id:'botnet',  name:'Nœud botnet',             base: 400,    mul: 1.15, tps: 2.50 },
+    { id:'daemon',  name:'Daemon planificateur',    base: 2600,   mul: 1.15, tps: 12.0 },
+    { id:'quantum', name:'Planif. quantique',       base: 18000,  mul: 1.15, tps: 60.0 }
+  ]
+};
+
+// === INCREMENTAL: type de loot créé lors de la conversion ===
+const TOKEN_LOOT = {
+  id: 'loot_tokens',
+  name: 'Tokens minés',
+  base: 0.1 // 0.1₵ / unité (les fractions s'agrègent à la vente)
+};
+
 // — Marché noir (prix = base × (1 + rep*coef), plafonné)
 const BLACK_MARKET = {
   repBonusPerPoint: 0.02,   // +2% par point de Réputation
@@ -426,22 +444,32 @@ function addLootItem(id, name, base, qty){
   state.loot[id] = cur;
 }
 
-function lootUnitPrice(base){
-  // prix unitaire augmente avec la réputation (aligné sur 2%/pt comme tes gains)
+function lootUnitPrice(base, asFloat=false){
+  // autorise les valeurs < 1₵ ; la réputation s'applique aussi
   const repMul = 1 + Math.max(0, state.rep)*0.02;
-  return Math.max(1, Math.round((Number(base)||1) * repMul));
+  const val = (Number(base)||1) * repMul;
+  return asFloat ? val : Math.round(val); // version entière si besoin ailleurs
+}
+function lootUnitText(base){
+  const v = lootUnitPrice(base, true);
+  const txt = (v < 1) ? (Math.round(v*10)/10).toFixed(1) : Math.round(v).toString();
+  return txt + '₵';
 }
 
 function sellLoot(id, qty=null){
   const it = state.loot?.[id]; if(!it) return;
   const n = (qty==null) ? it.qty : Math.max(0, Math.min(it.qty, qty));
   if(n<=0) return;
-  const unit = lootUnitPrice(it.base);
-  const gain = unit * n;
-  state.creds += gain;
+
+  // prix unitaire en float (peut être < 1)
+  const unit = lootUnitPrice(it.base, true);
+  const gain = Math.round((unit * n) * 100) / 100; // arrondi 2 décimales
+
+  state.creds = Math.round((state.creds + gain) * 100) / 100;
   it.qty -= n;
   if(it.qty<=0) delete state.loot[id];
-  addLog(`🧾 Vente: ${n}× <b>${it.name}</b> → <b>${gain}₵</b>`);
+
+  addLog(`🧾 Vente: ${n}× <b>${it.name}</b> → <b>${gain}₵</b> <span class="text-slate-400 text-xs">(${lootUnitText(it.base)}/u)</span>`);
   renderAll();
 }
 
@@ -449,16 +477,18 @@ function sellAllLoot(){
   if(!state.loot) return;
   let gain=0, parts=[];
   for (const [id,it] of Object.entries(state.loot)){
-    const unit = lootUnitPrice(it.base);
+    const unit = lootUnitPrice(it.base, true);
     gain += unit * it.qty;
     parts.push(`${it.qty}× ${it.name}`);
   }
+  gain = Math.round(gain * 100) / 100;
   if(gain<=0){ addLog('— Rien à vendre —'); return; }
-  state.creds += gain;
+  state.creds = Math.round((state.creds + gain) * 100) / 100;
   state.loot = {};
   addLog(`🧾 Vente totale: ${parts.join(', ')} → <b>${gain}₵</b>`);
   renderAll();
 }
+
 
 function renderLoot(){
   const root = document.getElementById('loot');
@@ -490,7 +520,7 @@ function renderLoot(){
     list.style.gridAutoRows = 'minmax(0,1fr)';
 
     for (const it of items){
-      const unit = lootUnitPrice(it.base);
+      const unitText = lootUnitText(it.base);
       const row = document.createElement('div');
       // Tuile qui occupe toute la hauteur de sa rangée
       row.className = 'h-full flex flex-col justify-between items-center rounded border border-white/10 bg-white/5 p-2';
@@ -498,7 +528,7 @@ function renderLoot(){
       row.innerHTML = `
         <div class="flex-1 min-h-0">
           <b class="block leading-tight">${it.name}</b>
-          <div class="text-slate-400 text-sm">x${it.qty} · ${unit}₵/u</div>
+          <div class="text-slate-400 text-sm">x${it.qty} · ${unitText}/u</div>
         </div>
         <div class="mt-2">
           <button class="${BTN} w-full" data-sell="${it.id}">Vendre</button>
@@ -698,6 +728,197 @@ function maybeRetaliation(target, server, lastCredGain){
   }
 }
 
+// === INCREMENTAL: état, helpers, UI ===
+function ensureIncState(){
+  if(!window.state) window.state = {};
+  if(!state.inc){
+    const counts = {};
+    INC.gens.forEach(g => counts[g.id] = 0);
+    state.inc = {
+      ticks: 0,
+      clickPower: 1,
+      counts,
+      tps: 0
+    };
+  }
+  return state.inc;
+}
+
+// === LOOT helpers ===
+function ensureLootState(){
+  if(!window.state) window.state = {};
+  if(!state.loot) state.loot = {};
+  return state.loot;
+}
+
+function grantTokenLoot(qty){
+  ensureLootState();
+  const base = (typeof TOKEN_LOOT.base === 'number') ? TOKEN_LOOT.base : 1;
+  addLootItem(TOKEN_LOOT.id, TOKEN_LOOT.name, base, qty);
+  if(typeof renderLoot === 'function') renderLoot();
+  if(typeof save === 'function') save();
+}
+
+function incGetCost(id){
+  const g = INC.gens.find(x => x.id === id);
+  const inc = ensureIncState();
+  const owned = inc.counts[id] || 0;
+  return Math.round(g.base * Math.pow(g.mul, owned));
+}
+
+function incRecomputeTps(){
+  const inc = ensureIncState();
+  inc.tps = INC.gens.reduce((sum, g) => sum + (inc.counts[g.id] * g.tps), 0);
+}
+
+function incTick(dt=1){
+  const inc = ensureIncState();
+  inc.ticks += inc.tps * dt;
+  saveInc();
+  renderIncremental();
+}
+
+function incPulse(){
+  const inc = ensureIncState();
+  inc.ticks += inc.clickPower;
+  saveInc();
+  renderIncremental();
+}
+
+function buyGen(id){
+  const inc = ensureIncState();
+  const cost = incGetCost(id);
+  if(inc.ticks >= cost){
+    inc.ticks -= cost;
+    inc.counts[id] = (inc.counts[id] || 0) + 1;
+    incRecomputeTps();
+    saveInc();
+    renderIncremental();
+  }
+}
+
+function fmtTicks(n){
+  return (n < 1000) ? n.toFixed(0) : Math.floor(n).toLocaleString('fr-FR');
+}
+
+function renderIncremental(){
+  const inc = ensureIncState();
+  let root = document.getElementById('inc');
+  if(!root){
+    root = document.createElement('section');
+    root.id = 'inc';
+    root.className = 'max-w-5xl mx-auto p-4 md:p-6';
+    document.body.prepend(root);
+  }
+
+  // UI (style aligné sur l'app : CARD / PILL / BTN)
+  root.innerHTML = `
+    <div class="${CARD}">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-2 mb-2">
+          <div class="flex flex-col">
+            <div class="text-2xl font-bold">
+              <span id="incTicks">${fmtTicks(inc.ticks)}</span>
+              <span class="text-slate-400 text-base">tokens</span>
+            </div>
+            <div class="text-slate-400 text-sm mt-1">
+              Production&nbsp;: <span id="incTps" class="text-cyan-300 font-semibold">${inc.tps.toFixed(2)}</span> TPS
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="${PILL}">+${inc.clickPower} / clic</span>
+            <button id="incPulse" class="${BTN_PRIMARY}">Mine</button>
+          </div>
+        </div>
+
+        <!-- Conversion Tokens -> Loot -->
+        <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-2 mb-2">
+          <div class="text-slate-400 text-sm">
+            Convertir en loot&nbsp;: <b class="text-slate-100">Tokens minés</b>
+            <span class="text-slate-300/80">·</span>
+            <span class="text-cyan-200"><span id="incUnit">0.1₵</span>/u</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="incConvQty" type="number" min="1" value="5"
+                  class="w-20 rounded-md bg-white/5 border border-white/10 p-1 text-slate-100">
+            <button id="incConvert" class="${BTN_PRIMARY}">Convertir</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2 grid grid-cols-1 md:grid-cols-3 gap-3">
+        ${INC.gens.map(g => {
+          const owned = inc.counts[g.id] || 0;
+          const cost = incGetCost(g.id);
+          const affordable = inc.ticks >= cost;
+          const rowCls = [
+            'flex','items-start','justify-between','gap-3',
+            'rounded-md','border','border-white/10','bg-white/5','p-2',
+          ].join(' ').trim();
+
+          return `
+            <div class="${rowCls}">
+              <div>
+                <b>${g.name}</b>
+                <div class="text-slate-400 text-sm">x${owned} • ${g.tps} TPS</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="${PILL}">${fmtTicks(cost)} tokens</span>
+                <button data-buy="${g.id}" class="${affordable ? BTN_SUCCESS : BTN + ' opacity-60'}" ${affordable ? '' : 'disabled'}>
+                  💰
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  root.querySelector('#incPulse')?.addEventListener('click', incPulse);
+  root.querySelector('#incConvert')?.addEventListener('click', () => {
+    const inc = ensureIncState();
+    const input = root.querySelector('#incConvQty');
+    const qty = Math.max(1, parseInt(input?.value || '0', 10) || 0);
+    if(inc.ticks < qty) return;
+    inc.ticks -= qty;
+    grantTokenLoot(qty);
+    saveInc?.();
+    renderIncremental();
+  });
+  root.querySelectorAll('[data-buy]').forEach(btn => {
+    btn.addEventListener('click', () => buyGen(btn.getAttribute('data-buy')));
+  });
+}
+
+function saveInc(){
+  try{ localStorage.setItem('inc', JSON.stringify(state.inc)); }catch(e){}
+}
+function loadInc(){
+  try{
+    const raw = localStorage.getItem('inc');
+    if(raw){
+      const parsed = JSON.parse(raw);
+      // Migration/validation
+      ensureIncState();
+      Object.assign(state.inc, parsed);
+    }else{
+      ensureIncState();
+    }
+  }catch(e){
+    ensureIncState();
+  }
+  incRecomputeTps();
+}
+
+function initIncremental(){
+  loadInc();
+  renderIncremental();
+  if(!window._incTicker){
+    window._incTicker = setInterval(()=>incTick(1), 1000);
+  }
+}
+
 // === Ticker d'événements (UI) ===
 function formatLeft(ms){
   if (ms <= 0) return '0s';
@@ -763,7 +984,6 @@ function eventMeta(e){
   }
   return { name: name + who, icon };
 }
-
 
 function renderEventTicker(){
   const root = document.getElementById('eventsTicker');
@@ -1517,7 +1737,6 @@ function renderTargets(){
   }
 }
 
-
 function renderMissions(){
   const root = document.getElementById('missions'); if(!root) return;
 
@@ -1655,7 +1874,7 @@ function renderStore(){
 function renderAll(){
   renderKPIs(); renderSkills(); renderPrograms(); renderGearInstalled(); renderLoot();
   renderStore(); renderTargets(); renderMissions(); renderUpgrades();
-  renderEventTicker(); // ✅ AJOUT
+  renderEventTicker(); 
   persist();
 }
 
@@ -1694,10 +1913,11 @@ window.addEventListener('DATA_READY', ()=>{
   document.getElementById('saveBtn').onclick=()=>{ persist(); addLog('💾 Sauvegardé'); };
   document.getElementById('resetBtn').onclick=()=>{
     const KEY = (typeof SAVE_KEY !== 'undefined' ? SAVE_KEY : (window.SAVE_KEY || 'cyber_netrunner_save_v6'));
-    ['cyber_netrunner_save_v4','cyber_netrunner_save_v5', KEY, OPEN_TARGETS_KEY, OPEN_MISSIONS_KEY, OPEN_UPGRADES_KEY]
-      .forEach(k=>localStorage.removeItem(k));
+    ['cyber_netrunner_save_v4','cyber_netrunner_save_v5', KEY, OPEN_TARGETS_KEY, OPEN_MISSIONS_KEY, OPEN_UPGRADES_KEY, 'inc']
+    .forEach(k=>localStorage.removeItem(k));
     location.reload();
   };
+  initIncremental();
   restore();
   ensureSkillsState();
   renderAll();

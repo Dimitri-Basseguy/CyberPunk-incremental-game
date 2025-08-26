@@ -176,7 +176,7 @@
       "id": "tool_sniffer",
       "name": "Sniffer paquets",
       "image": "./assets/imgs/tools-icon.webp",
-      "cost": 90,
+      "cost": 450,
       "bonuses": {
         "decrypt": 1
       }
