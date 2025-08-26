@@ -55,7 +55,7 @@
       "id": "spoof",
       "name": "SPOOF",
       "cost": 450,
-      "cpu": 1,
+      "cpu": 3,
       "desc": "+8 succès & +1 Rep sur City",
       "mods": {
         "cityBonusSuccess": 8,

@@ -1,9 +1,11 @@
 // app_json.js — data-driven version + Upgrades UI/effects
 const BTN = 'inline-flex items-center px-2 py-1 rounded-lg border border-white/15  hover:bg-white/15 font-semibold cursor-pointer transition ease-in-out';
+const BTN_SMALL = 'inline-flex items-center px-1 py-1 rounded-lg border border-white/15  hover:bg-white/15 font-semibold cursor-pointer transition ease-in-out';
 const BTN_PRIMARY = BTN + ' ring-1 ring-cyan-400/40 hover:ring-cyan-300/60';
 const BTN_SUCCESS = BTN + ' ring-1 ring-emerald-400/60 hover:ring-green-400/70 bg-emerald-500/20 hover:ring-2 shadow-lg shadow-green-400/80'; // ✅ vert si achetable
+const BTN_SUCCESS_SMALL = BTN_SMALL + ' ring-1 ring-emerald-400/60 hover:ring-green-400/70 bg-emerald-500/20 hover:ring-2 shadow-lg shadow-green-400/80'; // ✅ vert si achetable
 const CARD = 'rounded-xl border border-white/10 bg-white/5 p-2';
-const PILL = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 text-sm';
+const PILL = 'inline-flex items-center gap-1.5 px-1 py-0.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 text-xs';
 const PROGRESS_OUTER = 'h-2 bg-white/10 rounded-full overflow-hidden mt-1.5';
 const PROGRESS_INNER = 'block h-full bg-gradient-to-r from-neon-cyan to-neon-fuchsia';
 
@@ -103,16 +105,19 @@ const INC = {
     { id:'cron',    name:'Cron job',                base: 10,     mul: 1.15, tps: 0.10 },
     { id:'microbot',name:'Micro-bot',               base: 60,     mul: 1.15, tps: 0.50 },
     { id:'botnet',  name:'Nœud botnet',             base: 400,    mul: 1.15, tps: 2.50 },
-    { id:'daemon',  name:'Daemon planificateur',    base: 2600,   mul: 1.15, tps: 12.0 },
-    { id:'quantum', name:'Planif. quantique',       base: 18000,  mul: 1.15, tps: 60.0 }
+    { id:'daemon',  name:'Daemon planificateur',    base: 2600,   mul: 1.15, tps: 5.0 },
+    { id:'quantum', name:'Planif. quantique',       base: 4100,  mul: 1.15, tps: 10.0 }
   ]
 };
+
+const RP_PER_TOKEN = 0.1;     // 1 token => 0.1 RP
+const INC_CONVERT_DEFAULT = 5; // quantité par défaut dans les inputs de conversion
 
 // === INCREMENTAL: type de loot créé lors de la conversion ===
 const TOKEN_LOOT = {
   id: 'loot_tokens',
   name: 'Tokens minés',
-  base: 0.1 // 0.1₵ / unité (les fractions s'agrègent à la vente)
+  base: 0.01 // 0.1₵ / unité (les fractions s'agrègent à la vente)
 };
 
 // — Marché noir (prix = base × (1 + rep*coef), plafonné)
@@ -128,6 +133,8 @@ const state = {
   heat: 0,
   xp: 0,
   sp: 0,
+  rp: 0, // points de recherche
+  researched: new Set(),     // nœuds d'upgrade déjà "recherchés"
   skills: { netrun: 1, stealth: 1, decrypt: 1, speed: 1 },
   gearOwned: new Set(['deck_mk1']),
   gearInstalled: { deck:'deck_mk1', console:null, implant:null, mods:[], tools:[] },
@@ -814,7 +821,7 @@ function renderIncremental(){
   // UI (style aligné sur l'app : CARD / PILL / BTN)
   root.innerHTML = `
     <div class="${CARD}">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-2 mb-2">
           <div class="flex flex-col">
             <div class="text-2xl font-bold">
@@ -839,13 +846,22 @@ function renderIncremental(){
             <span class="text-cyan-200"><span id="incUnit">0.1₵</span>/u</span>
           </div>
           <div class="flex items-center gap-2">
-            <input id="incConvQty" type="number" min="1" value="5"
-                  class="w-20 rounded-md bg-white/5 border border-white/10 p-1 text-slate-100">
             <button id="incConvert" class="${BTN_PRIMARY}">Convertir</button>
           </div>
         </div>
-      </div>
 
+        <!-- Conversion Tokens -> RP -->
+        <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-2 mb-2">
+          <div class="text-slate-400 text-sm">
+            Convertir en recherche&nbsp;: <b class="text-slate-100">Points de recherche</b>
+            <span class="text-slate-300/80">·</span>
+            <span class="text-cyan-200"><span id="rpRatio">${RP_PER_TOKEN}</span> RP</span>/token
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="incConvertRP" class="${BTN_PRIMARY}">Convertir</button>
+          </div>
+        </div>
+      </div>
       <div class="space-y-2 grid grid-cols-1 md:grid-cols-3 gap-3">
         ${INC.gens.map(g => {
           const owned = inc.counts[g.id] || 0;
@@ -865,7 +881,7 @@ function renderIncremental(){
               <div class="flex items-center gap-2">
                 <span class="${PILL}">${fmtTicks(cost)} tokens</span>
                 <button data-buy="${g.id}" class="${affordable ? BTN_SUCCESS : BTN + ' opacity-60'}" ${affordable ? '' : 'disabled'}>
-                  💰
+                  📟​
                 </button>
               </div>
             </div>
@@ -879,12 +895,27 @@ function renderIncremental(){
   root.querySelector('#incConvert')?.addEventListener('click', () => {
     const inc = ensureIncState();
     const input = root.querySelector('#incConvQty');
-    const qty = Math.max(1, parseInt(input?.value || '0', 10) || 0);
-    if(inc.ticks < qty) return;
+    const qty = Math.max(1, parseInt(Math.floor(inc.ticks) || '0', 10) || 0);
+    if (inc.ticks < qty) return;
     inc.ticks -= qty;
     grantTokenLoot(qty);
     saveInc?.();
     renderIncremental();
+  });
+
+  root.querySelector('#incConvertRP')?.addEventListener('click', () => {
+    const inc = ensureIncState();
+    const input = root.querySelector('#incConvQtyRP');
+    const qty = Math.max(1, parseInt(Math.floor(inc.ticks) || '0', 10) || 0);
+    if (inc.ticks < qty) return;
+    inc.ticks -= qty;
+    const rpGain = Math.round(qty * RP_PER_TOKEN * 100) / 100;
+    state.rp = Math.round((state.rp + rpGain) * 100) / 100;
+    addLog(`📚 Recherche: +<b>${rpGain}</b> RP`);
+    saveInc?.();
+    renderIncremental();
+    renderKPIs?.();
+    persist?.();
   });
   root.querySelectorAll('[data-buy]').forEach(btn => {
     btn.addEventListener('click', () => buyGen(btn.getAttribute('data-buy')));
@@ -1379,15 +1410,40 @@ function hasAllReq(node){
   for(const id of req){ if(!state.upgrades.has(id)) return false; }
   return true;
 }
+function hasResearched(nodeId){
+  return !!state.researched && state.researched.has(nodeId);
+}
+function canResearch(node){
+  const cost = node.rp || 0;
+  if (cost <= 0) return false;            // rien à rechercher
+  if (state.upgrades.has(node.id)) return false; // déjà acheté
+  if (hasResearched(node.id)) return false;      // déjà recherché
+  return state.rp >= cost;
+}
+function research(nodeId){
+  const node = (window.UPGRADE_NODE_BY_ID||{})[nodeId]; if(!node) return;
+  const cost = node.rp || 0;
+  if (cost>0 && state.rp < cost) return;
+  // payer le coût RP (arrondi 2 déc.)
+  if (cost>0){
+    state.rp = Math.max(0, Math.round((state.rp - cost)*100)/100);
+  }
+  state.researched.add(node.id);
+  addLog(`🔬 Recherche complétée: <b>${node.name}</b>${cost?` (-${cost} RP)`:''}`);
+  renderAll(); persist();
+}
 function canUnlock(node){
-  return !state.upgrades.has(node.id) && hasAllReq(node) && state.sp >= (node.sp||1);
+  const needSp = node.sp || 1;
+  const researched = hasResearched(node.id) || (node.rp||0)===0;
+  return !state.upgrades.has(node.id) && hasAllReq(node) && researched && state.sp >= needSp;
 }
 function unlock(nodeId){
   const node = (window.UPGRADE_NODE_BY_ID||{})[nodeId]; if(!node) return;
   if(!canUnlock(node)) return;
-  state.sp -= (node.sp||1);
+  const spCost = (node.sp||1);
+  state.sp -= spCost;
   state.upgrades.add(node.id);
-  addLog(`🔧 Upgrade débloqué: <b>${node.name}</b> (${(node.sp||1)} SP)`);
+  addLog(`🔧 Upgrade débloqué: <b>${node.name}</b> (${spCost} SP)`);
   renderAll(); persist();
 }
 
@@ -1398,6 +1454,12 @@ function renderUpgrades(){
   const branches = window.UPGRADES || {};
   const container = document.createElement('div');
   container.className = 'grid grid-cols-1 md:grid-cols-3 gap-3';
+
+  // Barre RP (visible dans le bloc Upgrades)
+  const rpbar = document.createElement('div');
+  rpbar.className = 'flex items-center justify-between mb-2';
+  rpbar.innerHTML = `<span class="${PILL}">RP: <span class="font-mono">${(Math.round((state.rp||0)*10)/10).toFixed(1)}</span></span>`;
+  root.appendChild(rpbar);
 
   for(const [bid, branch] of Object.entries(branches)){
     const card = document.createElement('div'); card.className = CARD;
@@ -1417,24 +1479,58 @@ function renderUpgrades(){
 
       nodes.forEach(n=>{
         const owned = state.upgrades.has(n.id);
-        const locked = !hasAllReq(n);
-        const unlockable = canUnlock(n);
-        const row = document.createElement('div'); row.className='flex items-start justify-between gap-3 rounded-md border border-white/10 bg-white/5 p-2';
+        const prereqOk = hasAllReq(n);
+        const researched = hasResearched(n.id) || (n.rp||0)===0;
+
+        const canR = canResearch(n);
+        const canU = canUnlock(n);
+
+        const row = document.createElement('div'); 
+        row.className='flex items-start justify-between gap-3 rounded-md border border-white/10 bg-white/5 p-2';
+
         const left = document.createElement('div');
         left.innerHTML = `<b>${n.name}</b><div class="text-slate-400 text-sm">${n.desc}</div>`;
-        const right = document.createElement('div'); right.className = 'flex items-center gap-2';
-        const cost = document.createElement('span'); cost.className=PILL; cost.textContent = `${n.sp||1} SP`;
-        right.appendChild(cost);
-        const btn = document.createElement('button');
-        btn.className = unlockable ? BTN_PRIMARY : BTN + ' opacity-60';
-        btn.textContent = owned ? '✅' : (locked ? '🔐' : '💰');
-        btn.disabled = !unlockable || owned;
-        btn.onclick = ()=> unlock(n.id);
-        right.appendChild(btn);
-        row.appendChild(left); row.appendChild(right);
+        // Coûts
+        if (n.rp){
+          const pillRp = document.createElement('span');
+          pillRp.className = PILL + ' mr-2';
+          pillRp.textContent = researched ? 'RP ✓' : `${n.rp} RP`;
+          left.appendChild(pillRp);
+        }
+        const pillSp = document.createElement('span'); 
+        pillSp.className = PILL; 
+        pillSp.textContent = `${n.sp||1} SP`;
+        left.appendChild(pillSp);
 
+        const right = document.createElement('div'); 
+        right.className = 'flex items-center gap-2';
+
+        // Bouton RECHERCHER
+        if (!researched && (n.rp||0)>0){
+          const btnR = document.createElement('button');
+          btnR.className = canR ? BTN_SUCCESS : BTN + ' opacity-60';
+          btnR.textContent = '🔎';
+          btnR.disabled = !canR;
+          btnR.onclick = ()=> research(n.id);
+          right.appendChild(btnR);
+        }
+
+        // Bouton ACHETER
+        const btnU = document.createElement('button');
+        btnU.className = canU ? BTN_PRIMARY : BTN + ' opacity-60';
+        btnU.textContent = owned ? '✅' : ( !prereqOk ? '🔐' : '💰' );
+        btnU.disabled = !canU || owned;
+        btnU.onclick = ()=> unlock(n.id);
+        right.appendChild(btnU);
+
+        row.appendChild(left); 
+        row.appendChild(right);
+
+        // Styles d’état
         if(owned){ row.classList.add('ring-1','ring-emerald-500'); }
-        if(locked && !owned){ row.classList.add('opacity-70'); }
+        else if(researched){ row.classList.add('ring-1','ring-cyan-400/60'); }
+        if(!prereqOk && !owned){ row.classList.add('opacity-70'); }
+
         box.appendChild(row);
       });
 
@@ -1454,6 +1550,8 @@ function renderKPIs(){
   document.getElementById('kpi-rep').textContent = Math.floor(state.rep);
   document.getElementById('kpi-heat').textContent = Math.round(state.heat)+'%';
   document.getElementById('kpi-sp').textContent = state.sp;
+  const rpEl = document.getElementById('kpi-rp');
+  if (rpEl) rpEl.textContent = (Math.round(state.rp * 10) / 10).toFixed(1);
   renderSystemLoad();
   // refresh anneaux verts sans rerender complet
   updateStoreAffordability?.();
@@ -1879,8 +1977,16 @@ function renderAll(){
 }
 
 // ====== Save/Load ======
-function persist(){
-  const o = { ...state, gearOwned:[...state.gearOwned], programsOwned:[...state.programsOwned], upgrades:[...state.upgrades], hardening: state.hardening, loot: state.loot };
+function persist() {
+const o = { 
+...state,
+gearOwned:[...state.gearOwned],
+programsOwned:[...state.programsOwned],
+upgrades:[...state.upgrades],
+researched:[...state.researched],   // <-- NEW
+hardening: state.hardening,
+loot: state.loot
+};  
   const KEY = (typeof SAVE_KEY !== 'undefined' ? SAVE_KEY : (window.SAVE_KEY || 'cyber_netrunner_save_v6'));
   localStorage.setItem(KEY, JSON.stringify(o));
 }
@@ -1889,8 +1995,9 @@ function restore(){
     const KEY = (typeof SAVE_KEY !== 'undefined' ? SAVE_KEY : (window.SAVE_KEY || 'cyber_netrunner_save_v6'));
     const raw = localStorage.getItem(KEY); if(!raw) return;
     const o = JSON.parse(raw);
-    state.creds=o.creds; state.rep=o.rep; state.heat=o.heat; state.xp=o.xp; state.sp=o.sp; state.skills=o.skills;
+    state.creds=o.creds; state.rep=o.rep; state.heat=o.heat; state.xp=o.xp; state.sp=o.sp; state.rp = o.rp || 0; state.skills=o.skills;
     state.gearOwned=new Set(o.gearOwned||[]);
+    state.researched = new Set(o.researched || []);
     state.gearInstalled=o.gearInstalled||state.gearInstalled;
     state.programsOwned=new Set(o.programsOwned||[]);
     state.activePrograms=o.activePrograms||[];

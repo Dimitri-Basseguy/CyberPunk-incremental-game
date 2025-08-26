@@ -9,6 +9,7 @@
           "tier": 1,
           "name": "Shroud I",
           "sp": 1,
+          "rp": 300,
           "desc": "Chaleur en échec -10%",
           "effect": {
             "heatFailMul": 0.9
@@ -19,6 +20,7 @@
           "tier": 2,
           "name": "Ghost Net",
           "sp": 2,
+          "rp": 600,
           "req": [
             "st_t1_shroud"
           ],
@@ -32,6 +34,7 @@
           "tier": 3,
           "name": "CLOAK Sync",
           "sp": 2,
+          "rp": 900,
           "req": [
             "st_t2_ghost"
           ],
@@ -45,6 +48,7 @@
           "tier": 4,
           "name": "Trace Evade",
           "sp": 3,
+          "rp": 1200,
           "req": [
             "st_t3_cloaksync"
           ],
@@ -58,6 +62,7 @@
           "tier": 5,
           "name": "Silent Runner",
           "sp": 3,
+          "rp": 1600,
           "req": [
             "st_t4_traceevade"
           ],
