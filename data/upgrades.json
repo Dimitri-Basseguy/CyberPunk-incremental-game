@@ -82,6 +82,7 @@
           "tier": 1,
           "name": "Tables optimisées",
           "sp": 1,
+          "rp": 400,
           "desc": "+5% succès plat",
           "effect": {
             "successAdd": 0.05
@@ -92,6 +93,7 @@
           "tier": 2,
           "name": "Canaux latéraux",
           "sp": 2,
+          "rp": 800,
           "req": [
             "dc_t1_tables"
           ],
@@ -105,6 +107,7 @@
           "tier": 3,
           "name": "Anti-Noire/Adapt.",
           "sp": 2,
+          "rp": 1200,
           "req": [
             "dc_t2_sidechannel"
           ],
@@ -118,6 +121,7 @@
           "tier": 4,
           "name": "Bypass unique",
           "sp": 3,
+          "rp": 1600,
           "req": [
             "dc_t3_blackadapt"
           ],
@@ -131,6 +135,7 @@
           "tier": 5,
           "name": "Facto quantique",
           "sp": 3,
+          "rp": 2000,
           "req": [
             "dc_t4_bypass"
           ],
@@ -150,6 +155,7 @@
           "tier": 1,
           "name": "Threading",
           "sp": 1,
+          "rp": 300,
           "desc": "Latence par CPU -10%",
           "effect": {
             "latencyCpuMul": 0.9
@@ -160,6 +166,7 @@
           "tier": 2,
           "name": "Surcharge froide",
           "sp": 2,
+          "rp": 600,
           "req": [
             "sp_t1_threading"
           ],
@@ -173,6 +180,7 @@
           "tier": 3,
           "name": "Parallélisme",
           "sp": 2,
+          "rp": 900,
           "req": [
             "sp_t2_cooldown"
           ],
@@ -186,6 +194,7 @@
           "tier": 4,
           "name": "Overclock stable",
           "sp": 3,
+          "rp": 1200,
           "req": [
             "sp_t3_parallel"
           ],
@@ -199,6 +208,7 @@
           "tier": 5,
           "name": "Hyperthread",
           "sp": 3,
+          "rp": 1600,
           "req": [
             "sp_t4_overclock"
           ],

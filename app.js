@@ -30,10 +30,10 @@ const RETALIATION = {
   // Dégâts
   heatDmg: { base: 8, perLevel: 3, cityMul: 1.10, corpMul: 1.00 },
   credDmg: { asPctOfGainMin: 0.35, asPctOfGainMax: 0.65, floor: 15, capPctOfWallet: 0.20 },
-  repDmg:  { city: 1, corpMin: 2 }, // corpMin + floor(level/3)
+  repDmg:  { city: 0, corpMin: 1 }, // corpMin + floor(level/3)
 
   // Pression d’activité (augmente chance & dégâts selon le SPAM récent)
-  pressureWindowMs: 12*60*1000,   // regarde les tentatives de hack des 12 dernières minutes
+  pressureWindowMs: 5*60*1000,   // regarde les tentatives de hack des x dernières minutes
   pressurePerAttempt: 0.02,       // +2% de chance par tentative récente sur la même cible
   streakThreshold: 5,             // à partir de 5 tentatives dans la fenêtre…
   streakBonus: 0.10,              // …+10% de chance en plus (one-shot)
@@ -731,7 +731,7 @@ function maybeRetaliation(target, server, lastCredGain){
     state.creds = Math.max(0, state.creds - credLoss);
     state.rep   = Math.max(0, state.rep   - repLoss);
 
-    addLog(`⚠️ Représailles: <b>${target.name}</b> — +${heat}% chaleur, -${credLoss}₵, -${repLoss} Rep <span class="text-slate-400 text-xs">(p≈${Math.round(p*100)}% • ${attempts} tentatives/12min)</span>`);
+    addLog(`⚠️ Représailles: <b>${target.name}</b> — +${heat}% chaleur, -${credLoss}₵, -${repLoss} Rep <span class="text-slate-400 text-xs">(p≈${Math.round(p*100)}% • ${attempts} tentatives/${RETALIATION.pressureWindowMs/60000}min)</span>`);
   }
 }
 
@@ -822,7 +822,7 @@ function renderIncremental(){
   root.innerHTML = `
     <div class="${CARD}">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-2 mb-2">
+        <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 p-2 mb-2">
           <div class="flex flex-col">
             <div class="text-2xl font-bold">
               <span id="incTicks">${fmtTicks(inc.ticks)}</span>
@@ -839,7 +839,7 @@ function renderIncremental(){
         </div>
 
         <!-- Conversion Tokens -> Loot -->
-        <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-2 mb-2">
+        <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 p-2 mb-2">
           <div class="text-slate-400 text-sm">
             Convertir en loot&nbsp;: <b class="text-slate-100">Tokens minés</b>
             <span class="text-slate-300/80">·</span>
@@ -851,7 +851,7 @@ function renderIncremental(){
         </div>
 
         <!-- Conversion Tokens -> RP -->
-        <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-2 mb-2">
+        <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 p-2 mb-2">
           <div class="text-slate-400 text-sm">
             Convertir en recherche&nbsp;: <b class="text-slate-100">Points de recherche</b>
             <span class="text-slate-300/80">·</span>
@@ -915,6 +915,8 @@ function renderIncremental(){
     saveInc?.();
     renderIncremental();
     renderKPIs?.();
+    updateRPBadges?.();   // <-- met à jour tous les badges RP sans tout re-render
+    renderUpgrades?.();   // (conserve quand même un re-render si tu veux rafraîchir les états de nœuds)
     persist?.();
   });
   root.querySelectorAll('[data-buy]').forEach(btn => {
@@ -1458,7 +1460,7 @@ function renderUpgrades(){
   // Barre RP (visible dans le bloc Upgrades)
   const rpbar = document.createElement('div');
   rpbar.className = 'flex items-center justify-between mb-2';
-  rpbar.innerHTML = `<span class="${PILL}">RP: <span class="font-mono">${(Math.round((state.rp||0)*10)/10).toFixed(1)}</span></span>`;
+  rpbar.innerHTML = `<span class="${PILL}">RP: <span class="font-mono" data-rpval>${(Math.round((state.rp||0)*10)/10).toFixed(1)}</span></span>`;
   root.appendChild(rpbar);
 
   for(const [bid, branch] of Object.entries(branches)){
@@ -1595,6 +1597,13 @@ function renderKPIs(){
       xpBar.classList.remove('animate-pulse');
     }
   }
+}
+
+function updateRPBadges(){
+  const val = (Math.round((state.rp||0)*10)/10).toFixed(1);
+  { const n = document.getElementById('kpi-rp'); if (n) n.textContent = val; }       // KPI global (si présent)
+  { const n = document.getElementById('kpi-rp-head'); if (n) n.textContent = val; }  // dans le <h2> (si tu l'as ajouté)
+  document.querySelectorAll('[data-rpval]').forEach(el=> el.textContent = val); // badge du bloc Upgrades
 }
 
 function renderSkills(){
