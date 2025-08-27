@@ -5,7 +5,7 @@
     "tailwindcss": "^4.1.12"
   },
   "scripts": {
-    "dev": "npx @tailwindcss/cli -i ./assets/style/tailwind.css -o ./assets/style/tw.css --watch",
-    "build": "npx @tailwindcss/cli -i ./assets/style/tailwind.css -o ./assets/style/tw.css --minify"
+    "dev": "npx @tailwindcss/cli -i ./public/assets/style/tailwind.css -o ./public/assets/style/tw.css --watch",
+    "build": "npx @tailwindcss/cli -i ./public/assets/style/tailwind.css -o ./public/assets/style/tw.css --minify"
   }
 }
