@@ -117,7 +117,7 @@ const INC_CONVERT_DEFAULT = 5; // quantité par défaut dans les inputs de conve
 const TOKEN_LOOT = {
   id: 'loot_tokens',
   name: 'Tokens minés',
-  base: 0.01 // 0.1₵ / unité (les fractions s'agrègent à la vente)
+  base: 0.01 // 0.01₵ / unité (les fractions s'agrègent à la vente)
 };
 
 // — Marché noir (prix = base × (1 + rep*coef), plafonné)
@@ -459,7 +459,7 @@ function lootUnitPrice(base, asFloat=false){
 }
 function lootUnitText(base){
   const v = lootUnitPrice(base, true);
-  const txt = (v < 1) ? (Math.round(v*10)/10).toFixed(1) : Math.round(v).toString();
+  const txt = v.toFixed(2);
   return txt + '₵';
 }
 
@@ -843,7 +843,7 @@ function renderIncremental(){
           <div class="text-slate-400 text-sm">
             Convertir en loot&nbsp;: <b class="text-slate-100">Tokens minés</b>
             <span class="text-slate-300/80">·</span>
-            <span class="text-cyan-200"><span id="incUnit">0.1₵</span>/u</span>
+            <span class="text-cyan-200"><span id="incUnit">0.01₵</span>/u</span>
           </div>
           <div class="flex items-center gap-2">
             <button id="incConvert" class="${BTN_PRIMARY}">Convertir</button>
@@ -1088,6 +1088,93 @@ function tickEventTicker(){
   });
 
   if (needsRerender) renderEventTicker();
+}
+
+// === Console Dock (always visible, collapsible) ===
+function setupConsoleDock(){
+  const log = document.getElementById('log');
+  const height = '21vh';
+  if(!log) return; // rien à faire si #log n'existe pas encore
+
+  // dock existant ?
+  let dock = document.getElementById('consoleDock');
+  if(!dock){
+    dock = document.createElement('section');
+    dock.id = 'consoleDock';
+    dock.className = 'fixed bottom-2 left-2 right-2 md:left-4 md:right-4 z-50 pointer-events-none'; // bordures cliquables désactivées hors chrome
+    document.body.appendChild(dock);
+
+    const chrome = document.createElement('div');
+    chrome.id = 'consoleChrome';
+    chrome.className = 'pointer-events-auto rounded-xl border border-white/10 bg-slate-900/80 backdrop-blur-xl opacity-90 shadow-2xl';
+    dock.appendChild(chrome);
+
+    const head = document.createElement('div');
+    head.id = 'consoleHeader';
+    head.className = 'flex items-center justify-between gap-2 p-2 select-none cursor-pointer';
+    head.innerHTML = `
+      <div class="flex items-center gap-2">
+        <span>📟</span>
+        <b>Console</b>
+        <span class="text-slate-400 text-xs hidden sm:inline">(tape pour réduire/agrandir)</span>
+      </div>
+      <button type="button" id="consoleToggle"
+        class="${BTN}">▼</button>
+    `;
+    chrome.appendChild(head);
+
+    const scroller = document.createElement('div');
+    scroller.id = 'consoleScroll';
+    scroller.className = `px-2 pb-2 h-[${height}] overflow-y-auto`;
+    chrome.appendChild(scroller);
+
+    // Déplacer le #log existant dans le dock (on le "transplante")
+    log.classList.add('space-y-1','text-sm');
+    scroller.appendChild(log);
+
+    // état initial (mobile => replié par défaut si jamais pas encore stocké)
+    const key = 'console_collapsed_v1';
+    let collapsed = localStorage.getItem(key);
+    if(collapsed === null){
+      collapsed = (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) ? '1' : '0';
+      try{ localStorage.setItem(key, collapsed); }catch(e){}
+    }
+    toggleConsoleCollapsed(collapsed === '1');
+
+    // interactions
+    head.addEventListener('click', ()=> toggleConsoleCollapsed());
+    document.getElementById('consoleToggle').addEventListener('click', (e)=>{ e.stopPropagation(); toggleConsoleCollapsed(); });
+  }
+}
+
+function toggleConsoleCollapsed(force=null){
+  const height = '21vh';
+  const key = 'console_collapsed_v1';
+  const dock = document.getElementById('consoleDock');
+  const chrome = document.getElementById('consoleChrome');
+  const scroll = document.getElementById('consoleScroll');
+  const btn = document.getElementById('consoleToggle');
+  if(!dock || !chrome || !scroll || !btn) return;
+
+  // lire l'état courant
+  let collapsed = (dock.getAttribute('data-collapsed') === '1');
+  if(force !== null){ collapsed = !!force; }
+  else { collapsed = !collapsed; }
+
+  // appliquer classes/styles
+  dock.setAttribute('data-collapsed', collapsed ? '1' : '0');
+  if(collapsed){
+    scroll.classList.add('h-0','opacity-0','pointer-events-none');
+    scroll.classList.remove(`h-[${height}]`,'opacity-100');
+    btn.textContent = '▲';
+  }else{
+    scroll.classList.remove('h-0','opacity-0','pointer-events-none');
+    scroll.classList.add(`h-[${height}]`,'opacity-100');
+    btn.textContent = '▼';
+  }
+
+  // mémoriser
+  try{ localStorage.setItem(key, collapsed ? '1' : '0'); }catch(e){}
 }
 
 // ====== Actions ======
@@ -2037,5 +2124,6 @@ window.addEventListener('DATA_READY', ()=>{
   restore();
   ensureSkillsState();
   renderAll();
+  setupConsoleDock();
   addLog('Bienvenue, runner. Upgrades disponibles dans le nouveau panneau.');
 });
