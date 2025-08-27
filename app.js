@@ -104,9 +104,9 @@ const INC = {
   gens: [
     { id:'cron',    name:'Cron job',                base: 10,     mul: 1.15, tps: 0.10 },
     { id:'microbot',name:'Micro-bot',               base: 60,     mul: 1.15, tps: 0.50 },
-    { id:'botnet',  name:'Nœud botnet',             base: 400,    mul: 1.15, tps: 2.50 },
-    { id:'daemon',  name:'Daemon planificateur',    base: 2600,   mul: 1.15, tps: 5.0 },
-    { id:'quantum', name:'Planif. quantique',       base: 4100,  mul: 1.15, tps: 10.0 }
+    { id:'botnet',  name:'Nœud botnet',             base: 400,    mul: 1.15, tps: 1 },
+    { id:'daemon',  name:'Daemon planificateur',    base: 2600,   mul: 1.15, tps: 2.5 },
+    { id:'quantum', name:'Planif. quantique',       base: 4100,  mul: 1.15, tps: 5 }
   ]
 };
 
