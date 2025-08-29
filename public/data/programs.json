@@ -6,6 +6,7 @@
       "name": "BRUTEFORCE",
       "cost": 60,
       "cpu": 1,
+      "descKey": "programs.brute.desc",
       "desc": "+10% succès",
       "mods": {
         "successMul": 1.1
@@ -16,7 +17,7 @@
       "name": "CLOAK",
       "cost": 200,
       "cpu": 1,
-      "desc": "-30% chaleur en échec",
+      "descKey": "programs.cloak.desc",
       "mods": {
         "heatOnFailMul": 0.7
       }
@@ -26,7 +27,7 @@
       "name": "WORM",
       "cost": 350,
       "cpu": 2,
-      "desc": "+15% crédits",
+      "descKey": "programs.worm.desc",
       "mods": {
         "rewardMul": 1.15
       }
@@ -36,7 +37,7 @@
       "name": "BACKDOOR",
       "cost": 220,
       "cpu": 2,
-      "desc": "Tentative bonus après succès",
+      "descKey": "programs.backdoor.desc",
       "mods": {
         "extraAttemptOnSuccess": 1
       }
@@ -46,7 +47,7 @@
       "name": "ICE-SAW",
       "cost": 540,
       "cpu": 1,
-      "desc": "+12 vs Noire/Adaptative",
+      "descKey": "programs.icesaw.desc",
       "mods": {
         "vsBlackAdapt": 12
       }
@@ -56,7 +57,7 @@
       "name": "SPOOF",
       "cost": 450,
       "cpu": 3,
-      "desc": "+8 succès & +1 Rep sur City",
+      "descKey": "programs.spoof.desc",
       "mods": {
         "cityBonusSuccess": 8,
         "cityRep": 1
@@ -67,7 +68,7 @@
       "name": "ELECTRUM MINER",
       "cost": 999,
       "cpu": 1,
-      "desc": "+1$/s passif",
+      "descKey": "programs.miner.desc",
       "mods": {
         "passiveIncome": 1
       }

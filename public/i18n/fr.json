@@ -45,6 +45,18 @@
     "on_m3": { "name": "Comptes off-world" },
     "on_m4": { "name": "Noyau orbital" }
   },
+  "programs": {
+    "title" : "Programmes chargés",
+    "under-title": "Bibliothèque",
+    "btn-unload": "Retirer",
+    "brute": { "desc": "+10% succès" },
+    "cloak": { "desc": "-30% chaleur en échec" },
+    "worm": { "desc": "+15% crédits" },
+    "backdoor": { "desc": "Tentative bonus après succès" },
+    "icesaw": { "desc": "+12 vs Noire/Adaptative" },
+    "spoof": { "desc": "+8 succès & +1 Rep sur City" },
+    "miner": { "desc": "+1$/s passif" }
+  },
   "targets": {
     "scan": "Scanner",
     "hack": "Pirater",

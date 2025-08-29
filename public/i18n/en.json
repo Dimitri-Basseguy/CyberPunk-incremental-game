@@ -45,6 +45,18 @@
     "on_m3": { "name": "Off-World Accounts" },
     "on_m4": { "name": "Orbital Core" }
   },
+  "programs": {
+    "title" : "Loaded Programs",
+    "under-title": "Library",
+    "btn-unload": "Unload",
+    "brute": { "desc": "+10% success" },
+    "cloak": { "desc": "-30% heat on failure" },
+    "worm": { "desc": "+15% credits" },
+    "backdoor": { "desc": "Attempt bonus on success" },
+    "icesaw": { "desc": "+12 vs Black/Adaptive" },
+    "spoof": { "desc": "+8 success & +1 Rep on City" },
+    "miner": { "desc": "+1$/s passive" }
+  },
   "targets": {
     "scan": "Scan",
     "hack": "Hack",

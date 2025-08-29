@@ -1879,7 +1879,7 @@ function renderPrograms(){
     state.activePrograms.forEach(pid=>{
       const p = (window.PROGRAMS||[]).find(x=>x.id===pid);
       const chip=document.createElement('div'); chip.className=PILL;
-      chip.innerHTML = `${p?.name||pid} <button class="${BTN} ml-1" data-un="${pid}">Retirer</button>`;
+      chip.innerHTML = `${p?.name||pid} <button class="${BTN} ml-1" data-un="${pid}">${t('programs.btn-unload')}</button>`;
       apRoot.appendChild(chip);
       chip.querySelector('[data-un]')?.addEventListener('click',()=>unequipProgram(pid));
     });
@@ -1891,11 +1891,11 @@ function renderPrograms(){
     const equipped = state.activePrograms.includes(p.id);
     const full = state.activePrograms.length >= cap;
     const el = document.createElement('div'); el.className=CARD;
-    el.innerHTML = `<div><b>${p.name}</b> <div class="text-slate-400 text-sm">CPU ${p.cpu} — ${p.desc}</div></div>
+    el.innerHTML = `<div><b>${p.name}</b> <div class="text-slate-400 text-sm">CPU ${p.cpu} — ${t(p.descKey)}</div></div>
       <div class="flex gap-2 mt-2">
         ${owned ? (
           equipped
-            ? `<button class="${BTN}" data-un="${p.id}">Retirer</button>`
+            ? `<button class="${BTN}" data-un="${p.id}">${t('programs.btn-unload')}</button>`
             : `<button class="${BTN_PRIMARY}" ${(full|| (cpuUsed()+p.cpu>cpuCapacity()))? 'disabled':''} data-eq="${p.id}">Charger</button>`
         ) : `<button class="${BTN_PRIMARY}" data-buyprog="${p.id}">💰 (${p.cost}$)</button>`}
       </div>`;
