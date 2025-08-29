@@ -90,10 +90,11 @@ function renderLangSwitch(){
     host.className = 'fixed top-2 right-2 z-50';
     document.body.appendChild(host);
   }
+  // 🇫🇷 🇬🇧
   host.innerHTML = `
-    <div class="inline-flex gap-1 rounded-lg border border-white/10 bg-white/5 p-1">
-      <button class="${BTN} ${I18N.lang==='fr'?'ring-1 ring-cyan-400/60':''}" data-lang="fr">FR</button>
-      <button class="${BTN} ${I18N.lang==='en'?'ring-1 ring-cyan-400/60':''}" data-lang="en">EN</button>
+    <div class="inline-flex gap-2 p-1">
+      <button class="${BTN} ${I18N.lang==='fr'?'ring-1 ring-cyan-400/60':''}" data-lang="fr">🇫🇷</button>
+      <button class="${BTN} ${I18N.lang==='en'?'ring-1 ring-cyan-400/60':''}" data-lang="en">🇬🇧</button>
     </div>
   `;
   host.querySelectorAll('[data-lang]').forEach(b=>{
@@ -1938,9 +1939,10 @@ function serverLine(target, s){
   
   const hardLv = getHardeningLvl(s.id);
   const fortBadge = hardLv ? ` <span class="ml-1 text-fuchsia-300">Fortifié L${hardLv}</span>` : '';
+  const iceNames = s.ice.map(key => t(key)).join(', ');
   wrap.innerHTML = `<div>
-      <div><b>${s.name}</b> <span class="text-slate-400 text-sm">lvl ${s.level}</span></div>
-      <div class="text-slate-400 text-sm">GLACE: ${s.ice.join(', ')}${fortBadge}</div>
+      <div><b>${t(s.name)}</b> <span class="text-slate-400 text-sm">lvl ${s.level}</span></div>
+      <div class="text-slate-400 text-sm">${t('targets.defense')}: ${iceNames}${fortBadge}</div>
       <div class="${PROGRESS_OUTER}"><span class="${PROGRESS_INNER}" style="width:${known? Math.round(known*100):0}%"></span></div>
     </div>
     <div class="flex gap-2">
@@ -1986,27 +1988,27 @@ function renderTargets(){
   const havePreference = (prevOpen.size > 0) || hasStored;
 
   root.innerHTML='';
-  (window.TARGETS||[]).forEach(t=>{
+  (window.TARGETS||[]).forEach(target=>{
     const det = document.createElement('details');
-    det.dataset.id = t.id;
+    det.dataset.id = target.id;
     // si une préférence existe, on l’applique; sinon on garde ton défaut (ville ouverte)
-    det.open = havePreference ? prefer.has(t.id) : (t.id==='city');
+    det.open = havePreference ? prefer.has(target.id) : (target.id==='city');
 
     det.className = CARD + ' [&_summary]:cursor-pointer [&_summary]:text-cyan-300 [&_summary]:font-semibold transition ease-in-out hover:ring-1 hover:ring-cyan-400/50';
     const sum = document.createElement('summary');
     sum.className = 'flex items-center justify-between gap-2 text-cyan-300 font-semibold';
-
+    
     sum.innerHTML = `
-      <span class="summary-head">${t.name}${t.kind==='city' ? ' — Métropole' : ''}</span>
-      ${t.image ? `
-        <img src="${t.image}" alt="${t.name}"
+      <span class="summary-head">${t(target.name)}${t.kind==='city' ? ' — Métropole' : ' — Corpo'}</span>
+      ${target.image ? `
+        <img src="${target.image}" alt="${t(target.name)}"
             class="w-12 h-12 object-cover rounded ring-1 ring-cyan-400/40">
       ` : ''}
     `;
     det.appendChild(sum);
-
+    
     const box = document.createElement('div'); box.className='mt-2 space-y-2';
-    t.servers.forEach(s=> box.appendChild( serverLine(t,s) ));
+    target.servers.forEach(s=> box.appendChild( serverLine(target,s) ));
     det.appendChild(box);
 
     det.addEventListener('toggle', saveOpenTargets);

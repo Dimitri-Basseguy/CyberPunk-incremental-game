@@ -58,6 +58,106 @@
     "miner": { "desc": "+1$/s passive" }
   },
   "targets": {
+    "title": "Targets — City & Corpo servers",
+    "defense": "ICE",
+    "ice": {
+      "tracer": "Tracer",
+      "tar": "Tar ICE",
+      "white": "White ICE",
+      "adaptive": "Adaptive",
+      "black": "Black ICE",
+      "qsec": "Q-Sec AI"
+    },
+    "neo_aurora": {
+      "title": "Neo Aurora",
+      "server": {
+        "grid01": {
+          "name": "Energy Node S-12",
+          "loot": [
+            {"energy_readouts":  {"name": "Network Readings"}},
+            {"smart_meter_keys":  {"name": "Smart Meter Keys"}},
+            {"substation_layout": {"name": "Substation Layout"}},
+            {"grid_credentials":  {"name": "Grid Credentials"}},
+            {"load_forecasts":    {"name": "Load Forecasts"}}
+          ]
+        },
+        "traffic01": {
+          "name": "Traffic Control L3",
+          "loot": [
+            {"signal_algos":  {"name": "Signal Algorithms"}},
+            {"greenwave_profiles":  {"name": "Greenwave Profiles"}},
+            {"cam_plate_cache": {"name": "LPR Plate Cache"}},
+            {"ticket_void_token":  {"name": "Ticket Void Tokens"}},
+            {"drone_route_map":    {"name": "Urban Drone Routes"}}
+          ]
+        },
+        "registry01": {
+            "name": "Citizen Registry",
+            "loot": [
+            {"citizen_hashes":  {"name": "Biometric Hashes"}},
+            {"synthetic_ids":  {"name": "Synthetic IDs"}},
+            {"addr_histories": {"name": "Address Histories"}},
+            {"birth_records":  {"name": "Birth Records"}},
+            {"taxpayer_tokens":    {"name": "Taxpayer Tokens"}}
+          ]
+        },
+        "metro01": {
+          "name": "Métro — Dispatch",
+          "loot": [
+            {"metro_access_cards":  {"name": "Access Cards"}},
+            {"maintenance_windows":  {"name": "Maintenance Windows"}},
+            {"turnstile_keys": {"name": "Turnstile Keys"}},
+            {"route_timings":  {"name": "Line Timings"}},
+            {"control_room_codes":    {"name": "Control Room Codes"}}
+          ]
+        }
+      }
+    },
+      "neongate": {
+      "title": "NeonGate Industries",
+      "server": {
+        "ng_gate": {
+          "name": "Perimeter Gateway",
+          "loot": [
+        {"trial_codes":  {"name": "Trial Codes"}},
+        {"whitelist_frag":  {"name": "Whitelist Fragments"}},
+        {"otp_seed": {"name": "Disposable OTP Seeds"}},
+        {"honeypot_sigs":  {"name": "Honeypot Signatures"}},
+        {"vpn_creds_temp":    {"name": "Temporary VPN Access"}}
+          ]
+        },
+        "ng_rnd": {
+          "name": "R&D ProtoLab",
+          "loot": [
+        {"proto_cad":  {"name": "Proto CAD Files"}},
+        {"lab_notes":  {"name": "Lab Notes"}},
+        {"sim_models": {"name": "Simulation Models"}},
+        {"benchmarks":  {"name": "Internal Benchmarks"}},
+        {"proto_blueprints":    {"name": "Proto Blueprints"}}
+          ]
+        },
+        "ng_fin": {
+          "name": "Citizen Ledgers",
+          "loot": [
+            {"multisig_shard":  {"name": "Multisig Fragment"}},
+            {"cold_wallet_index":  {"name": "Cold Wallet Index"}},
+            {"invoice_ledgers": {"name": "Invoice Ledgers"}},
+            {"aml_flags":  {"name": "Internal AML Flags"}},
+            {"premium_client_list":    {"name": "Premium Client List"}}
+          ]
+        },
+        "ng_core": {
+          "name": "Q-Sec Core",
+          "loot": [
+            {"qshard":  {"name": "Quantum Shard"}},
+            {"firmware_keys":  {"name": "Low-level Firmware Keys"}},
+            {"sec_arch_docs": {"name": "Security Architecture Docs"}},
+            {"priv_cert_chain":  {"name": "Private Certificate Chain"}},
+            {"zero_day_notes":    {"name": "Internal Zero-day Notes"}}
+          ]
+        }
+      }
+    },
     "scan": "Scan",
     "hack": "Hack",
     "fortified": "Hardened L{lvl}"

@@ -58,6 +58,106 @@
     "miner": { "desc": "+1$/s passif" }
   },
   "targets": {
+    "title": "Cibles — serveurs de la ville & corpos",
+    "defense": "GLACE",
+    "ice": {
+      "tracer": "Traceur",
+      "tar": "GLACE Goudron",
+      "white": "GLACE Blanche",
+      "adaptive": "Adaptative",
+      "black": "Noire",
+      "qsec": "IA Q-Sec"
+    },
+    "neo_aurora": {
+      "title": "Neo Aurora",
+      "server": {
+        "grid01": {
+          "name": "Nœud Énergie S-12",
+          "loot": [
+            {"energy_readouts":  {"name": "Lectures réseau"}},
+            {"smart_meter_keys":  {"name": "Clés compteurs"}},
+            {"substation_layout": {"name": "Plan sous-station"}},
+            {"grid_credentials":  {"name": "Identifiants réseau"}},
+            {"load_forecasts":    {"name": "Prévisions de charge"}}
+          ]
+        },
+        "traffic01": {
+          "name": "Traffic Control L3",
+          "loot": [
+            {"signal_algos":  {"name": "Algorithmes feux"}},
+            {"greenwave_profiles":  {"name": "Profils onde verte"}},
+            {"cam_plate_cache": {"name": "Cache plaques LPR"}},
+            {"ticket_void_token":  {"name": "Jetons annulation PV"}},
+            {"drone_route_map":    {"name": "Routes drones urbains"}}
+          ]
+        },
+        "registry01": {
+          "name": "Registres citoyens",
+          "loot": [
+            {"citizen_hashes":  {"name": "Hashes biométriques"}},
+            {"synthetic_ids":  {"name": "Identifiants synthétiques"}},
+            {"addr_histories": {"name": "Historiques d'adresses"}},
+            {"birth_records":  {"name": "Extraits d’état civil"}},
+            {"taxpayer_tokens":    {"name": "Jetons contribuables"}}
+          ]
+        },
+        "metro01": {
+          "name": "Métro — Dispatch",
+          "loot": [
+            {"metro_access_cards":  {"name": "Cartes d’accès"}},
+            {"maintenance_windows":  {"name": "Fenêtres maintenance"}},
+            {"turnstile_keys": {"name": "Clés tourniquet"}},
+            {"route_timings":  {"name": "Timings de lignes"}},
+            {"control_room_codes":    {"name": "Codes salle de contrôle"}}
+          ]
+        }
+      }
+    },
+     "neongate": {
+      "title": "NeonGate Industries",
+      "server": {
+        "ng_gate": {
+          "name": "Gateway périmétrique",
+          "loot": [
+            {"trial_codes":  {"name": "Codes d’essai"}},
+            {"whitelist_frag":  {"name": "Fragments whitelist"}},
+            {"otp_seed": {"name": "Seeds OTP jetables"}},
+            {"honeypot_sigs":  {"name": "Signatures honeypot"}},
+            {"vpn_creds_temp":    {"name": "Accès VPN temporaires"}}
+          ]
+        },
+        "ng_rnd": {
+          "name": "R&D ProtoLab",
+          "loot": [
+            {"proto_cad":  {"name": "Fichiers CAD proto"}},
+            {"lab_notes":  {"name": "Notes de labo"}},
+            {"sim_models": {"name": "Modèles de simulation"}},
+            {"benchmarks":  {"name": "Benchmarks internes"}},
+            {"proto_blueprints":    {"name": "Plans proto"}}
+          ]
+        },
+        "ng_fin": {
+          "name": "Registres citoyens",
+          "loot": [
+            {"multisig_shard":  {"name": "Fragment multi-sig"}},
+            {"cold_wallet_index":  {"name": "Index portefeuille froid"}},
+            {"invoice_ledgers": {"name": "Grands livres factures"}},
+            {"aml_flags":  {"name": "Flags AML internes"}},
+            {"premium_client_list":    {"name": "Liste clients premium"}}
+          ]
+        },
+        "ng_core": {
+          "name": "Noyau Q-Sec",
+          "loot": [
+            {"qshard":  {"name": "Shard quantique"}},
+            {"firmware_keys":  {"name": "Clés firmware bas niveau"}},
+            {"sec_arch_docs": {"name": "Docs archi sécurité"}},
+            {"priv_cert_chain":  {"name": "Chaîne de certificats privés"}},
+            {"zero_day_notes":    {"name": "Notes zero-day internes"}}
+          ]
+        }
+      }
+    },
     "scan": "Scanner",
     "hack": "Pirater",
     "fortified": "Fortifié L{lvl}"
