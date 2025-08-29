@@ -1,0 +1,53 @@
+{
+  "ui": {
+    "upgrades": "Upgrades Tree",
+    "open_all": "Open all",
+    "close_all": "Close all",
+    "loot": "Loot",
+    "sell_all": "Sell all",
+    "accept_chain": "Accept chain",
+    "abandon": "Abandon",
+    "city": "— Metro"
+  },
+  "inc": {
+    "generators": "Generators",
+    "tokens": "tokens",
+    "production": "Production",
+    "per_click": "/ click",
+    "mine": "Mine",
+    "to_loot": "Convert to loot:",
+    "to_rp": "Convert to research:",
+    "convert": "Convert",
+    "cost": "Cost"
+  },
+  "logs": {
+    "welcome": "Welcome, runner. Upgrades available in the new panel.",
+    "sell": "🧾 Sale: {n}× <b>{name}</b> → <b>{gain}$</b>"
+  },
+  "missions": {
+    "title" : "Fixers — Corpo Contracts",
+    "objective": "objective",
+    "reward": "Reward",
+    "ng_m1": { "name": "Recon" },
+    "ng_m2": { "name": "Prototype Theft" },
+    "ng_m3": { "name": "Financial Assault" },
+    "ng_m4": { "name": "Q-Sec down" },
+    "bs_m1": { "name": "Open the portal" },
+    "bs_m2": { "name": "Loot the logs" },
+    "bs_m3": { "name": "Trap the SOC" },
+    "bs_m4": { "name": "Take down Cerberus" },
+    "ax_m1": { "name": "Sample Collection" },
+    "ax_m2": { "name": "Genetic Data" },
+    "ax_m3": { "name": "Patent Theft" },
+    "ax_m4": { "name": "Bio-Nexus" },
+    "on_m1": { "name": "Uplink Hook" },
+    "on_m2": { "name": "Cargo Manifest" },
+    "on_m3": { "name": "Off-World Accounts" },
+    "on_m4": { "name": "Orbital Core" }
+  },
+  "targets": {
+    "scan": "Scan",
+    "hack": "Hack",
+    "fortified": "Hardened L{lvl}"
+  }
+}

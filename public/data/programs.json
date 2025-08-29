@@ -67,7 +67,7 @@
       "name": "ELECTRUM MINER",
       "cost": 999,
       "cpu": 1,
-      "desc": "+1₵/s passif",
+      "desc": "+1$/s passif",
       "mods": {
         "passiveIncome": 1
       }

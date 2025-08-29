@@ -4,7 +4,7 @@
     "neongate": [
       {
         "id": "ng_m1",
-        "name": "Repérage",
+        "nameKey": "missions.ng_m1.name",
         "objective": {
           "target": "neongate",
           "server": "ng_gate"
@@ -16,7 +16,7 @@
       },
       {
         "id": "ng_m2",
-        "name": "Vol proto",
+        "nameKey": "missions.ng_m2.name",
         "objective": {
           "target": "neongate",
           "server": "ng_rnd"
@@ -28,7 +28,7 @@
       },
       {
         "id": "ng_m3",
-        "name": "Assaut financier",
+        "nameKey": "missions.ng_m3.name",
         "objective": {
           "target": "neongate",
           "server": "ng_fin"
@@ -40,7 +40,7 @@
       },
       {
         "id": "ng_m4",
-        "name": "Q-Sec down",
+        "nameKey": "missions.ng_m4.name",
         "objective": {
           "target": "neongate",
           "server": "ng_core"
@@ -54,7 +54,7 @@
     "blacksun": [
       {
         "id": "bs_m1",
-        "name": "Ouvrir le portail",
+        "nameKey": "missions.bs_m1.name",
         "objective": {
           "target": "blacksun",
           "server": "bs_gate"
@@ -66,7 +66,7 @@
       },
       {
         "id": "bs_m2",
-        "name": "Piller les logs",
+        "nameKey": "missions.bs_m2.name",
         "objective": {
           "target": "blacksun",
           "server": "bs_logs"
@@ -78,7 +78,7 @@
       },
       {
         "id": "bs_m3",
-        "name": "Piéger le SOC",
+        "nameKey": "missions.bs_m3.name",
         "objective": {
           "target": "blacksun",
           "server": "bs_ops"
@@ -90,7 +90,7 @@
       },
       {
         "id": "bs_m4",
-        "name": "Abattre Cerbère",
+        "nameKey": "missions.bs_m4.name",
         "objective": {
           "target": "blacksun",
           "server": "bs_core"
@@ -104,7 +104,7 @@
     "axiom": [
       {
         "id": "ax_m1",
-        "name": "Échantillons d’essai",
+        "nameKey": "missions.ax_m1.name",
         "objective": {
           "target": "axiom",
           "server": "ax_trials"
@@ -116,7 +116,7 @@
       },
       {
         "id": "ax_m2",
-        "name": "Données génétiques",
+        "nameKey": "missions.ax_m2.name",
         "objective": {
           "target": "axiom",
           "server": "ax_gen"
@@ -128,7 +128,7 @@
       },
       {
         "id": "ax_m3",
-        "name": "Vol de brevets",
+        "nameKey": "missions.ax_m3.name",
         "objective": {
           "target": "axiom",
           "server": "ax_ip"
@@ -140,7 +140,7 @@
       },
       {
         "id": "ax_m4",
-        "name": "Bio-Nexus",
+        "nameKey": "missions.ax_m4.name",
         "objective": {
           "target": "axiom",
           "server": "ax_core"
@@ -154,7 +154,7 @@
     "orbital": [
       {
         "id": "on_m1",
-        "name": "Accroche uplink",
+        "nameKey": "missions.on_m1.name",
         "objective": {
           "target": "orbital",
           "server": "on_sat"
@@ -166,7 +166,7 @@
       },
       {
         "id": "on_m2",
-        "name": "Manifest cargo",
+        "nameKey": "missions.on_m2.name",
         "objective": {
           "target": "orbital",
           "server": "on_cargo"
@@ -178,7 +178,7 @@
       },
       {
         "id": "on_m3",
-        "name": "Comptes off-world",
+        "nameKey": "missions.on_m3.name",
         "objective": {
           "target": "orbital",
           "server": "on_fin"
@@ -190,7 +190,7 @@
       },
       {
         "id": "on_m4",
-        "name": "Noyau orbital",
+        "nameKey": "missions.on_m4.name",
         "objective": {
           "target": "orbital",
           "server": "on_core"

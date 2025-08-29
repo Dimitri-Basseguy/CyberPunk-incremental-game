@@ -9,6 +9,98 @@ const PILL = 'inline-flex items-center gap-1.5 px-1 py-0.5 rounded-full border b
 const PROGRESS_OUTER = 'h-2 bg-white/10 rounded-full overflow-hidden mt-1.5';
 const PROGRESS_INNER = 'block h-full bg-gradient-to-r from-neon-cyan to-neon-fuchsia';
 
+// === i18n (FR/EN) minimal ===
+const SUPPORTED_LANGS = ['fr','en'];
+const DEFAULT_LANG = 'fr';
+const I18N_PATH = './i18n';
+
+let I18N = { lang: DEFAULT_LANG, dict: {} };
+
+function _browserLang(){
+  const l = (navigator.language||'fr').slice(0,2).toLowerCase();
+  return SUPPORTED_LANGS.includes(l) ? l : DEFAULT_LANG;
+}
+
+async function loadDict(lang){
+  try{
+    const res = await fetch(`${I18N_PATH}/${lang}.json`, { cache:'no-store' });
+    const json = await res.json();
+    I18N.dict = json;
+    I18N.lang = lang;
+    document.documentElement.setAttribute('lang', lang);
+  }catch(e){
+    I18N.dict = {};
+    I18N.lang = lang;
+  }
+}
+
+function t(key, vars={}){
+  let cur = I18N.dict;
+  for(const part of key.split('.')) cur = cur?.[part];
+  let s = (typeof cur === 'string') ? cur : key;
+  s = s.replace(/\{(\w+)\}/g, (_,k)=> (k in vars ? String(vars[k]) : `{${k}}`));
+  return s;
+}
+
+// Accepte :
+//  - string "texte brut"
+//  - string "@clé.i18n" (traduction via dictionnaire)
+//  - { fr: "...", en: "..." } (objet multilingue)
+//  - fallback => valeur brute
+function i18nText(v){
+  if (v && typeof v === 'object' && !Array.isArray(v)) {
+    const lang = (I18N?.lang || DEFAULT_LANG);
+    return v[lang] ?? v[DEFAULT_LANG] ?? Object.values(v)[0] ?? '';
+  }
+  if (typeof v === 'string') {
+    if (v.startsWith('@')) return tr(v.slice(1));
+    return v;
+  }
+  return (v==null) ? '' : String(v);
+}
+
+async function setLang(lang){
+  if(!SUPPORTED_LANGS.includes(lang)) lang = DEFAULT_LANG;
+  await loadDict(lang);
+  try{ localStorage.setItem('lang', lang); }catch(e){}
+  applyI18nToDom();
+  renderLangSwitch();
+  // Re-render pour textes générés côté JS
+  renderAll?.();
+}
+
+async function initI18n(){
+  const fromUrl = new URLSearchParams(location.search).get('lang');
+  const fromLS  = (()=>{ try{ return localStorage.getItem('lang'); }catch(e){ return null; }})();
+  const first = fromUrl || fromLS || _browserLang();
+  await loadDict(first);
+}
+
+function applyI18nToDom(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+}
+
+function renderLangSwitch(){
+  let host = document.getElementById('langSwitch');
+  if(!host){
+    host = document.createElement('div');
+    host.id = 'langSwitch';
+    host.className = 'fixed top-2 right-2 z-50';
+    document.body.appendChild(host);
+  }
+  host.innerHTML = `
+    <div class="inline-flex gap-1 rounded-lg border border-white/10 bg-white/5 p-1">
+      <button class="${BTN} ${I18N.lang==='fr'?'ring-1 ring-cyan-400/60':''}" data-lang="fr">FR</button>
+      <button class="${BTN} ${I18N.lang==='en'?'ring-1 ring-cyan-400/60':''}" data-lang="en">EN</button>
+    </div>
+  `;
+  host.querySelectorAll('[data-lang]').forEach(b=>{
+    b.onclick = ()=> setLang(b.getAttribute('data-lang'));
+  });
+}
+
 // Storage keys
 const OPEN_TARGETS_KEY = 'open_targets_v1';
 const OPEN_MISSIONS_KEY = 'open_missions_v1';
@@ -117,7 +209,7 @@ const INC_CONVERT_DEFAULT = 5; // quantité par défaut dans les inputs de conve
 const TOKEN_LOOT = {
   id: 'loot_tokens',
   name: 'Tokens minés',
-  base: 0.01 // 0.01₵ / unité (les fractions s'agrègent à la vente)
+  base: 0.01 // 0.01$ / unité (les fractions s'agrègent à la vente)
 };
 
 // — Marché noir (prix = base × (1 + rep*coef), plafonné)
@@ -452,7 +544,7 @@ function addLootItem(id, name, base, qty){
 }
 
 function lootUnitPrice(base, asFloat=false){
-  // autorise les valeurs < 1₵ ; la réputation s'applique aussi
+  // autorise les valeurs < 1$ ; la réputation s'applique aussi
   const repMul = 1 + Math.max(0, state.rep)*0.02;
   const val = (Number(base)||1) * repMul;
   return asFloat ? val : Math.round(val); // version entière si besoin ailleurs
@@ -460,7 +552,7 @@ function lootUnitPrice(base, asFloat=false){
 function lootUnitText(base){
   const v = lootUnitPrice(base, true);
   const txt = v.toFixed(2);
-  return txt + '₵';
+  return txt + '$';
 }
 
 function sellLoot(id, qty=null){
@@ -476,7 +568,7 @@ function sellLoot(id, qty=null){
   it.qty -= n;
   if(it.qty<=0) delete state.loot[id];
 
-  addLog(`🧾 Vente: ${n}× <b>${it.name}</b> → <b>${gain}₵</b> <span class="text-slate-400 text-xs">(${lootUnitText(it.base)}/u)</span>`);
+  addLog(`🧾 Vente: ${n}× <b>${it.name}</b> → <b>${gain}$</b> <span class="text-slate-400 text-xs">(${lootUnitText(it.base)}/u)</span>`);
   renderAll();
 }
 
@@ -492,7 +584,7 @@ function sellAllLoot(){
   if(gain<=0){ addLog('— Rien à vendre —'); return; }
   state.creds = Math.round((state.creds + gain) * 100) / 100;
   state.loot = {};
-  addLog(`🧾 Vente totale: ${parts.join(', ')} → <b>${gain}₵</b>`);
+  addLog(`🧾 Vente totale: ${parts.join(', ')} → <b>${gain}$</b>`);
   renderAll();
 }
 
@@ -508,9 +600,9 @@ function renderLoot(){
 
   const head = document.createElement('div');
   head.className = 'flex items-center justify-between mb-1';
-  head.innerHTML = `<b class="text-cyan-300">Loot</b>
+  head.innerHTML = `<b class="text-cyan-300">${t('ui.loot')}</b>
     <div class="flex gap-2">
-      <button class="${BTN}" data-sellall>Tout vendre</button>
+      <button class="${BTN}" data-sellall>${t('ui.sell_all')}</button>
     </div>`;
   card.appendChild(head);
 
@@ -731,7 +823,7 @@ function maybeRetaliation(target, server, lastCredGain){
     state.creds = Math.max(0, state.creds - credLoss);
     state.rep   = Math.max(0, state.rep   - repLoss);
 
-    addLog(`⚠️ Représailles: <b>${target.name}</b> — +${heat}% chaleur, -${credLoss}₵, -${repLoss} Rep <span class="text-slate-400 text-xs">(p≈${Math.round(p*100)}% • ${attempts} tentatives/${RETALIATION.pressureWindowMs/60000}min)</span>`);
+    addLog(`⚠️ Représailles: <b>${target.name}</b> — +${heat}% chaleur, -${credLoss}$, -${repLoss} Rep <span class="text-slate-400 text-xs">(p≈${Math.round(p*100)}% • ${attempts} tentatives/${RETALIATION.pressureWindowMs/60000}min)</span>`);
   }
 }
 
@@ -826,39 +918,39 @@ function renderIncremental(){
           <div class="flex flex-col">
             <div class="text-2xl font-bold">
               <span id="incTicks">${fmtTicks(inc.ticks)}</span>
-              <span class="text-slate-400 text-base">tokens</span>
+              <span class="text-slate-400 text-base">${t('inc.tokens')}</span>
             </div>
             <div class="text-slate-400 text-sm mt-1">
-              Production&nbsp;: <span id="incTps" class="text-cyan-300 font-semibold">${inc.tps.toFixed(2)}</span> TPS
+              ${t('inc.production')}&nbsp;: <span id="incTps" class="text-cyan-300 font-semibold">${inc.tps.toFixed(2)}</span> TPS
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <span class="${PILL}">+${inc.clickPower} / clic</span>
-            <button id="incPulse" class="${BTN_PRIMARY}">Mine</button>
+            <span class="${PILL}">+${inc.clickPower} ${t('inc.per_click')}</span>
+            <button id="incPulse" class="${BTN_PRIMARY}">${t('inc.mine')}</button>
           </div>
         </div>
 
         <!-- Conversion Tokens -> Loot -->
         <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 p-2 mb-2">
           <div class="text-slate-400 text-sm">
-            Convertir en loot&nbsp;: <b class="text-slate-100">Tokens minés</b>
+            ${t('inc.to_loot')} </br>
             <span class="text-slate-300/80">·</span>
-            <span class="text-cyan-200"><span id="incUnit">0.01₵</span>/u</span>
+            <span class="text-cyan-200"><span id="incUnit">0.01$</span>/u</span>
           </div>
           <div class="flex items-center gap-2">
-            <button id="incConvert" class="${BTN_PRIMARY}">Convertir</button>
+            <button id="incConvert" class="${BTN_PRIMARY}">${t('inc.convert')}</button>
           </div>
         </div>
 
         <!-- Conversion Tokens -> RP -->
         <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 p-2 mb-2">
           <div class="text-slate-400 text-sm">
-            Convertir en recherche&nbsp;: <b class="text-slate-100">Points de recherche</b>
+            ${t('inc.to_rp')}</br>
             <span class="text-slate-300/80">·</span>
             <span class="text-cyan-200"><span id="rpRatio">${RP_PER_TOKEN}</span> RP</span>/token
           </div>
           <div class="flex items-center gap-2">
-            <button id="incConvertRP" class="${BTN_PRIMARY}">Convertir</button>
+            <button id="incConvertRP" class="${BTN_PRIMARY}">${t('inc.convert')}</button>
           </div>
         </div>
       </div>
@@ -1224,7 +1316,7 @@ function hack(targetId, serverId){
   buttons.forEach(b=>b.disabled=true);
   setTimeout(()=>{ doHack(t,s); buttons.forEach(b=>b.disabled=false); }, delay);
 }
-function doHack(t, s){
+function doHack(target, s){
   const nowTs = Date.now();
   (state.attemptHistory[t.id] ||= []).push(nowTs);
   state.attemptHistory[t.id] = state.attemptHistory[t.id].filter(ts => nowTs - ts < RETALIATION.pressureWindowMs);
@@ -1257,7 +1349,7 @@ function doHack(t, s){
     ? `, <span class="text-slate-400">${s.reward.loot}</span>`
     : '';
 
-    addLog(`✔️ Succès: <b>${t.name} › ${s.name}</b> +<b>${cred}₵</b>, +<b>${repGain} Rep</b>${extra? ' — tentative bonus':''}`);
+    addLog(`✔️ Succès: <b>${t.name} › ${s.name}</b> +<b>${cred}$</b>, +<b>${repGain} Rep</b>${extra? ' — tentative bonus':''}`);
     // 🎁 LOOT (succès)
     const loot = rollLoot(t, s);
     if (loot.length){
@@ -1298,7 +1390,7 @@ function doHack(t, s){
     const heatCap = 100 - (upgradeMods().heatCapMinus||0);
     state.heat = Math.min(heatCap, state.heat + h);
     state.creds = Math.max(0, state.creds - loss);
-    addLog(`💀 Échec: <b>${t.name} › ${s.name}</b> — chaleur +${h}%${loss?`, perte ${loss}₵`:''}`);
+    addLog(`💀 Échec: <b>${t.name} › ${s.name}</b> — chaleur +${h}%${loss?`, perte ${loss}$`:''}`);
   }
   if(state.heat>=100 - (upgradeMods().heatCapMinus||0)){
     const ms = 10000 * (upgradeMods().lockoutMul || 1);
@@ -1480,7 +1572,7 @@ function onHackSuccess(tid, sid){
     state.creds += credGain;
     state.rep   += repGain;
 
-    addLog(`🏁 Mission accomplie: <b>${step.name}</b> +<b>${credGain}₵</b> <span class="text-slate-400 text-xs">×${missionMul}</span> (+${repGain} Rep)`);
+    addLog(`🏁 Mission accomplie: <b>${step.name}</b> +<b>${credGain}$</b> <span class="text-slate-400 text-xs">×${missionMul}</span> (+${repGain} Rep)`);
 
     state.missions.active.index++;
     const chain = (window.MISSION_CHAINS||{})[state.missions.active.corp] || [];
@@ -1635,7 +1727,7 @@ function renderUpgrades(){
 
 // ====== Render ======
 function renderKPIs(){
-  document.getElementById('kpi-creds').textContent = state.creds+'₵';
+  document.getElementById('kpi-creds').textContent = state.creds+'$';
   document.getElementById('kpi-rep').textContent = Math.floor(state.rep);
   document.getElementById('kpi-heat').textContent = Math.round(state.heat)+'%';
   document.getElementById('kpi-sp').textContent = state.sp;
@@ -1805,7 +1897,7 @@ function renderPrograms(){
           equipped
             ? `<button class="${BTN}" data-un="${p.id}">Retirer</button>`
             : `<button class="${BTN_PRIMARY}" ${(full|| (cpuUsed()+p.cpu>cpuCapacity()))? 'disabled':''} data-eq="${p.id}">Charger</button>`
-        ) : `<button class="${BTN_PRIMARY}" data-buyprog="${p.id}">💰 (${p.cost}₵)</button>`}
+        ) : `<button class="${BTN_PRIMARY}" data-buyprog="${p.id}">💰 (${p.cost}$)</button>`}
       </div>`;
     if(owned){
       if(equipped) el.querySelector('[data-un]')?.addEventListener('click',()=>unequipProgram(p.id));
@@ -1833,13 +1925,13 @@ function renderGearInstalled(){
   const divTools = document.createElement('div'); divTools.className=PILL; divTools.innerHTML = `<span class="text-slate-400">Outils:</span> ${tools.join(', ')||'—'}`; root.appendChild(divTools);
 }
 
-function serverLine(t, s){
+function serverLine(target, s){
   const wrap = document.createElement('div');
   wrap.className = 'grid grid-cols-[1fr_auto] gap-2 items-center';
   const known = state.discovered[s.id];
   // si connu, on recalcule live pour intégrer hardening & events récents
   const um = upgradeMods();
-  const live = known ? computeSuccess(s, t) : null;
+  const live = known ? computeSuccess(s, target) : null;
   const pct = known
     ? (um.showScanExact ? ((live*100).toFixed(1) + '%') : (Math.round(live*100) + '%'))
     : '?';
@@ -1852,11 +1944,11 @@ function serverLine(t, s){
       <div class="${PROGRESS_OUTER}"><span class="${PROGRESS_INNER}" style="width:${known? Math.round(known*100):0}%"></span></div>
     </div>
     <div class="flex gap-2">
-      <button class="${BTN}" data-scan>Scanner</button>
-      <button class="${BTN_PRIMARY}" data-action="hack">Pirater (${pct})</button>
+      <button class="${BTN}" data-scan>${t('targets.scan')}</button>
+      <button class="${BTN_PRIMARY}" data-action="hack">${t('targets.hack')} (${pct})</button>
     </div>`;
-  wrap.querySelector('[data-scan]').onclick = ()=>scan(t.id, s.id);
-  wrap.querySelector('[data-action="hack"]').onclick = ()=>hack(t.id, s.id);
+  wrap.querySelector('[data-scan]').onclick = ()=>scan(target.id, s.id);
+  wrap.querySelector('[data-action="hack"]').onclick = ()=>hack(target.id, s.id);
   return wrap;
 }
 
@@ -1866,8 +1958,8 @@ function renderTargets(){
   if(!document.getElementById('targetsToolbar')){
     const bar = document.createElement('div');
     bar.id='targetsToolbar'; bar.className='flex flex-wrap gap-2 mb-2';
-    const openBtn=document.createElement('button'); openBtn.className=BTN; openBtn.textContent='Tout ouvrir';
-    const closeBtn=document.createElement('button'); closeBtn.className=BTN; closeBtn.textContent='Tout fermer';
+    const openBtn=document.createElement('button'); openBtn.className=BTN; openBtn.textContent = t('ui.open_all');
+    const closeBtn=document.createElement('button'); closeBtn.className=BTN; closeBtn.textContent = t('ui.close_all');
     openBtn.onclick=()=>{ root.querySelectorAll('details[data-id]').forEach(d=>d.open=true); saveOpenTargets(); };
     closeBtn.onclick=()=>{ root.querySelectorAll('details[data-id]').forEach(d=>d.open=false); saveOpenTargets(); };
     root.parentElement.insertBefore(bar, root);
@@ -1937,8 +2029,8 @@ function renderMissions(){
   if(!document.getElementById('missionsToolbar')){
     const bar = document.createElement('div');
     bar.id='missionsToolbar'; bar.className='flex flex-wrap gap-2 mb-2';
-    const openBtn=document.createElement('button'); openBtn.className=BTN; openBtn.textContent='Tout ouvrir';
-    const closeBtn=document.createElement('button'); closeBtn.className=BTN; closeBtn.textContent='Tout fermer';
+    const openBtn=document.createElement('button'); openBtn.className=BTN; openBtn.textContent = t('ui.open_all');
+    const closeBtn=document.createElement('button'); closeBtn.className=BTN; closeBtn.textContent = t('ui.close_all');
     openBtn.onclick=()=>{ root.querySelectorAll('details[data-id]').forEach(d=>d.open=true); saveOpenMissions(); };
     closeBtn.onclick=()=>{ root.querySelectorAll('details[data-id]').forEach(d=>d.open=false); saveOpenMissions(); };
     root.parentElement.insertBefore(bar, root);
@@ -1976,16 +2068,17 @@ function renderMissions(){
     const li = document.createElement('div'); li.className='space-y-1';
     chain.forEach((step,i)=>{
       const status = m && m.corp===cid && m.index>i ? '✅' : (m && m.corp===cid && m.index===i ? '▶️' : '•');
+      const title  = step.nameKey ? t(step.nameKey) : i18nText(step.name);
       const row = document.createElement('div'); row.className='flex gap-2';
-      row.innerHTML = `<div>${status} <b>${step.name}</b> — <span class="text-slate-400 text-sm">objectif: ${step.objective.server}</span> <span class="${PILL}">${step.reward.cred}₵ · +${step.reward.rep} Rep</span></div>`;
+      row.innerHTML = `<div>${status} <b>${title}</b> — <span class="text-slate-400 text-sm">${t('missions.objective')}: ${step.objective.server}</span> <span class="${PILL}">${step.reward.cred}$ · +${step.reward.rep} Rep</span></div>`;
       li.appendChild(row);
     });
     box.appendChild(li);
     const controls = document.createElement('div'); controls.className='flex gap-2 mt-2';
     if(!m){
-      const btn=document.createElement('button'); btn.className=BTN + ' ring-1 ring-cyan-400/40'; btn.textContent='Accepter la chaîne'; btn.onclick=()=>acceptChain(cid); controls.appendChild(btn);
+      const btn=document.createElement('button'); btn.className=BTN + ' ring-1 ring-cyan-400/40'; btn.textContent = t('ui.accept_chain');; btn.onclick=()=>acceptChain(cid); controls.appendChild(btn);
     } else if(m && m.corp===cid){
-      const btn=document.createElement('button'); btn.className=BTN; btn.textContent='Abandonner'; btn.onclick=()=>abandonMission(); controls.appendChild(btn);
+      const btn=document.createElement('button'); btn.className=BTN; btn.textContent = t('ui.abandon'); btn.onclick=()=>abandonMission(); controls.appendChild(btn);
     }
     box.appendChild(controls);
     det.appendChild(box);
@@ -2055,7 +2148,7 @@ function renderStore(){
       </div>
       <div class="text-slate-400 text-sm">${bonuses||'—'}</div>
       <div class="flex items-center justify-between mt-2">
-        <span class="font-mono">${it.cost||0}₵</span>
+        <span class="font-mono">${it.cost||0}$</span>
         <button class="${btnClass}" ${owned||blocked? 'disabled':''}
                 data-buy="${it.id}" data-cost="${it.cost||0}">${btnLabel}</button>
       </div>`;
@@ -2112,7 +2205,9 @@ function restore(){
 }
 
 // ====== Boot (attend DATA_READY) ======
-window.addEventListener('DATA_READY', ()=>{
+window.addEventListener('DATA_READY', async ()=>{
+  await initI18n();
+  renderLangSwitch();
   document.getElementById('saveBtn').onclick=()=>{ persist(); addLog('💾 Sauvegardé'); };
   document.getElementById('resetBtn').onclick=()=>{
     const KEY = (typeof SAVE_KEY !== 'undefined' ? SAVE_KEY : (window.SAVE_KEY || 'cyber_netrunner_save_v6'));

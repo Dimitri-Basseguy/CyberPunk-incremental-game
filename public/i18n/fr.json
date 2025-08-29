@@ -1,0 +1,53 @@
+{
+  "ui": {
+    "upgrades": "Arbre d’upgrades",
+    "open_all": "Tout ouvrir",
+    "close_all": "Tout fermer",
+    "loot": "Loot",
+    "sell_all": "Tout vendre",
+    "accept_chain": "Accepter la chaîne",
+    "abandon": "Abandonner",
+    "city": "— Métropole"
+  },
+  "inc": {
+    "generators": "Générateurs",
+    "tokens": "tokens",
+    "production": "Production",
+    "per_click": "/ clic",
+    "mine": "Mine",
+    "to_loot": "Convertir en loot :",
+    "to_rp": "Convertir en recherche :",
+    "convert": "Convertir",
+    "cost": "Coût"
+  },
+  "logs": {
+    "welcome": "Bienvenue, runner. Upgrades disponibles dans le nouveau panneau.",
+    "sell": "🧾 Vente: {n}× <b>{name}</b> → <b>{gain}$</b>"
+  },
+  "missions": {
+    "title" : "Fixers — Contrats corpos",
+    "objective": "objectif",
+    "reward": "Récompense",
+    "ng_m1": { "name": "Repérage" },
+    "ng_m2": { "name": "Vol proto" },
+    "ng_m3": { "name": "Assaut financier" },
+    "ng_m4": { "name": "Q-Sec down" },
+    "bs_m1": { "name": "Ouvrir le portail" },
+    "bs_m2": { "name": "Piller les logs" },
+    "bs_m3": { "name": "Piéger le SOC" },
+    "bs_m4": { "name": "Abattre Cerbère" },
+    "ax_m1": { "name": "Échantillons d’essai" },
+    "ax_m2": { "name": "Données génétiques" },
+    "ax_m3": { "name": "Vol de brevets" },
+    "ax_m4": { "name": "Bio-Nexus" },
+    "on_m1": { "name": "Accroche uplink" },
+    "on_m2": { "name": "Manifest cargo" },
+    "on_m3": { "name": "Comptes off-world" },
+    "on_m4": { "name": "Noyau orbital" }
+  },
+  "targets": {
+    "scan": "Scanner",
+    "hack": "Pirater",
+    "fortified": "Fortifié L{lvl}"
+  }
+}
