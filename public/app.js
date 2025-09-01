@@ -1272,16 +1272,16 @@ function toggleConsoleCollapsed(force=null){
 
 // ====== Actions ======
 function scan(targetId, serverId){
-  const t = (window.TARGETS||[]).find(t=>t.id===targetId);
-  const s = t.servers.find(s=>s.id===serverId);
+  const target = (window.TARGETS||[]).find(t=>t.id===targetId);
+  const s = target.servers.find(s=>s.id===serverId);
   const um = upgradeMods();
   const btns = document.querySelectorAll('[data-scan], [data-action="hack"]');
   btns.forEach(b=>b.disabled=true);
   const delay = Math.round(350 * (um.scanLatencyMul||1));
   setTimeout(()=>{
-    const c = computeSuccess(s,t); // bypass ne s'applique pas au scan
+    const c = computeSuccess(s,target); // bypass ne s'applique pas au scan
     state.discovered[serverId] = c;
-    addLog(`Scan <span class="text-slate-400">${t.name} › ${s.name}</span> → chance ${Math.round(c*100)}%`);
+    addLog(`Scan <span class="text-slate-400">${target.name} › ${t(s.name)}</span> → chance ${Math.round(c*100)}%`);
     renderTargets();
     // Si le scan révèle ≥95 %, chance de fortifier immédiatement
     if (c >= ADAPTIVE.scanTriggerAt && Math.random() < ADAPTIVE.onScanChance){
@@ -1350,14 +1350,14 @@ function doHack(target, s){
     ? `, <span class="text-slate-400">${s.reward.loot}</span>`
     : '';
 
-    addLog(`✔️ Succès: <b>${t.name} › ${s.name}</b> +<b>${cred}$</b>, +<b>${repGain} Rep</b>${extra? ' — tentative bonus':''}`);
+    addLog(`✔️ Succès: <b>${target.name} › ${t(s.name)}</b> +<b>${cred}$</b>, +<b>${repGain} Rep</b>${extra? ' — tentative bonus':''}`);
     // 🎁 LOOT (succès)
     const loot = rollLoot(t, s);
     if (loot.length){
       const parts = [];
       for (const d of loot){
-        addLootItem(d.id, d.name, d.base, d.qty);
-        parts.push(`${d.qty}× ${d.name}`);
+        addLootItem(d.id, t(d.name), d.base, d.qty);
+        parts.push(`${d.qty}× ${t(d.name)}`);
       }
       addLog(`🎁 Butin: <span class="text-slate-300">${parts.join(', ')}</span>`);
     }
