@@ -158,6 +158,51 @@
         }
       }
     },
+    "blacksun": {
+      "title": "BlackSun Security",
+      "server": {
+        "bs_gate": {
+          "name": "Portail Sécu",
+          "loot": [
+            {"sso_tokens":  {"name": "Tokens SSO"}},
+            {"mfa_backup_codes":  {"name": "Codes secours MFA"}},
+            {"vpn_cfg": {"name": "Configuration VPN"}},
+            {"revoked_list":  {"name": "Listes révocation"}},
+            {"audit_badges":    {"name": "Badges d'audit"}}
+          ]
+        },
+        "bs_logs": {
+          "name": "SIEM & Logs",
+          "loot": [
+            {"siem_dumps":  {"name": "Dumps SIEM"}},
+            {"ioc_packs":  {"name": "Packs IOC"}},
+            {"netflow_spans": {"name": "Trames NetFlow"}},
+            {"alert_rules":  {"name": "Règles d’alerte"}},
+            {"log_forgery_kit":    {"name": "Kits falsif. logs"}}
+          ]
+        },
+        "bs_ops": {
+          "name": "Ops SOC",
+          "loot": [
+            {"soc_playbooks":  {"name": "Playbooks SOC"}},
+            {"ops_backdoor":  {"name": "Backdoor SOC"}},
+            {"pager_rotas": {"name": "Rotas d’astreinte"}},
+            {"ir_reports":  {"name": "Rapports IR internes"}},
+            {"c2_endpoints":    {"name": "Endpoints C2"}}
+          ]
+        },
+        "bs_core": {
+          "name": "Noyau Cerbère",
+          "loot": [
+            {"cerberus_master":  {"name": "Clé maître Cerbère"}},
+            {"root_of_trust":  {"name": "Ancrages de confiance"}},
+            {"sensor_signers": {"name": "Signataires capteurs"}},
+            {"vault_maps":  {"name": "Cartes coffres HSM"}},
+            {"redteam_artifacts":    {"name": "Artefacts RedTeam"}}
+          ]
+        }
+      }
+    },
     "scan": "Scanner",
     "hack": "Pirater",
     "fortified": "Fortifié L{lvl}"

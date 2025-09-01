@@ -1999,7 +1999,7 @@ function renderTargets(){
     sum.className = 'flex items-center justify-between gap-2 text-cyan-300 font-semibold';
     
     sum.innerHTML = `
-      <span class="summary-head">${t(target.name)}${t.kind==='city' ? ' — Métropole' : ' — Corpo'}</span>
+      <span class="summary-head">${t(target.name)}${t(target.kind)==='city' ? ' — Métropole' : ' — Corpo'}</span>
       ${target.image ? `
         <img src="${target.image}" alt="${t(target.name)}"
             class="w-12 h-12 object-cover rounded ring-1 ring-cyan-400/40">

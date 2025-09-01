@@ -158,6 +158,51 @@
         }
       }
     },
+    "blacksun": {
+      "title": "BlackSun Security",
+      "server": {
+        "bs_gate": {
+            "name": "Security Portal",
+            "loot": [
+            {"sso_tokens":  {"name": "SSO Tokens"}},
+            {"mfa_backup_codes":  {"name": "MFA Backup Codes"}},
+            {"vpn_cfg": {"name": "VPN Configuration"}},
+            {"revoked_list":  {"name": "Revocation Lists"}},
+            {"audit_badges":    {"name": "Audit Badges"}}
+          ]
+        },
+        "bs_logs": {
+          "name": "SIEM & Logs",
+          "loot": [
+            {"siem_dumps":  {"name": "SIEM Dumps"}},
+            {"ioc_packs":  {"name": "IOC Packs"}},
+            {"netflow_spans": {"name": "NetFlow Frames"}},
+            {"alert_rules":  {"name": "Alert Rules"}},
+            {"log_forgery_kit":    {"name": "Log Forgery Kits"}}
+          ]
+        },
+        "bs_ops": {
+          "name": "Ops SOC",
+          "loot": [
+            {"soc_playbooks":  {"name": "SOC Playbooks"}},
+            {"ops_backdoor":  {"name": "SOC Backdoor"}},
+            {"pager_rotas": {"name": "On-call Rotas"}},
+            {"ir_reports":  {"name": "Internal IR Reports"}},
+            {"c2_endpoints":    {"name": "C2 Endpoints"}}
+          ]
+        },
+        "bs_core": {
+            "name": "Cerberus Core",
+            "loot": [
+            {"cerberus_master":  {"name": "Cerberus Master Key"}},
+            {"root_of_trust":  {"name": "Root of Trust Anchors"}},
+            {"sensor_signers": {"name": "Sensor Signers"}},
+            {"vault_maps":  {"name": "HSM Vault Maps"}},
+            {"redteam_artifacts":    {"name": "RedTeam Artifacts"}}
+          ]
+        }
+      }
+    },
     "scan": "Scan",
     "hack": "Hack",
     "fortified": "Hardened L{lvl}"
