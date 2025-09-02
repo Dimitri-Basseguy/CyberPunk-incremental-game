@@ -1335,7 +1335,7 @@ function doHack(target, s){
   if(tmods.heatAttemptAdd) state.heat = clamp(state.heat + tmods.heatAttemptAdd, 0, 100);
 
   if(roll <= chance){
-    const rm = rewardMul(t, s) * (tmods.rewardMul || 1);
+    const rm = rewardMul(target, s) * (tmods.rewardMul || 1);
     const cred = Math.round(s.reward.cred*rm);
     const repGain = s.reward.rep + (programMods().cityRep && t.kind==='city' ? programMods().cityRep : 0);
     state.creds += cred;
@@ -1359,7 +1359,7 @@ function doHack(target, s){
         addLootItem(d.id, t(d.name), d.base, d.qty);
         parts.push(`${d.qty}× ${t(d.name)}`);
       }
-      addLog(`🎁 Butin: <span class="text-slate-300">${parts.join(', ')}</span>`);
+      addLog(`🎁 ${t('logs.loot_text')}: <span class="text-slate-300">${parts.join(', ')}</span>`);
     }
 
     // --- FORTIFICATION ADAPTATIVE ---
@@ -1379,8 +1379,8 @@ function doHack(target, s){
         state.skills[s.id] = (state.skills[s.id]||0) + delta;
       }
     }
-    if(state.xp>=100){ state.xp-=100; state.sp++; addLog('⬆️ Point de compétence obtenu'); }
-    onHackSuccess(t.id, s.id);
+    if(state.xp>=100){ state.xp-=100; state.sp++; addLog(`⬆️ ${t('logs.xp_gain_text')}`); }
+    onHackSuccess(target.id, s.id);
     // ⬇️ nouveau : chance de représailles
     maybeRetaliation(target, s, cred);
     if(extra){ renderAll(); return; }
@@ -1391,7 +1391,7 @@ function doHack(target, s){
     const heatCap = 100 - (upgradeMods().heatCapMinus||0);
     state.heat = Math.min(heatCap, state.heat + h);
     state.creds = Math.max(0, state.creds - loss);
-    addLog(`💀 Échec: <b>${t.name} › ${s.name}</b> — chaleur +${h}%${loss?`, perte ${loss}$`:''}`);
+    addLog(`💀 ${t('logs.fail_text')}: <b>${target.name} › ${t(s.name)}</b> — ${t('logs.heat_text')} +${h}%${loss?`, ${t('logs.loss_text')} ${loss}$`:''}`);
   }
   if(state.heat>=100 - (upgradeMods().heatCapMinus||0)){
     const ms = 10000 * (upgradeMods().lockoutMul || 1);
@@ -1415,7 +1415,7 @@ function lockout(ms){
     state.events.push({ type:'lockout', start: now, ends: now + ms });
   }
   // log plus explicite + rafraîchit le panneau
-  addLog(`🔥 Surcharge de chaleur — 🔒 verrou de ${Math.round(ms/1000)}s`);
+  addLog(`🔥 ${t('logs.heat_overload_text')} ${Math.round(ms/1000)}s`);
   renderEventTicker?.();
 
   clearTimeout(lockTimer);
@@ -1423,14 +1423,14 @@ function lockout(ms){
     buttons.forEach(b=>b.disabled=false);
     state.heat = Math.max(0, state.heat-30);
     renderAll();
-    addLog('🧊 Verrou levé, chaleur -30%');
+    addLog(`🧊 ${t('logs.heat_unlocked_text')}`);
   }, ms);
 }
 
 function buy(itemId){
   const it = itemById(itemId); if(!it) return;
-  if(it.requires && !it.requires.every(r=>state.gearOwned.has(r))){ addLog('⛔ Pré-requises manquantes.'); return; }
-  if(state.creds < it.cost){ addLog('⛔ Crédits insuffisants.'); return; }
+  if(it.requires && !it.requires.every(r=>state.gearOwned.has(r))){ addLog(`⛔ ${t('missing_prerequisites_text')}`); return; }
+  if(state.creds < it.cost){ addLog(`⛔ ${t('insufficient_credits_text')}`); return; }
   state.creds -= it.cost; state.gearOwned.add(it.id);
   const type = it.type;
   if(['deck','console','implant'].includes(type)){
@@ -1440,29 +1440,29 @@ function buy(itemId){
   } else if(type==='tool'){
     state.gearInstalled.tools.push(it.id);
   }
-  addLog(`🛒 Acheté: <b>${it.name}</b>`);
+  addLog(`🛒 ${t('purchased_text')}: <b>${it.name}</b>`);
   renderAll();
 }
 
 function learnProgram(pId){
   const p = (window.PROGRAMS||[]).find(p=>p.id===pId); if(!p) return;
-  if(state.creds < p.cost){ addLog('⛔ Crédits insuffisants.'); return; }
-  state.creds -= p.cost; state.programsOwned.add(p.id); addLog(`📦 Programme acquis: <b>${p.name}</b>`); renderAll();
+  if(state.creds < p.cost){ addLog(`⛔ ${t('insufficient_credits_text')}`); return; }
+  state.creds -= p.cost; state.programsOwned.add(p.id); addLog(`📦 ${t('logs.acquired_text')} <b>${p.name}</b>`); renderAll();
 }
 
 function equipProgram(pId){
   if(!state.programsOwned.has(pId)) return;
   if(state.activePrograms.includes(pId)) return;
   const p = (window.PROGRAMS||[]).find(x=>x.id===pId); if(!p) return;
-  if(state.activePrograms.length >= programSlots()){ addLog('⛔ Slots de programme pleins.'); return; }
-  if(cpuUsed()+p.cpu > cpuCapacity()){ addLog('⛔ CPU insuffisant.'); return; }
+  if(state.activePrograms.length >= programSlots()){ addLog(`⛔ ${t('logs.full_slots_text')}`); return; }
+  if(cpuUsed()+p.cpu > cpuCapacity()){ addLog(`⛔ ${t('logs.insufficient_cpu_text')}`); return; }
   state.activePrograms.push(pId);
-  addLog(`💾 Programme chargé: <b>${p.name}</b>`);
+  addLog(`💾 ${t('logs.loaded_text')} <b>${p.name}</b>`);
   renderPrograms(); persist();
 }
 function unequipProgram(pId){
   const i = state.activePrograms.indexOf(pId);
-  if(i>=0){ state.activePrograms.splice(i,1); addLog(`⏏️ Programme retiré: <b>${(window.PROGRAMS||[]).find(p=>p.id===pId)?.name}</b>`); renderPrograms(); persist(); }
+  if(i>=0){ state.activePrograms.splice(i,1); addLog(`⏏️ ${t('logs.unloaded_text')} <b>${(window.PROGRAMS||[]).find(p=>p.id===pId)?.name}</b>`); renderPrograms(); persist(); }
 }
 
 function spendPoint(skill){ if(state.sp<=0) return; state.sp--; state.skills[skill]+=1; addLog(`🧠 ${skill.toUpperCase()} +1`); renderAll(); }
@@ -1556,8 +1556,8 @@ function spawnSecurityEvent(){
 
 // Missions
 function currentMission(){ return state.missions.active || null; }
-function acceptChain(corpId){ state.missions.active = { corp: corpId, index:0 }; addLog(`📝 Mission acceptée — <b>${(window.TARGETS||[]).find(t=>t.id===corpId)?.name}</b>: ${(window.MISSION_CHAINS||{})[corpId][0].name}`); renderMissions(); persist(); }
-function abandonMission(){ if(state.missions.active){ addLog('🗑️ Mission abandonnée'); state.missions.active=null; renderMissions(); persist(); } }
+function acceptChain(corpId){ state.missions.active = { corp: corpId, index:0 }; addLog(`📝 ${t('logs.accepted_mission_text')} — <b>${(window.TARGETS||[]).find(t=>t.id===corpId)?.name}</b>: ${(window.MISSION_CHAINS||{})[corpId][0].name}`); renderMissions(); persist(); }
+function abandonMission(){ if(state.missions.active){ addLog(`🗑️ ${t('logs.abandoned_mission_text')}`); state.missions.active=null; renderMissions(); persist(); } }
 function missionStep(){ const m=currentMission(); if(!m) return null; return (window.MISSION_CHAINS||{})[m.corp][m.index]||null; }
 function onHackSuccess(tid, sid){
   const step = missionStep(); 
@@ -1573,12 +1573,12 @@ function onHackSuccess(tid, sid){
     state.creds += credGain;
     state.rep   += repGain;
 
-    addLog(`🏁 Mission accomplie: <b>${step.name}</b> +<b>${credGain}$</b> <span class="text-slate-400 text-xs">×${missionMul}</span> (+${repGain} Rep)`);
+    addLog(`🏁 ${t('logs.completed_mission_text')} <b>${step.name}</b> +<b>${credGain}$</b> <span class="text-slate-400 text-xs">×${missionMul}</span> (+${repGain} Rep)`);
 
     state.missions.active.index++;
     const chain = (window.MISSION_CHAINS||{})[state.missions.active.corp] || [];
     if(state.missions.active.index >= chain.length){
-      addLog('🎖️ Chaîne terminée — toutes les missions complétées !');
+      addLog(`🎖️ ${t('logs.chain_finish')}`);
       state.missions.active = null;
     }
     renderMissions();
@@ -1611,7 +1611,7 @@ function research(nodeId){
     state.rp = Math.max(0, Math.round((state.rp - cost)*100)/100);
   }
   state.researched.add(node.id);
-  addLog(`🔬 Recherche complétée: <b>${node.name}</b>${cost?` (-${cost} RP)`:''}`);
+  addLog(`🔬 ${t('logs.research_completed_text')} <b>${node.name}</b>${cost?` (-${cost} RP)`:''}`);
   renderAll(); persist();
 }
 function canUnlock(node){
@@ -1625,7 +1625,7 @@ function unlock(nodeId){
   const spCost = (node.sp||1);
   state.sp -= spCost;
   state.upgrades.add(node.id);
-  addLog(`🔧 Upgrade débloqué: <b>${node.name}</b> (${spCost} SP)`);
+  addLog(`🔧 ${t('logs.upgrade_unlocked_text')} <b>${node.name}</b> (${spCost} SP)`);
   renderAll(); persist();
 }
 
@@ -2210,7 +2210,7 @@ function restore(){
 window.addEventListener('DATA_READY', async ()=>{
   await initI18n();
   renderLangSwitch();
-  document.getElementById('saveBtn').onclick=()=>{ persist(); addLog('💾 Sauvegardé'); };
+  document.getElementById('saveBtn').onclick=()=>{ persist(); addLog(`💾 ${t('logs.save_text')}`); };
   document.getElementById('resetBtn').onclick=()=>{
     const KEY = (typeof SAVE_KEY !== 'undefined' ? SAVE_KEY : (window.SAVE_KEY || 'cyber_netrunner_save_v6'));
     ['cyber_netrunner_save_v4','cyber_netrunner_save_v5', KEY, OPEN_TARGETS_KEY, OPEN_MISSIONS_KEY, OPEN_UPGRADES_KEY, 'inc']
@@ -2222,5 +2222,5 @@ window.addEventListener('DATA_READY', async ()=>{
   ensureSkillsState();
   renderAll();
   setupConsoleDock();
-  addLog('Bienvenue, runner. Upgrades disponibles dans le nouveau panneau.');
+  addLog(`💾 ${t('logs.welcome')}`);
 });
