@@ -451,7 +451,7 @@ function computeSuccess(server, target, bypassStrength=0){
   }
 
   const hardLvl = getHardeningLvl(server.id);
-  const iceBaseNoBypass = server.level*12 + server.ice.reduce((s,n)=>s+(ICE[n]?.strength||0),0);
+  const iceBaseNoBypass = server.level*12 + server.ice.reduce((s,n)=>s+(ICE[n]?.strength||0),0);  
   const iceBase = Math.max(0, iceBaseNoBypass - (bypassStrength||0));
   const ev = activeEventMods(target);
   const extraHard = hardLvl * (ADAPTIVE.icePerLevel || 0);
@@ -1897,7 +1897,7 @@ function renderPrograms(){
         ${owned ? (
           equipped
             ? `<button class="${BTN}" data-un="${p.id}">${t('programs.btn-unload')}</button>`
-            : `<button class="${BTN_PRIMARY}" ${(full|| (cpuUsed()+p.cpu>cpuCapacity()))? 'disabled':''} data-eq="${p.id}">Charger</button>`
+            : `<button class="${BTN_PRIMARY}" ${(full|| (cpuUsed()+p.cpu>cpuCapacity()))? 'disabled':''} data-eq="${p.id}">${t('ui.load')}</button>`
         ) : `<button class="${BTN_PRIMARY}" data-buyprog="${p.id}">💰 (${p.cost}$)</button>`}
       </div>`;
     if(owned){
@@ -1939,7 +1939,7 @@ function serverLine(target, s){
   
   const hardLv = getHardeningLvl(s.id);
   const fortBadge = hardLv ? ` <span class="ml-1 text-fuchsia-300">Fortifié L${hardLv}</span>` : '';
-  const iceNames = s.ice.map(key => t(key)).join(', ');
+  const iceNames = s.icenameKey.map(key => t(key)).join(', ');
   wrap.innerHTML = `<div>
       <div><b>${t(s.name)}</b> <span class="text-slate-400 text-sm">lvl ${s.level}</span></div>
       <div class="text-slate-400 text-sm">${t('targets.defense')}: ${iceNames}${fortBadge}</div>

@@ -11,8 +11,9 @@
           "id": "grid01",
           "name": "targets.neo_aurora.server.grid01.name",
           "level": 1,
+          "icenameKey": ["targets.ice.white"],
           "ice": [
-            "targets.ice.white"
+            "GLACE Blanche"
           ],
           "reward": {
             "cred": 35,
@@ -20,36 +21,9 @@
             "loot": [
               { "id": "energy_readouts", "name": "targets.neo_aurora.server.grid01.loot.energy_readouts.name", "base": 2, "p": 0.60, "q": [1, 3] },
               { "id": "smart_meter_keys", "name": "targets.neo_aurora.server.grid01.loot.smart_meter_keys.name", "base": 3, "p": 0.35, "q": [1, 2] },
-              {
-                "id": "substation_layout",
-                "name": "targets.neo_aurora.server.grid01.loot.substation_layout.name",
-                "base": 4,
-                "p": 0.22,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "grid_credentials",
-                "name": "targets.neo_aurora.server.grid01.loot.grid_credentials.name",
-                "base": 3,
-                "p": 0.18,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "load_forecasts",
-                "name": "targets.neo_aurora.server.grid01.loot.load_forecasts.name",
-                "base": 2,
-                "p": 0.28,
-                "q": [
-                  1,
-                  2
-                ]
-              }
+              { "id": "substation_layout", "name": "targets.neo_aurora.server.grid01.loot.substation_layout.name", "base": 4, "p": 0.22, "q": [1, 1] }, 
+              { "id": "grid_credentials", "name": "targets.neo_aurora.server.grid01.loot.grid_credentials.name", "base": 3, "p": 0.18, "q": [1, 2] }, 
+              { "id": "load_forecasts", "name": "targets.neo_aurora.server.grid01.loot.load_forecasts.name", "base": 2, "p": 0.28, "q": [1, 2] }
             ]
           }
         },
@@ -57,7 +31,8 @@
           "id": "traffic01",
           "name": "targets.neo_aurora.server.traffic01.name",
           "level": 2,
-          "ice": [
+          "ice": ["Traceur", "GLACE Goudron"],
+          "icenameKey": [
             "targets.ice.tracer",
             "targets.ice.tar"
           ],
@@ -65,56 +40,11 @@
             "cred": 65,
             "rep": 1,
             "loot": [
-              {
-                "id": "signal_algos",
-                "name": "targets.neo_aurora.server.traffic01.loot.signal_algos.name",
-                "base": 4,
-                "p": 0.50,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "greenwave_profiles",
-                "name": "targets.neo_aurora.server.traffic01.loot.greenwave_profiles.name",
-                "base": 4,
-                "p": 0.35,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "cam_plate_cache",
-                "name": "targets.neo_aurora.server.traffic01.loot.cam_plate_cache.name",
-                "base": 5,
-                "p": 0.22,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "ticket_void_token",
-                "name": "targets.neo_aurora.server.traffic01.loot.ticket_void_token.name",
-                "base": 6,
-                "p": 0.12,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "drone_route_map",
-                "name": "targets.neo_aurora.server.traffic01.loot.drone_route_map.name",
-                "base": 4,
-                "p": 0.18,
-                "q": [
-                  1,
-                  1
-                ]
-              }
+              { "id": "signal_algos", "name": "targets.neo_aurora.server.traffic01.loot.signal_algos.name", "base": 4, "p": 0.50, "q": [1, 2] },
+              { "id": "greenwave_profiles", "name": "targets.neo_aurora.server.traffic01.loot.greenwave_profiles.name", "base": 4, "p": 0.35, "q": [1, 2] },
+              { "id": "cam_plate_cache", "name": "targets.neo_aurora.server.traffic01.loot.cam_plate_cache.name", "base": 5, "p": 0.22, "q": [1, 2] },
+              { "id": "ticket_void_token", "name": "targets.neo_aurora.server.traffic01.loot.ticket_void_token.name", "base": 6, "p": 0.12, "q": [1, 1] },
+              { "id": "drone_route_map", "name": "targets.neo_aurora.server.traffic01.loot.drone_route_map.name", "base": 4, "p": 0.18, "q": [1, 1] }
             ]
           }
         },
@@ -122,63 +52,19 @@
           "id": "registry01",
           "name": "targets.neo_aurora.server.registry01.name",
           "level": 3,
-          "ice": [
+          "ice": ["Adaptative"],
+          "icenameKey": [
             "targets.ice.adaptive"
           ],
           "reward": {
             "cred": 120,
             "rep": 1,
             "loot": [
-              {
-                "id": "citizen_hashes",
-                "name": "targets.neo_aurora.server.registry01.loot.citizen_hashes.name",
-                "base": 6,
-                "p": 0.35,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "synthetic_ids",
-                "name": "targets.neo_aurora.server.registry01.loot.synthetic_ids.name",
-                "base": 8,
-                "p": 0.18,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "addr_histories",
-                "name": "targets.neo_aurora.server.registry01.loot.addr_histories.name",
-                "base": 5,
-                "p": 0.28,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "birth_records",
-                "name": "targets.neo_aurora.server.registry01.loot.birth_records.name",
-                "base": 7,
-                "p": 0.14,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "taxpayer_tokens",
-                "name": "targets.neo_aurora.server.registry01.loot.taxpayer_tokens.name",
-                "base": 6,
-                "p": 0.18,
-                "q": [
-                  1,
-                  1
-                ]
-              }
+              { "id": "citizen_hashes", "name": "targets.neo_aurora.server.registry01.loot.citizen_hashes.name", "base": 6, "p": 0.35, "q": [1, 2] },
+              { "id": "synthetic_ids", "name": "targets.neo_aurora.server.registry01.loot.synthetic_ids.name", "base": 8, "p": 0.18, "q": [1, 1] },
+              { "id": "addr_histories", "name": "targets.neo_aurora.server.registry01.loot.addr_histories.name", "base": 5, "p": 0.28, "q": [1, 2] },
+              { "id": "birth_records", "name": "targets.neo_aurora.server.registry01.loot.birth_records.name", "base": 7, "p": 0.14, "q": [1, 1] },
+              { "id": "taxpayer_tokens", "name": "targets.neo_aurora.server.registry01.loot.taxpayer_tokens.name", "base": 6, "p": 0.18, "q": [1, 1] }
             ]
           }
         },
@@ -186,7 +72,8 @@
           "id": "metro01",
           "name": "targets.neo_aurora.server.metro01.name",
           "level": 4,
-          "ice": [
+          "ice": ["Noire", "Traceur"],
+          "icenameKey": [
             "targets.ice.black",
             "targets.ice.tracer"
           ],
@@ -194,56 +81,11 @@
             "cred": 180,
             "rep": 2,
             "loot": [
-              {
-                "id": "metro_access_cards",
-                "name": "targets.neo_aurora.server.metro01.loot.metro_access_cards.name",
-                "base": 6,
-                "p": 0.35,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "maintenance_windows",
-                "name": "targets.neo_aurora.server.metro01.loot.maintenance_windows.name",
-                "base": 7,
-                "p": 0.22,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "turnstile_keys",
-                "name": "targets.neo_aurora.server.metro01.loot.turnstile_keys.name",
-                "base": 6,
-                "p": 0.25,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "route_timings",
-                "name": "targets.neo_aurora.server.metro01.loot.route_timings.name",
-                "base": 5,
-                "p": 0.30,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "control_room_codes",
-                "name": "targets.neo_aurora.server.metro01.loot.control_room_codes.name",
-                "base": 8,
-                "p": 0.12,
-                "q": [
-                  1,
-                  1
-                ]
-              }
+              { "id": "metro_access_cards", "name": "targets.neo_aurora.server.metro01.loot.metro_access_cards.name", "base": 6, "p": 0.35, "q": [1, 2] },
+              { "id": "maintenance_windows", "name": "targets.neo_aurora.server.metro01.loot.maintenance_windows.name", "base": 7, "p": 0.22, "q": [1, 1] },
+              { "id": "turnstile_keys", "name": "targets.neo_aurora.server.metro01.loot.turnstile_keys.name", "base": 6, "p": 0.25, "q": [1, 2] },
+              { "id": "route_timings", "name": "targets.neo_aurora.server.metro01.loot.route_timings.name", "base": 5, "p": 0.30, "q": [1, 2] },
+              { "id": "control_room_codes", "name": "targets.neo_aurora.server.metro01.loot.control_room_codes.name", "base": 8, "p": 0.12, "q": [1, 1] }
             ]
           }
         }
@@ -259,7 +101,8 @@
           "id": "ng_gate",
           "name": "targets.neongate.server.ng_gate.name",
           "level": 1,
-          "ice": [
+          "ice": ["GLACE Blanche", "Traceur"],
+          "icenameKey": [
             "targets.ice.white",
             "targets.ice.tracer"
           ],
@@ -324,7 +167,8 @@
           "id": "ng_rnd",
           "name": "targets.neongate.server.ng_rnd.name",
           "level": 2,
-          "ice": [
+          "ice": ["GLACE Goudron", "Adaptative"],
+          "icenameKey": [
             "targets.ice.tar",
             "targets.ice.adaptive"
           ],
@@ -389,7 +233,8 @@
           "id": "ng_fin",
           "name": "targets.neongate.server.ng_fin.name",
           "level": 3,
-          "ice": [
+          "ice": ["Adaptative", "Noire"],
+          "icenameKey": [
             "targets.ice.adaptive",
             "targets.ice.black"
           ],
@@ -454,7 +299,8 @@
           "id": "ng_core",
           "name": "targets.neongate.server.ng_core.name",
           "level": 4,
-          "ice": [
+          "ice": ["IA Q-Sec", "Noire"],
+          "icenameKey": [
             "targets.ice.qsec",
             "targets.ice.black"
           ],
@@ -527,7 +373,8 @@
           "id": "bs_gate",
           "name": "targets.blacksun.server.bs_gate.name",
           "level": 1,
-          "ice": [
+          "ice":["Traceur"],
+          "icenameKey": [
             "targets.ice.tracer"
           ],
           "reward": {
@@ -592,6 +439,10 @@
           "name": "targets.blacksun.server.bs_logs.name",
           "level": 2,
           "ice": [
+            "GLACE Goudron",
+            "Traceur"
+          ],
+          "icenameKey": [
             "targets.ice.tar",
             "targets.ice.tracer"
           ],
@@ -656,7 +507,8 @@
           "id": "bs_ops",
           "name": "targets.blacksun.server.bs_ops.name",
           "level": 3,
-          "ice": [
+          "ice":["Adaptative","Noire"],
+          "icenameKey": [
             "targets.ice.adaptive",
             "targets.ice.black"
           ],
@@ -721,7 +573,8 @@
           "id": "bs_core",
           "name": "targets.blacksun.server.bs_core.name",
           "level": 4,
-          "ice": [
+          "ice": ["IA Q-Sec", "Noire"],
+          "icenameKey": [
             "targets.ice.black",
             "targets.ice.qsec"
           ],
@@ -794,7 +647,8 @@
           "id": "ax_trials",
           "name": "targets.axiom.server.ax_trials.name",
           "level": 1,
-          "ice": [
+          "ice": ["GLACE Blanche"],
+          "icenameKey": [
             "targets.ice.white"
           ],
           "reward": {
@@ -858,7 +712,8 @@
           "id": "ax_gen",
           "name": "targets.axiom.server.ax_gen.name",
           "level": 2,
-          "ice": [
+          "ice": ["Traceur", "Adaptative"],
+          "icenameKey": [
             "targets.ice.tracer",
             "targets.ice.adaptive"
           ],
@@ -923,7 +778,8 @@
           "id": "ax_ip",
           "name": "targets.axiom.server.ax_ip.name",
           "level": 3,
-          "ice": [
+          "ice": ["GLACE Goudron", "Noire"],
+          "icenameKey": [
             "targets.ice.tar",
             "targets.ice.black"
           ],
@@ -988,7 +844,8 @@
           "id": "ax_core",
           "name": "targets.axiom.server.ax_core.name",
           "level": 4,
-          "ice": [
+          "ice":["IA Q-Sec","Noire"],
+          "icenameKey": [
             "targets.ice.qsec",
             "targets.ice.black"
           ],
@@ -1058,66 +915,22 @@
       "servers": [
         {
           "id": "on_sat",
-          "name": "Uplink Satellite",
+          "name": "targets.orbital.server.on_sat.name",
           "level": 1,
-          "ice": [
-            "GLACE Blanche",
-            "Traceur"
+          "ice":["GLACE Blanche","Traceur"],
+          "icenameKey": [
+            "targets.ice.white",
+            "targets.ice.tracer"
           ],
           "reward": {
             "cred": 85,
             "rep": 1,
             "loot": [
-              {
-                "id": "uplink_window",
-                "name": "Fenêtre uplink",
-                "base": 4,
-                "p": 0.45,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "sat_ephemeris",
-                "name": "Éphémérides",
-                "base": 3,
-                "p": 0.50,
-                "q": [
-                  1,
-                  3
-                ]
-              },
-              {
-                "id": "antenna_whitelist",
-                "name": "Whitelist antennes",
-                "base": 3,
-                "p": 0.35,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "downlink_keys",
-                "name": "Clés downlink",
-                "base": 4,
-                "p": 0.25,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "telemetry_cache",
-                "name": "Cache télémétrie",
-                "base": 3,
-                "p": 0.40,
-                "q": [
-                  2,
-                  4
-                ]
-              }
+              { "id": "uplink_window", "name": "targets.orbital.server.on_sat.loot.uplink_window.name", "base": 4, "p": 0.45, "q": [1, 2] },
+              { "id": "sat_ephemeris", "name": "targets.orbital.server.on_sat.loot.sat_ephemeris.name", "base": 3, "p": 0.50, "q": [1, 3] },
+              { "id": "antenna_whitelist", "name": "targets.orbital.server.on_sat.loot.antenna_whitelist.name", "base": 3, "p": 0.35, "q": [1, 2] },
+              { "id": "downlink_keys", "name": "targets.orbital.server.on_sat.loot.downlink_keys.name", "base": 4, "p": 0.25, "q": [1, 1] },
+              { "id": "telemetry_cache", "name": "targets.orbital.server.on_sat.loot.telemetry_cache.name", "base": 3, "p": 0.40, "q": [2, 4] }
             ]
           }
         },
@@ -1125,136 +938,49 @@
           "id": "on_cargo",
           "name": "Cargo Orbital",
           "level": 2,
-          "ice": [
-            "GLACE Goudron",
-            "Adaptative"
+          "ice": ["Adaptative","GLACE Goudron"],
+          "icenameKey": [
+            "targets.ice.tar",
+            "targets.ice.adaptive"
           ],
-          "reward": {
+            "reward": {
             "cred": 170,
             "rep": 1,
             "loot": [
-              {
-                "id": "cargo_manifest",
-                "name": "Manifest cargo",
-                "base": 6,
-                "p": 0.40,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "customs_override",
-                "name": "Override douanes",
-                "base": 7,
-                "p": 0.18,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "dock_schedules",
-                "name": "Horaires quais",
-                "base": 5,
-                "p": 0.35,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "crew_id_alias",
-                "name": "Alias équipage",
-                "base": 5,
-                "p": 0.28,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "hazmat_routes",
-                "name": "Routes HAZMAT",
-                "base": 6,
-                "p": 0.22,
-                "q": [
-                  1,
-                  1
-                ]
-              }
+              { "id": "cargo_manifest", "name": "targets.orbital.server.on_cargo.loot.cargo_manifest.name", "base": 6, "p": 0.40, "q": [1, 2] },
+              { "id": "customs_override", "name": "targets.orbital.server.on_cargo.loot.customs_override.name", "base": 7, "p": 0.18, "q": [1, 1] },
+              { "id": "dock_schedules", "name": "targets.orbital.server.on_cargo.loot.dock_schedules.name", "base": 5, "p": 0.35, "q": [1, 2] },
+              { "id": "crew_id_alias", "name": "targets.orbital.server.on_cargo.loot.crew_id_alias.name", "base": 5, "p": 0.28, "q": [1, 2] },
+              { "id": "hazmat_routes", "name": "targets.orbital.server.on_cargo.loot.hazmat_routes.name", "base": 6, "p": 0.22, "q": [1, 1] }
             ]
-          }
+            }
         },
         {
           "id": "on_fin",
-          "name": "Comptes Off-world",
+          "name": "targets.orbital.server.on_fin.name",
           "level": 3,
-          "ice": [
-            "Adaptative",
-            "Noire"
+          "ice": ["Adaptative", "Noire"],
+          "icenameKey": [
+            "targets.ice.adaptive",
+            "targets.ice.black"
           ],
           "reward": {
             "cred": 320,
             "rep": 2,
             "loot": [
-              {
-                "id": "offworld_accounts",
-                "name": "Accès offshore",
-                "base": 11,
-                "p": 0.12,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "tax_haven_map",
-                "name": "Carte paradis fiscaux",
-                "base": 9,
-                "p": 0.18,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "credit_lines",
-                "name": "Lignes de crédit",
-                "base": 8,
-                "p": 0.24,
-                "q": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "id": "escrow_keys",
-                "name": "Clés escrow",
-                "base": 10,
-                "p": 0.14,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "bond_ledgers",
-                "name": "Registres obligations",
-                "base": 8,
-                "p": 0.28,
-                "q": [
-                  1,
-                  2
-                ]
-              }
+              { "id": "offworld_accounts", "name": "targets.orbital.server.on_cargo.loot.offworld_accounts.name", "base": 11, "p": 0.12, "q": [1, 1] },
+              { "id": "tax_haven_map", "name": "targets.orbital.server.on_cargo.loot.tax_haven_map.name", "base": 9, "p": 0.18, "q": [1, 1] },
+              { "id": "credit_lines", "name": "targets.orbital.server.on_cargo.loot.credit_lines.name", "base": 8, "p": 0.24, "q": [1, 2] },
+              { "id": "escrow_keys", "name": "targets.orbital.server.on_cargo.loot.escrow_keys.name", "base": 10, "p": 0.14, "q": [1, 1] },
+              { "id": "bond_ledgers", "name": "targets.orbital.server.on_cargo.loot.bond_ledgers.name", "base": 8, "p": 0.28, "q": [1, 2] }
             ]
           }
         },
         {
           "id": "on_core",
-          "name": "Noyau Orbital",
+          "name": "targets.orbital.server.on_core.name",
           "level": 4,
+          "icenameKey": ["targets.ice.qsec", "targets.ice.black"],
           "ice": [
             "IA Q-Sec",
             "Noire"
@@ -1263,56 +989,11 @@
             "cred": 520,
             "rep": 3,
             "loot": [
-              {
-                "id": "azure_core_key",
-                "name": "Clé azur",
-                "base": 15,
-                "p": 0.06,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "orbital_root",
-                "name": "Racine orbitale",
-                "base": 14,
-                "p": 0.08,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "station_layouts",
-                "name": "Plans stations",
-                "base": 12,
-                "p": 0.16,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "deep_space_routes",
-                "name": "Routes deep space",
-                "base": 11,
-                "p": 0.20,
-                "q": [
-                  1,
-                  1
-                ]
-              },
-              {
-                "id": "gravity_sim",
-                "name": "Simulateurs gravité",
-                "base": 12,
-                "p": 0.14,
-                "q": [
-                  1,
-                  1
-                ]
-              }
+              { "id": "azure_core_key", "name": "targets.orbital.server.on_core.loot.azure_core_key.name", "base": 15, "p": 0.06, "q": [1, 1] },
+              { "id": "orbital_root", "name": "targets.orbital.server.on_core.loot.orbital_root.name", "base": 14, "p": 0.08, "q": [1, 1] },
+              { "id": "station_layouts", "name": "targets.orbital.server.on_core.loot.station_layouts.name", "base": 12, "p": 0.16, "q": [1, 1] },
+              { "id": "deep_space_routes", "name": "targets.orbital.server.on_core.loot.deep_space_routes.name", "base": 11, "p": 0.20, "q": [1, 1] },
+              { "id": "gravity_sim", "name": "targets.orbital.server.on_core.loot.gravity_sim.name", "base": 12, "p": 0.14, "q": [1, 1] }
             ]
           }
         }

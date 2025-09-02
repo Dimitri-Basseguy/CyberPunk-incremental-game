@@ -7,7 +7,8 @@
     "sell_all": "Sell all",
     "accept_chain": "Accept chain",
     "abandon": "Abandon",
-    "city": "— Metro"
+    "city": "— Metro",
+    "load": "Load"
   },
   "inc": {
     "generators": "Generators",
@@ -244,6 +245,51 @@
             "wetware_maps": {"name": "Wetware Maps"},
             "trial_keyring":  {"name": "Trial Keyring"},
             "xenograft_data":    {"name": "Xenograft Data"}
+          }
+        }
+      }
+    },
+    "orbital": {
+      "title": "Orbital Nexus Group",
+      "server": {
+        "on_sat": {
+          "name": "Uplink Satellite",
+          "loot": {
+            "uplink_window":  {"name": "Uplink Window"},
+            "sat_ephemeris":  {"name": "Satellite Ephemeris"},
+            "antenna_whitelist": {"name": "Antenna Whitelist"},
+            "downlink_keys":  {"name": "Downlink Keys"},
+            "telemetry_cache":    {"name": "Telemetry Cache"}
+          }
+        },
+        "on_cargo": {
+          "name": "Orbital Cargo",
+          "loot": {
+            "cargo_manifest":  {"name": "Cargo Manifest"},
+            "customs_override":  {"name": "Customs Override"},
+            "dock_schedules": {"name": "Dock Schedules"},
+            "crew_id_alias":  {"name": "Crew ID Alias"},
+            "hazmat_routes":    {"name": "HAZMAT Routes"}
+          }
+        },
+        "on_fin": {
+          "name": "Off-world Accounts",
+          "loot": {
+            "offworld_accounts":  {"name": "Offshore Access"},
+            "tax_haven_map":  {"name": "Tax Haven Map"},
+            "credit_lines": {"name": "Credit Lines"},
+            "escrow_keys":  {"name": "Escrow Keys"},
+            "bond_ledgers":    {"name": "Bond Ledgers"}
+          }
+        },
+        "on_core": {
+          "name": "Orbital Core",
+          "loot": {
+            "azure_core_key":  {"name": "Azure Core Key"},
+            "orbital_root":  {"name": "Orbital Root"},
+            "station_layouts": {"name": "Station Layouts"},
+            "deep_space_routes":  {"name": "Deep Space Routes"},
+            "gravity_sim":    {"name": "Gravity Simulation"}
           }
         }
       }

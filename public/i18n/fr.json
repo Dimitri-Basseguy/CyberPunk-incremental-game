@@ -7,7 +7,8 @@
     "sell_all": "Tout vendre",
     "accept_chain": "Accepter la chaîne",
     "abandon": "Abandonner",
-    "city": "— Métropole"
+    "city": "— Métropole",
+    "load": "Charger"
   },
   "inc": {
     "generators": "Générateurs",
@@ -244,6 +245,51 @@
             "wetware_maps": {"name": "Plans wetware"},
             "trial_keyring":  {"name": "Trousseau essais"},
             "xenograft_data":    {"name": "Données xénogreffes"}
+          }
+        }
+      }
+    },
+    "orbital": {
+      "title": "Orbital Nexus Group",
+      "server": {
+        "on_sat": {
+          "name": "Uplink Satellite",
+          "loot": {
+            "uplink_window":  {"name": "Fenêtre uplink"},
+            "sat_ephemeris":  {"name": "Éphémérides satellites"},
+            "antenna_whitelist": {"name": "Whitelist antennes"},
+            "downlink_keys":  {"name": "Clés de downlink"},
+            "telemetry_cache":    {"name": "Cache de télémétrie"}
+          }
+        },
+        "on_cargo": {
+          "name": "Cargo Orbital",
+          "loot": {
+            "cargo_manifest":  {"name": "Manifest cargo"},
+            "customs_override":  {"name": "Override douanes"},
+            "dock_schedules": {"name": "Horaires de dock"},
+            "crew_id_alias":  {"name": "Alias ID équipage"},
+            "hazmat_routes":    {"name": "Routes HAZMAT"}
+          }
+        },
+        "on_fin": {
+          "name": "Comptes Off-world",
+          "loot": {
+            "offworld_accounts":  {"name": "Accès offshore"},
+            "tax_haven_map":  {"name": "Carte paradis fiscaux"},
+            "credit_lines": {"name": "Lignes de crédit"},
+            "escrow_keys":  {"name": "Clés escrow"},
+            "bond_ledgers":    {"name": "Registres d'obligations"}
+          }
+        },
+        "on_core": {
+          "name": "Noyau Orbital",
+          "loot": {
+            "azure_core_key":  {"name": "Clé azur"},
+            "orbital_root":  {"name": "Racine orbitale"},
+            "station_layouts": {"name": "Plans de station"},
+            "deep_space_routes":  {"name": "Routes deep space"},
+            "gravity_sim":    {"name": "Simulation de gravité"}
           }
         }
       }
