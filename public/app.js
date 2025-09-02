@@ -276,7 +276,7 @@ function bumpHardeningIfNeeded(target, server, observedChance, reason='mise à j
   h.last = now;
 
   if (ADAPTIVE.log){
-    addLog(`🛡️ <b>${target.name} › ${server.name}</b> — fortification ${reason} (GLACE +${ADAPTIVE.icePerLevel*applied}, L${h.lvl})`);
+    addLog(`🛡️ <b>${target.name} › ${server.name}</b> — ${t('logs.fortification')} ${reason} (${t('logs.ice_text')} +${ADAPTIVE.icePerLevel*applied}, L${h.lvl})`);
   }
 
   // re-calcul immédiat de la chance connue (si scannée)
@@ -569,7 +569,7 @@ function sellLoot(id, qty=null){
   it.qty -= n;
   if(it.qty<=0) delete state.loot[id];
 
-  addLog(`🧾 Vente: ${n}× <b>${it.name}</b> → <b>${gain}$</b> <span class="text-slate-400 text-xs">(${lootUnitText(it.base)}/u)</span>`);
+  addLog(`🧾 ${t('logs.sell_text')}: ${n}× <b>${it.name}</b> → <b>${gain}$</b> <span class="text-slate-400 text-xs">(${lootUnitText(it.base)}/u)</span>`);
   renderAll();
 }
 
@@ -585,7 +585,7 @@ function sellAllLoot(){
   if(gain<=0){ addLog('— Rien à vendre —'); return; }
   state.creds = Math.round((state.creds + gain) * 100) / 100;
   state.loot = {};
-  addLog(`🧾 Vente totale: ${parts.join(', ')} → <b>${gain}$</b>`);
+  addLog(`🧾 ${t('logs.sell_all_text')}: ${parts.join(', ')} → <b>${gain}$</b>`);
   renderAll();
 }
 
@@ -697,7 +697,7 @@ function maybeTraceOnScan(target){
       state.events.push(ev);
     }
 
-    addLog(`🎯 Traceur activé sur <b>${target.name}</b> — niveau ${lvl}. Scans/hacks plus risqués temporairement.`);
+    addLog(`🎯 ${t('logs.tracer_active_text')} <b>${t(target.name)}</b> — ${t('logs.level_text')} ${lvl}. ${t('logs.scan_risk_text')}.`);
     renderEventTicker?.();
 
     // contre-mesure instantanée (pic de chaleur + mini-verrou) : conditionnelle
@@ -707,7 +707,7 @@ function maybeTraceOnScan(target){
       const spike = panic.heatSpike[L] || 6;
       const heatCap = 100 - (upgradeMods().heatCapMinus||0);
       state.heat = Math.min(heatCap, state.heat + spike);
-      addLog(`⚡ Contre-mesure détectée — +${spike}% chaleur`);
+      addLog(`⚡ ${t('logs.countermeasure_detected_text')} — +${spike}% ${t('logs.heat_text')}`);
       if(typeof lockout === 'function'){ lockout(panic.lockoutMs[L] || 2000); }
     }
   }
@@ -823,8 +823,8 @@ function maybeRetaliation(target, server, lastCredGain){
     state.heat = Math.min(heatCap, state.heat + heat);
     state.creds = Math.max(0, state.creds - credLoss);
     state.rep   = Math.max(0, state.rep   - repLoss);
-
-    addLog(`⚠️ Représailles: <b>${target.name}</b> — +${heat}% chaleur, -${credLoss}$, -${repLoss} Rep <span class="text-slate-400 text-xs">(p≈${Math.round(p*100)}% • ${attempts} tentatives/${RETALIATION.pressureWindowMs/60000}min)</span>`);
+    console.log(t(target.name));
+    addLog(`⚠️ ${t('logs.retaliation_text')}: <b>${target.name}</b> — +${heat}% ${t('logs.heat_text')}, -${credLoss}$, -${repLoss} Rep <span class="text-slate-400 text-xs">(p≈${Math.round(p*100)}% • ${attempts} ${t('logs.attempts_text')}/${RETALIATION.pressureWindowMs/60000}min)</span>`);
   }
 }
 
@@ -1004,7 +1004,7 @@ function renderIncremental(){
     inc.ticks -= qty;
     const rpGain = Math.round(qty * RP_PER_TOKEN * 100) / 100;
     state.rp = Math.round((state.rp + rpGain) * 100) / 100;
-    addLog(`📚 Recherche: +<b>${rpGain}</b> RP`);
+    addLog(`📚 ${t('logs.search_text')}: +<b>${rpGain}</b> RP`);
     saveInc?.();
     renderIncremental();
     renderKPIs?.();
@@ -1281,15 +1281,15 @@ function scan(targetId, serverId){
   setTimeout(()=>{
     const c = computeSuccess(s,target); // bypass ne s'applique pas au scan
     state.discovered[serverId] = c;
-    addLog(`Scan <span class="text-slate-400">${target.name} › ${t(s.name)}</span> → chance ${Math.round(c*100)}%`);
+    addLog(`Scan <span class="text-slate-400">${target.name} › ${t(s.name)}</span> → ${t('logs.luck_text')} ${Math.round(c*100)}%`);
     renderTargets();
     // Si le scan révèle ≥95 %, chance de fortifier immédiatement
     if (c >= ADAPTIVE.scanTriggerAt && Math.random() < ADAPTIVE.onScanChance){
-      bumpHardeningIfNeeded(t, s, c, 'suite au scan');
+      bumpHardeningIfNeeded(target, s, c, `${t('logs.scan_text')}`);
     }
 
     // ✅ AJOUT : pression de scan & éventuel "trace"
-    maybeTraceOnScan(t);
+    maybeTraceOnScan(target);
 
     btns.forEach(b=>b.disabled=false);
   }, delay);
@@ -1308,23 +1308,23 @@ function maybeBypass(server){
 }
 
 function hack(targetId, serverId){
-  const t = (window.TARGETS||[]).find(t=>t.id===targetId);
-  const s = t.servers.find(s=>s.id===serverId);
+  const target = (window.TARGETS||[]).find(t=>t.id===targetId);
+  const s = target.servers.find(s=>s.id===serverId);
   const um = upgradeMods();
   const delayBase = 300;
   const delay = (delayBase + cpuUsed()*150) * (um.latencyCpuMul || 1);
   const buttons = document.querySelectorAll('[data-action="hack"]');
   buttons.forEach(b=>b.disabled=true);
-  setTimeout(()=>{ doHack(t,s); buttons.forEach(b=>b.disabled=false); }, delay);
+  setTimeout(()=>{ doHack(target,s); buttons.forEach(b=>b.disabled=false); }, delay);
 }
 function doHack(target, s){
   const nowTs = Date.now();
-  (state.attemptHistory[t.id] ||= []).push(nowTs);
-  state.attemptHistory[t.id] = state.attemptHistory[t.id].filter(ts => nowTs - ts < RETALIATION.pressureWindowMs);
-  const tmods = activeEventMods(t);
+  (state.attemptHistory[target.id] ||= []).push(nowTs);
+  state.attemptHistory[target.id] = state.attemptHistory[target.id].filter(ts => nowTs - ts < RETALIATION.pressureWindowMs);
+  const tmods = activeEventMods(target);
   // appliquer bypass éventuel
   const bypass = maybeBypass(s);
-  const baseChance = computeSuccess(s, t, bypass);
+  const baseChance = computeSuccess(s, target, bypass);
   let chance = baseChance + (tmods.chanceAdd||0);
   const hardLvl = getHardeningLvl(s.id);
   const maxCap = 0.95 - (hardLvl * (ADAPTIVE.capDropPerLevel || 0));
@@ -1350,9 +1350,9 @@ function doHack(target, s){
     ? `, <span class="text-slate-400">${s.reward.loot}</span>`
     : '';
 
-    addLog(`✔️ Succès: <b>${target.name} › ${t(s.name)}</b> +<b>${cred}$</b>, +<b>${repGain} Rep</b>${extra? ' — tentative bonus':''}`);
+    addLog(`✔️ ${t('logs.success_text')}: <b>${t(target.name)} › ${t(s.name)}</b> +<b>${cred}$</b>, +<b>${repGain} Rep</b>${extra? ' — ' + t('logs.attempts_bonus_text'):''}`);
     // 🎁 LOOT (succès)
-    const loot = rollLoot(t, s);
+    const loot = rollLoot(target, s);
     if (loot.length){
       const parts = [];
       for (const d of loot){
@@ -1382,7 +1382,7 @@ function doHack(target, s){
     if(state.xp>=100){ state.xp-=100; state.sp++; addLog('⬆️ Point de compétence obtenu'); }
     onHackSuccess(t.id, s.id);
     // ⬇️ nouveau : chance de représailles
-    maybeRetaliation(t, s, cred);
+    maybeRetaliation(target, s, cred);
     if(extra){ renderAll(); return; }
   } else {
     const hardLvl = getHardeningLvl(s.id);

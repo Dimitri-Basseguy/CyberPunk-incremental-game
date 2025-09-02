@@ -23,7 +23,23 @@
   },
   "logs": {
     "welcome": "Welcome, runner. Upgrades available in the new panel.",
-    "sell": "🧾 Sale: {n}× <b>{name}</b> → <b>{gain}$</b>"
+    "sell": "🧾 Sale: {n}× <b>{name}</b> → <b>{gain}$</b>",
+    "fortification": "Fortification",
+    "ice_text": "ICE",
+    "sell_text": "Sell",
+    "sell_all_text": "Sell all",
+    "tracer_active_text": "Tracer active on",
+    "scan_risk_text": "Scans/hacks more risky temporarily",
+    "level_text": "level",
+    "countermeasure_detected_text": "Countermeasure detected",
+    "heat_text": "Heat",
+    "retaliation_text": "Retaliation",
+    "attempts_text": "attempts",
+    "attempts_bonus_text": "attempt bonus",
+    "search_text": "Search",
+    "luck_text": "Luck",
+    "scan_text": "following the scan",
+    "success_text": "Success"
   },
   "missions": {
     "title" : "Fixers — Corpo Contracts",

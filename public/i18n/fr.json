@@ -23,7 +23,23 @@
   },
   "logs": {
     "welcome": "Bienvenue, runner. Upgrades disponibles dans le nouveau panneau.",
-    "sell": "🧾 Vente: {n}× <b>{name}</b> → <b>{gain}$</b>"
+    "sell": "🧾 Vente: {n}× <b>{name}</b> → <b>{gain}$</b>",
+    "fortification": "Fortification",
+    "ice_text": "GLACE",
+    "sell_text": "Vente",
+    "sell_all_text": "Vente totale",
+    "tracer_active_text": "Traceur activé sur",
+    "scan_risk_text": "Scans/hacks plus risqués temporairement",
+    "level_text": "niveau",
+    "countermeasure_detected_text": "Contre-mesure détectée",
+    "heat_text": "Chaleur",
+    "retaliation_text": "Représailles",
+    "attempts_text": "tentatives",
+    "attemps_bonus_text": "tentative bonus",
+    "search_text": "Recherche",
+    "luck_text": "chance",
+    "scan_text": "suite au scan",
+    "success_text": "Succès"
   },
   "missions": {
     "title" : "Fixers — Contrats corpos",
