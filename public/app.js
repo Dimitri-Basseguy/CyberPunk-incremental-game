@@ -1573,7 +1573,7 @@ function onHackSuccess(tid, sid){
     state.creds += credGain;
     state.rep   += repGain;
 
-    addLog(`🏁 ${t('logs.completed_mission_text')} <b>${step.name}</b> +<b>${credGain}$</b> <span class="text-slate-400 text-xs">×${missionMul}</span> (+${repGain} Rep)`);
+    addLog(`🏁 ${t('logs.completed_mission_text')} <b>${t(step.nameKey)}</b> +<b>${credGain}$</b> <span class="text-slate-400 text-xs">×${missionMul}</span> (+${repGain} Rep)`);
 
     state.missions.active.index++;
     const chain = (window.MISSION_CHAINS||{})[state.missions.active.corp] || [];
