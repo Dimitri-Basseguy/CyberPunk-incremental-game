@@ -203,6 +203,51 @@
         }
       }
     },
+    "axiom": {
+      "title": "Axiom Bioware",
+      "server": {
+        "ax_trials": {
+          "name": "Essais cliniques",
+          "loot": {
+            "trial_records":  {"name": "Dossiers d'essai"},
+            "adverse_events":  {"name": "Événements indésirables"},
+            "placebo_batches": {"name": "Lots placebo"},
+            "patient_aliases":  {"name": "Alias patients"},
+            "drug_stability":    {"name": "Stabilité des médicaments"}
+          }
+        },
+        "ax_gen": {
+          "name": "Génétique",
+          "loot": {
+            "gene_synth":  {"name": "Gènes synth."},
+            "crispr_guides":  {"name": "Guides CRISPR"},
+            "cell_line_maps": {"name": "Cartes lignées cellulaires"},
+            "biohazard_permits":  {"name": "Permis biohazard"},
+            "ethics_waivers":    {"name": "Dérogations éthiques"}
+          }
+        },
+        "ax_ip": {
+          "name": "Propriété Intellectuelle",
+          "loot": {
+            "patent_drafts":  {"name": "Brouillons de brevets"},
+            "licensing_terms":  {"name": "Conditions de licence"},
+            "ciphered_prior_art": {"name": "Art antérieur chiffré"},
+            "lawyer_memos":  {"name": "Mémos juridiques"},
+            "tech_transfer":    {"name": "Dossiers tech transfer"}
+          }
+        },
+        "ax_core": {
+          "name": "Bio-Nexus",
+          "loot": {
+            "biocode_seed":  {"name": "Seed biocode"},
+            "implant_firmware":  {"name": "FW implants"},
+            "wetware_maps": {"name": "Plans wetware"},
+            "trial_keyring":  {"name": "Trousseau essais"},
+            "xenograft_data":    {"name": "Données xénogreffes"}
+          }
+        }
+      }
+    },
     "scan": "Scanner",
     "hack": "Pirater",
     "fortified": "Fortifié L{lvl}"

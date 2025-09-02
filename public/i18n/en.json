@@ -73,88 +73,88 @@
       "server": {
         "grid01": {
           "name": "Energy Node S-12",
-          "loot": [
-            {"energy_readouts":  {"name": "Network Readings"}},
-            {"smart_meter_keys":  {"name": "Smart Meter Keys"}},
-            {"substation_layout": {"name": "Substation Layout"}},
-            {"grid_credentials":  {"name": "Grid Credentials"}},
-            {"load_forecasts":    {"name": "Load Forecasts"}}
-          ]
+          "loot": {
+            "energy_readouts":  {"name": "Network Readings"},
+            "smart_meter_keys":  {"name": "Smart Meter Keys"},
+            "substation_layout": {"name": "Substation Layout"},
+            "grid_credentials":  {"name": "Grid Credentials"},
+            "load_forecasts":    {"name": "Load Forecasts"}
+          }
         },
         "traffic01": {
           "name": "Traffic Control L3",
-          "loot": [
-            {"signal_algos":  {"name": "Signal Algorithms"}},
-            {"greenwave_profiles":  {"name": "Greenwave Profiles"}},
-            {"cam_plate_cache": {"name": "LPR Plate Cache"}},
-            {"ticket_void_token":  {"name": "Ticket Void Tokens"}},
-            {"drone_route_map":    {"name": "Urban Drone Routes"}}
-          ]
+          "loot": {
+            "signal_algos":  {"name": "Signal Algorithms"},
+            "greenwave_profiles":  {"name": "Greenwave Profiles"},
+            "cam_plate_cache": {"name": "LPR Plate Cache"},
+            "ticket_void_token":  {"name": "Ticket Void Tokens"},
+            "drone_route_map":    {"name": "Urban Drone Routes"}
+          }
         },
         "registry01": {
             "name": "Citizen Registry",
-            "loot": [
-            {"citizen_hashes":  {"name": "Biometric Hashes"}},
-            {"synthetic_ids":  {"name": "Synthetic IDs"}},
-            {"addr_histories": {"name": "Address Histories"}},
-            {"birth_records":  {"name": "Birth Records"}},
-            {"taxpayer_tokens":    {"name": "Taxpayer Tokens"}}
-          ]
+            "loot": {
+              "citizen_hashes":  {"name": "Biometric Hashes"},
+              "synthetic_ids":  {"name": "Synthetic IDs"},
+              "addr_histories": {"name": "Address Histories"},
+              "birth_records":  {"name": "Birth Records"},
+              "taxpayer_tokens":    {"name": "Taxpayer Tokens"}
+            }
         },
         "metro01": {
           "name": "Métro — Dispatch",
-          "loot": [
-            {"metro_access_cards":  {"name": "Access Cards"}},
-            {"maintenance_windows":  {"name": "Maintenance Windows"}},
-            {"turnstile_keys": {"name": "Turnstile Keys"}},
-            {"route_timings":  {"name": "Line Timings"}},
-            {"control_room_codes":    {"name": "Control Room Codes"}}
-          ]
+          "loot": {
+            "metro_access_cards":  {"name": "Access Cards"},
+            "maintenance_windows":  {"name": "Maintenance Windows"},
+            "turnstile_keys": {"name": "Turnstile Keys"},
+            "route_timings":  {"name": "Line Timings"},
+            "control_room_codes":    {"name": "Control Room Codes"}
+          }
         }
       }
     },
-      "neongate": {
+    "neongate": {
       "title": "NeonGate Industries",
       "server": {
         "ng_gate": {
           "name": "Perimeter Gateway",
-          "loot": [
-        {"trial_codes":  {"name": "Trial Codes"}},
-        {"whitelist_frag":  {"name": "Whitelist Fragments"}},
-        {"otp_seed": {"name": "Disposable OTP Seeds"}},
-        {"honeypot_sigs":  {"name": "Honeypot Signatures"}},
-        {"vpn_creds_temp":    {"name": "Temporary VPN Access"}}
-          ]
+          "loot": {
+            "trial_codes":  {"name": "Trial Codes"},
+            "whitelist_frag":  {"name": "Whitelist Fragments"},
+            "otp_seed": {"name": "Disposable OTP Seeds"},
+            "honeypot_sigs":  {"name": "Honeypot Signatures"},
+            "vpn_creds_temp":    {"name": "Temporary VPN Access"}
+          }
         },
         "ng_rnd": {
           "name": "R&D ProtoLab",
-          "loot": [
-        {"proto_cad":  {"name": "Proto CAD Files"}},
-        {"lab_notes":  {"name": "Lab Notes"}},
-        {"sim_models": {"name": "Simulation Models"}},
-        {"benchmarks":  {"name": "Internal Benchmarks"}},
-        {"proto_blueprints":    {"name": "Proto Blueprints"}}
-          ]
+          "loot": {
+            "proto_cad":  {"name": "Proto CAD Files"},
+            "lab_notes":  {"name": "Lab Notes"},
+            "sim_models": {"name": "Simulation Models"},
+            "benchmarks":  {"name": "Internal Benchmarks"},
+            "proto_blueprints":    {"name": "Proto Blueprints"}
+          }
         },
         "ng_fin": {
           "name": "Citizen Ledgers",
-          "loot": [
-            {"multisig_shard":  {"name": "Multisig Fragment"}},
-            {"cold_wallet_index":  {"name": "Cold Wallet Index"}},
-            {"invoice_ledgers": {"name": "Invoice Ledgers"}},
-            {"aml_flags":  {"name": "Internal AML Flags"}},
-            {"premium_client_list":    {"name": "Premium Client List"}}
-          ]
+          "loot": {
+            "multisig_shard":  {"name": "Multisig Fragment"},
+            "cold_wallet_index":  {"name": "Cold Wallet Index"},
+            "invoice_ledgers": {"name": "Invoice Ledgers"},
+            "aml_flags":  {"name": "Internal AML Flags"},
+            "premium_client_list":    {"name": "Premium Client List"}
+          }
         },
         "ng_core": {
           "name": "Q-Sec Core",
-          "loot": [
-            {"qshard":  {"name": "Quantum Shard"}},
-            {"firmware_keys":  {"name": "Low-level Firmware Keys"}},
-            {"sec_arch_docs": {"name": "Security Architecture Docs"}},
-            {"priv_cert_chain":  {"name": "Private Certificate Chain"}},
-            {"zero_day_notes":    {"name": "Internal Zero-day Notes"}}
-          ]
+          "loot": {
+            "qshard":  {"name": "Quantum Shard"},
+            "firmware_keys":  {"name": "Low-level Firmware Keys"},
+            "sec_arch_docs": {"name": "Security Architecture Docs"},
+            "priv_cert_chain":  {"name": "Private Certificate Chain"},
+            "zero_day_notes":    {"name": "Internal Zero-day Notes"}
+          }
         }
       }
     },
@@ -163,43 +163,88 @@
       "server": {
         "bs_gate": {
             "name": "Security Portal",
-            "loot": [
-            {"sso_tokens":  {"name": "SSO Tokens"}},
-            {"mfa_backup_codes":  {"name": "MFA Backup Codes"}},
-            {"vpn_cfg": {"name": "VPN Configuration"}},
-            {"revoked_list":  {"name": "Revocation Lists"}},
-            {"audit_badges":    {"name": "Audit Badges"}}
-          ]
+            "loot": {
+              "sso_tokens":  {"name": "SSO Tokens"},
+              "mfa_backup_codes":  {"name": "MFA Backup Codes"},
+              "vpn_cfg": {"name": "VPN Configuration"},
+              "revoked_list":  {"name": "Revocation Lists"},
+              "audit_badges":    {"name": "Audit Badges"}
+          }
         },
         "bs_logs": {
           "name": "SIEM & Logs",
-          "loot": [
-            {"siem_dumps":  {"name": "SIEM Dumps"}},
-            {"ioc_packs":  {"name": "IOC Packs"}},
-            {"netflow_spans": {"name": "NetFlow Frames"}},
-            {"alert_rules":  {"name": "Alert Rules"}},
-            {"log_forgery_kit":    {"name": "Log Forgery Kits"}}
-          ]
+          "loot": {
+            "siem_dumps":  {"name": "SIEM Dumps"},
+            "ioc_packs":  {"name": "IOC Packs"},
+            "netflow_spans": {"name": "NetFlow Frames"},
+            "alert_rules":  {"name": "Alert Rules"},
+            "log_forgery_kit":    {"name": "Log Forgery Kits"}
+          }
         },
         "bs_ops": {
           "name": "Ops SOC",
-          "loot": [
-            {"soc_playbooks":  {"name": "SOC Playbooks"}},
-            {"ops_backdoor":  {"name": "SOC Backdoor"}},
-            {"pager_rotas": {"name": "On-call Rotas"}},
-            {"ir_reports":  {"name": "Internal IR Reports"}},
-            {"c2_endpoints":    {"name": "C2 Endpoints"}}
-          ]
+          "loot": {
+            "soc_playbooks":  {"name": "SOC Playbooks"},
+            "ops_backdoor":  {"name": "SOC Backdoor"},
+            "pager_rotas": {"name": "On-call Rotas"},
+            "ir_reports":  {"name": "Internal IR Reports"},
+            "c2_endpoints":    {"name": "C2 Endpoints"}
+          }
         },
         "bs_core": {
             "name": "Cerberus Core",
-            "loot": [
-            {"cerberus_master":  {"name": "Cerberus Master Key"}},
-            {"root_of_trust":  {"name": "Root of Trust Anchors"}},
-            {"sensor_signers": {"name": "Sensor Signers"}},
-            {"vault_maps":  {"name": "HSM Vault Maps"}},
-            {"redteam_artifacts":    {"name": "RedTeam Artifacts"}}
-          ]
+            "loot": {
+              "cerberus_master":  {"name": "Cerberus Master Key"},
+              "root_of_trust":  {"name": "Root of Trust Anchors"},
+              "sensor_signers": {"name": "Sensor Signers"},
+              "vault_maps":  {"name": "HSM Vault Maps"},
+              "redteam_artifacts":    {"name": "RedTeam Artifacts"}
+            }
+        }
+      }
+    },
+     "axiom": {
+      "title": "Axiom Bioware",
+      "server": {
+        "ax_trials": {
+          "name": "Clinical Trials",
+          "loot": {
+            "trial_records":  {"name": "Trial Records"},
+            "adverse_events":  {"name": "Adverse Events"},
+            "placebo_batches": {"name": "Placebo Batches"},
+            "patient_aliases":  {"name": "Patient Aliases"},
+            "drug_stability":    {"name": "Drug Stability"}
+          }
+        },
+        "ax_gen": {
+          "name": "Genetics",
+          "loot": {
+            "gene_synth":  {"name": "Synth Genes"},
+            "crispr_guides":  {"name": "CRISPR Guides"},
+            "cell_line_maps": {"name": "Cell Line Maps"},
+            "biohazard_permits":  {"name": "Biohazard Permits"},
+            "ethics_waivers":    {"name": "Ethics Waivers"}
+          }
+        },
+        "ax_ip": {
+          "name": "Intellectual Property",
+          "loot": {
+            "patent_drafts":  {"name": "Patent Drafts"},
+            "licensing_terms":  {"name": "Licensing Terms"},
+            "ciphered_prior_art": {"name": "Ciphered Prior Art"},
+            "lawyer_memos":  {"name": "Lawyer Memos"},
+            "tech_transfer":    {"name": "Tech Transfer Files"}
+          }
+        },
+        "ax_core": {
+          "name": "Bio-Nexus",
+          "loot": {
+            "biocode_seed":  {"name": "Biocode Seed"},
+            "implant_firmware":  {"name": "Implant Firmware"},
+            "wetware_maps": {"name": "Wetware Maps"},
+            "trial_keyring":  {"name": "Trial Keyring"},
+            "xenograft_data":    {"name": "Xenograft Data"}
+          }
         }
       }
     },
