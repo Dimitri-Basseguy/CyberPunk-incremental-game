@@ -1113,7 +1113,7 @@ function eventMeta(e){
     if (corp) who = ' — ' + corp.name;
   }
   if (e.type === 'lockout') {
-    return { name: 'Surcharge de chaleur — 🔒 verrou', icon: '🔥' };
+    return { name: `${t('logs.heat_overload_text')}`, icon: '🔥' };
   }
   if (e.type === 'trace') {
     const L = e.level || 1;
@@ -1130,7 +1130,7 @@ function eventMeta(e){
           who2 = ` — [corpo inconnue: ${e.corp}]`;
         }
       } else {
-        who2 = ' — Réseau municipal';
+        who2 = `${t('logs.municipal_network_text')}`;
       }
       return { name: `${t('ui.activ_tracer')}${L}${who2}`, icon: '🎯' };
   }
@@ -1149,7 +1149,7 @@ function renderEventTicker(){
   if (!state.events.length){
     const p = document.createElement('p');
     p.className = 'text-slate-400 text-sm';
-    p.textContent = '— Aucun événement en cours —';
+    p.textContent = `${t('logs.no_active_events_text')}`;
     root.appendChild(p);
     return;
   }

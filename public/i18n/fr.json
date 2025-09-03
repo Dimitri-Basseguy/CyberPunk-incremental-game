@@ -60,7 +60,9 @@
     "abandoned_mission_text": "Mission abandonnée",
     "completed_mission_text": "Mission accomplie:",
     "upgrade_unlocked_text": "Upgrade débloqué:",
-    "save_text": "Sauvegardé"
+    "save_text": "Sauvegardé",
+    "municipal_network_text": " — Réseau municipal",
+    "no_active_events_text": "— Aucun événement en cours —"
   },
   "missions": {
     "title" : "Fixers — Contrats corpos",

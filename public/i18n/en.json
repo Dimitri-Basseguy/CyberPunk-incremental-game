@@ -62,7 +62,9 @@
     "chain_finish":"Chain finished — all missions completed!",
     "upgrade_unlocked_text": "Upgrade unlocked:",
     "research_completed_text": "Research completed:",
-    "save_text": "Saved"
+    "save_text": "Saved",
+    "municipal_network_text": " — Municipal Network",
+    "no_active_events_text": "— No active events —"
   },
   "missions": {
     "title" : "Fixers — Corpo Contracts",
