@@ -33,7 +33,12 @@ async function loadDict(lang){
     I18N.lang = lang;
   }
 }
-
+/**
+ * Traduire une clé i18n en fonction de la langue active
+ * @param {*} key 
+ * @param {*} vars 
+ * @returns 
+ */
 function t(key, vars={}){
   let cur = I18N.dict;
   for(const part of key.split('.')) cur = cur?.[part];
@@ -652,7 +657,20 @@ function addLog(msg){
 
 function pushEvent(ev, logMsg){
   state.events.push(ev);
-  if (logMsg) addLog(logMsg);
+  if (logMsg) {
+    // Si le logMsg ressemble à une clé d'événement, on le traduit
+    if (logMsg.startsWith('events.')) {
+      // On tente de passer le nom de la corpo si présent dans l'événement
+      let corpName = '';
+      if (ev.corp) {
+        const corp = (window.TARGETS||[]).find(t => t.id === ev.corp);
+        if (corp) corpName = corp.name;
+      }
+      addLog(t(logMsg, { corp: corpName }));
+    } else {
+      addLog(t(logMsg));
+    }
+  }
   // force un refresh immédiat du ticker pour éviter le libellé générique
   if (typeof renderEventTicker === 'function') renderEventTicker();
 }
@@ -823,7 +841,7 @@ function maybeRetaliation(target, server, lastCredGain){
     state.heat = Math.min(heatCap, state.heat + heat);
     state.creds = Math.max(0, state.creds - credLoss);
     state.rep   = Math.max(0, state.rep   - repLoss);
-    console.log(t(target.name));
+    
     addLog(`⚠️ ${t('logs.retaliation_text')}: <b>${target.name}</b> — +${heat}% ${t('logs.heat_text')}, -${credLoss}$, -${repLoss} Rep <span class="text-slate-400 text-xs">(p≈${Math.round(p*100)}% • ${attempts} ${t('logs.attempts_text')}/${RETALIATION.pressureWindowMs/60000}min)</span>`);
   }
 }
@@ -1082,7 +1100,7 @@ function eventMeta(e){
     : e.type==='bounty' ? 'Prime temporaire'
     : 'Événement');
 
-  const name = d?.name || nameFallback;
+  const name = d?.nameKey ? t(d.nameKey) : nameFallback;
   const icon = d?.icon || (e.type==='audit' ? '📊'
                      : e.type==='city_sweep' ? '🚨'
                      : e.type==='bounty' ? '💰'
@@ -1100,13 +1118,21 @@ function eventMeta(e){
   if (e.type === 'trace') {
     const L = e.level || 1;
     let who2 = '';
-    if (e.corp){
-      const corp = (window.TARGETS||[]).find(t=>t.id===e.corp);
-      if (corp) who2 = ' — ' + corp.name;
-    } else {
-      who2 = ' — Réseau municipal';
-    }
-    return { name: `Traceur actif L${L}${who2}`, icon: '🎯' };
+      if (e.corp) {
+        const corp = (window.TARGETS||[]).find(t => t.id === e.corp);
+        
+        // Si la corpo du traceur est la même que la cible active, on simplifie le message
+        if (corp && window.CURRENT_TARGET && corp.id === window.CURRENT_TARGET.id) {
+          who2 = '';
+        } else if (corp) {
+          who2 = ' — ' + corp.name;
+        } else {
+          who2 = ` — [corpo inconnue: ${e.corp}]`;
+        }
+      } else {
+        who2 = ' — Réseau municipal';
+      }
+      return { name: `${t('ui.activ_tracer')}${L}${who2}`, icon: '🎯' };
   }
   return { name: name + who, icon };
 }
@@ -1163,6 +1189,10 @@ function tickEventTicker(){
     renderEventTicker();
     return;
   }
+    // Forcer le rafraîchissement du ticker à chaque tick si des événements sont actifs
+    if (state.events.length) {
+      renderEventTicker();
+    }
 
   const now = Date.now();
   let needsRerender = false;
@@ -1540,14 +1570,14 @@ function spawnSecurityEvent(){
       ev.corp = c.id;
       msg = (chosen.log && chosen.log.corp)
         ? chosen.log.corp.replace('{corp}', c.name)
-        : `Événement ${chosen.name} chez ${c.name}`;
+        : `Événement ${t(chosen.nameKey)} chez ${c.name}`;
     } else {
-      msg = `Événement ${chosen.name}`;
+      msg = `Événement ${t(chosen.nameKey)}`;
     }
   } else {
     msg = (chosen.log && chosen.log.default)
       ? chosen.log.default
-      : `Événement ${chosen.name}`;
+      : `Événement ${t(chosen.nameKey)}`;
   }
 
   pushEvent(ev, msg);

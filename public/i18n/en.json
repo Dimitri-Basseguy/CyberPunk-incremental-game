@@ -8,7 +8,9 @@
     "accept_chain": "Accept chain",
     "abandon": "Abandon",
     "city": "— Metro",
-    "load": "Load"
+    "load": "Load",
+    "activ_tracer": "Active tracer L",
+    "active_events": "Active events"
   },
   "inc": {
     "generators": "Generators",
@@ -334,5 +336,21 @@
     "scan": "Scan",
     "hack": "Hack",
     "fortified": "Hardened L{lvl}"
+  },
+  "events": {
+    "audit": {"name": "Security Audit", "log": {"corp": "📊 Security audit at {corp} — ICE reinforced (+10) for 30s"}},
+    "city_sweep": {"name": "Municipal Network Sweep", "log": {"default": "🚨 Municipal network sweep — heat on failure +6 for 25s"}},
+    "bounty": {"name": "Temporary Bounty", "log": {"corp": "💰 Temporary bounty on {corp} — rewards x1.25, +2 heat per attempt, 30s"}},
+    "trace_spike": {"name": "Trace Spike", "log": {"default": "📡 Trace spike — chances -8% for 20s"}},
+    "quiet_hours": {"name": "Quiet Hours", "log": {"default": "🌙 Quiet hours — chances +5% for 20s"}},
+    "system_maintenance": {"name": "System Maintenance", "log": {"default": "🛠️ System maintenance — chances +6% for 25s"}},
+    "corp_coffee_break": {"name": "Coffee Break", "log": {"corp": "☕ Coffee break at {corp} — chances +6% for 18s"}},
+    "bug_bounty_window": {"name": "Bug Bounty Window", "log": {"corp": "💡 Bug bounty at {corp} — rewards ×1.2, chances +2% (30s)"}},
+    "traffic_surge": {"name": "Traffic Surge", "log": {"default": "📈 Traffic surge — +1 heat/attempt, +3 heat on failure, rewards ×1.1 (30s)"}},
+    "firewall_reconfig": {"name": "Firewall Reconfig", "log": {"corp": "🧱 Firewall reconfig at {corp} — ICE +6 (25s)"}},
+    "red_team_drill": {"name": "Red Team Drill", "log": {"corp": "🔴 Red Team drill at {corp} — ICE +15, chances −5% (35s)"}},
+    "sensor_sweep": {"name": "Sensor Sweep", "log": {"default": "📡 Sensor sweep — heat on failure +10 (22s)"}},
+    "lockdown_protocol": {"name": "Lockdown Protocol", "log": {"default": "🚔 Lockdown — ICE +12, chances −6%, +2 heat/attempt (40s)"}},
+    "zero_day_buzz": {"name": "Zero-Day Buzz", "log": {"default": "⚠️ Zero-Day buzz — rewards ×1.35, +3 heat/attempt, chances −2% (30s)"}}
   }
 }

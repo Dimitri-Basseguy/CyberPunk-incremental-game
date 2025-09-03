@@ -1,7 +1,7 @@
 [
   {
     "id": "audit",
-    "name": "Audit sécurité",
+    "nameKey": "events.audit.name",
     "scope": "corp",
     "duration_ms": 30000,
     "weight": 4,
@@ -9,12 +9,12 @@
       "iceBonus": 10
     },
     "log": {
-      "corp": "📊 Audit sécurité chez {corp} — GLACE renforcée (+10) pendant 30s"
+      "corp": "events.audit.log.corp"
     }
   },
   {
     "id": "city_sweep",
-    "name": "Sweep réseau municipal",
+    "nameKey": "events.city_sweep.name",
     "scope": "city",
     "duration_ms": 25000,
     "weight": 3,
@@ -22,12 +22,12 @@
       "heatFailAdd": 6
     },
     "log": {
-      "default": "🚨 Sweep réseau municipal — chaleur en cas d’échec +6 pendant 25s"
+      "default": "events.city_sweep.log.default"
     }
   },
   {
     "id": "bounty",
-    "name": "Prime temporaire",
+    "nameKey": "events.bounty.name",
     "scope": "corp",
     "duration_ms": 30000,
     "weight": 3,
@@ -36,12 +36,12 @@
       "heatAttemptAdd": 2
     },
     "log": {
-      "corp": "💰 Prime temporaire sur {corp} — récompenses x1.25, +2 chaleur par tentative, 30s"
+      "corp": "events.bounty.log.corp"
     }
   },
   {
     "id": "trace_spike",
-    "name": "Spike de traçage",
+    "nameKey": "events.trace_spike.name",
     "scope": "any",
     "duration_ms": 20000,
     "weight": 2,
@@ -49,97 +49,97 @@
       "chanceAdd": -0.08
     },
     "log": {
-      "default": "📡 Spike de traçage — chances -8% pendant 20s"
+      "default": "events.trace_spike.log.default"
     }
   },
   {
     "id": "quiet_hours",
-    "name": "Heures creuses",
+    "nameKey": "events.quiet_hours.name",
     "scope": "any",
     "duration_ms": 20000,
     "weight": 5,
     "effects": { "chanceAdd": 0.05 },
-    "log": { "default": "🌙 Heures creuses — chances +5% pendant 20s" }
+    "log": { "default": "events.quiet_hours.log.default" }
   },
   {
     "id": "system_maintenance",
-    "name": "Maintenance planifiée",
+    "nameKey": "events.system_maintenance.name",
     "scope": "city",
     "duration_ms": 25000,
     "weight": 4,
     "effects": { "chanceAdd": 0.06 },
-    "log": { "default": "🛠️ Maintenance planifiée — chances +6% sur le réseau municipal (25s)" }
+    "log": { "default": "events.system_maintenance.log.default" }
   },
   {
     "id": "corp_coffee_break",
-    "name": "Pause caf’",
+    "nameKey": "events.corp_coffee_break.name",
     "scope": "corp",
     "duration_ms": 18000,
     "weight": 4,
     "effects": { "chanceAdd": 0.06 },
-    "log": { "corp": "☕ Pause caf’ chez {corp} — chances +6% (18s)" }
+    "log": { "corp": "events.corp_coffee_break.log.corp" }
   },
   {
     "id": "bug_bounty_window",
-    "name": "Fenêtre bug bounty",
+    "nameKey": "events.bug_bounty_window.name",
     "scope": "corp",
     "duration_ms": 30000,
     "weight": 3,
     "effects": { "rewardMul": 1.2, "chanceAdd": 0.02 },
-    "log": { "corp": "💡 Bug bounty chez {corp} — récompenses ×1.2, chances +2% (30s)" }
+    "log": { "corp": "events.bug_bounty_window.log.corp" }
   },
   {
     "id": "traffic_surge",
-    "name": "Pic de trafic",
+    "nameKey": "events.traffic_surge.name",
     "scope": "city",
     "duration_ms": 30000,
     "weight": 3,
     "effects": { "heatAttemptAdd": 1, "heatFailAdd": 3, "rewardMul": 1.1 },
-    "log": { "default": "📈 Pic de trafic — +1 chaleur/tentative, +3 chaleur échec, récompenses ×1.1 (30s)" }
+    "log": { "default": "events.traffic_surge.log.default" }
   },
   {
     "id": "firewall_reconfig",
-    "name": "Reconfig pare-feu",
+    "nameKey": "events.firewall_reconfig.name",
     "scope": "corp",
     "duration_ms": 25000,
     "weight": 2,
     "effects": { "iceBonus": 6 },
-    "log": { "corp": "🧱 Reconfig pare-feu chez {corp} — GLACE +6 (25s)" }
+    "log": { "corp": "events.firewall_reconfig.log.corp" }
   },
   {
     "id": "red_team_drill",
-    "name": "Exercice Red Team",
+    "nameKey": "events.red_team_drill.name",
     "scope": "corp",
     "duration_ms": 35000,
     "weight": 2,
     "effects": { "iceBonus": 15, "chanceAdd": -0.05 },
-    "log": { "corp": "🔴 Exercice Red Team chez {corp} — GLACE +15, chances −5% (35s)" }
+    "log": { "corp": "events.red_team_drill.log.corp" }
   },
   {
     "id": "sensor_sweep",
-    "name": "Balayage capteurs",
+    "nameKey": "events.sensor_sweep.name",
     "scope": "any",
     "duration_ms": 22000,
     "weight": 3,
     "effects": { "heatFailAdd": 10 },
-    "log": { "default": "📡 Balayage capteurs — chaleur en cas d’échec +10 (22s)" }
+    "log": { "default": "events.sensor_sweep.log.default" }
   },
   {
     "id": "lockdown_protocol",
-    "name": "Protocole Lockdown",
+    "nameKey": "events.lockdown_protocol.name",
     "scope": "city",
     "duration_ms": 40000,
     "weight": 1,
     "effects": { "iceBonus": 12, "chanceAdd": -0.06, "heatAttemptAdd": 2 },
-    "log": { "default": "🚔 Lockdown — GLACE +12, chances −6%, +2 chaleur/tentative (40s)" }
+    "log": { "default": "events.lockdown_protocol.log.default" }
   },
   {
     "id": "zero_day_buzz",
-    "name": "Agitation Zero-Day",
+    "nameKey": "events.zero_day_buzz.name",
     "scope": "any",
     "duration_ms": 30000,
     "weight": 2,
     "effects": { "rewardMul": 1.35, "heatAttemptAdd": 3, "chanceAdd": -0.02 },
-    "log": { "default": "⚠️ Agitation Zero-Day — récompenses ×1.35, +3 chaleur/tentative, chances −2% (30s)" }
+    "log": { "default": "events.zero_day_buzz.log.default" }
   }
 ]
