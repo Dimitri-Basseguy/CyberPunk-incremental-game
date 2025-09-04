@@ -418,5 +418,11 @@
       "tool_shadowmask":  "Shadowmask",
       "tool_adrenaline_boost":  "Neural Adrenaline Boost"
     }
+  },
+  "skills": {
+    "netrun": {"desc": "Your mastery of intrusions and deck OS. Major impact on success (weight ×8 in calculation). Applies to scan and hack. Small gains possible after success (+0.02)."},
+    "decrypt": {"desc": "Breaking encryptions, dictionary attacks, heuristics. Strong impact on success (weight ×7). Applies to scan and hack. Slight gains after success (+0.015)."},
+    "stealth": {"desc": "Network stealth, obfuscation, and signature reduction. Improves success (weight ×5)."},
+    "speed": {"desc": "Execution speed, macros, and responsiveness. Improves success (weight ×4). Does not affect latency by default."}
   }
 }

@@ -1833,7 +1833,9 @@ function renderSkills(){
     const gear = Number(g[id]||0);
     const total = baseVal + gear;
 
-    const infoLines = (meta.desc||[]).map(l=>`<li>${l}</li>`).join('');
+    let descArr = Array.isArray(meta.desc) ? meta.desc : t(meta.desc);
+    if (!Array.isArray(descArr)) descArr = [descArr];
+    const infoLines = descArr.map(l=>`<li>${l}</li>`).join('');
 
     const card = document.createElement('div');
     card.className = 'relative rounded-xl border border-white/10 bg-white/5 p-3 overflow-visible min-h-[88px]';

@@ -9,12 +9,7 @@
       "start": 1,
       "gainOnSuccess": 0.02,
       "gainChance": 0.5,
-      "desc": [
-        "Ta maîtrise des intrusions et de l’OS du deck.",
-        "Impact majeur sur la réussite (poids ×8 dans le calcul).",
-        "S’applique au scan et au piratage.",
-        "Petits gains après succès possibles (+0.02)."
-      ]
+      "desc": "skills.netrun.desc"
     },
     {
       "id": "decrypt",
@@ -24,12 +19,7 @@
       "start": 1,
       "gainOnSuccess": 0.015,
       "gainChance": 0.5,
-      "desc": [
-        "Cassage de chiffrements, attaques par dictionnaire, heuristiques.",
-        "Impact fort sur la réussite (poids ×7).",
-        "S’applique au scan et au piratage.",
-        "Légers gains après succès (+0.015)."
-      ]
+      "desc": "skills.decrypt.desc"
     },
     {
       "id": "stealth",
@@ -39,10 +29,7 @@
       "start": 1,
       "gainOnSuccess": 0,
       "gainChance": 0.0,
-      "desc": [
-        "Furtivité réseau, obfuscation et réduction des signatures.",
-        "Améliore la réussite (poids ×5)."
-      ]
+      "desc": "skills.stealth.desc"
     },
     {
       "id": "speed",
@@ -52,11 +39,7 @@
       "start": 1,
       "gainOnSuccess": 0.01,
       "gainChance": 0.5,
-      "desc": [
-        "Vitesse d’exécution, macros et réactivité.",
-        "Améliore la réussite (poids ×4).",
-        "N’influe pas la latence par défaut (à moins d’un patch dédié)."
-      ]
+      "desc": "skills.speed.desc"
     }
   ]
 }
