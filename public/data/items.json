@@ -3,7 +3,7 @@
   "decks": [
     {
       "id": "deck_mk1",
-      "name": "Cyberdeck Mk.I",
+      "name": "items.decks.deck_mk1",
       "image": "./assets/imgs/deck-mk-I.png",
       "slots": 1,
       "cpu": 4,
@@ -15,7 +15,7 @@
     },
     {
       "id": "deck_mk2",
-      "name": "Cyberdeck Mk.II",
+      "name": "items.decks.deck_mk2",
       "image": "./assets/imgs/deck-mk-II.png",
       "slots": 2,
       "cpu": 7,
@@ -30,7 +30,7 @@
     },
     {
       "id": "deck_mk3",
-      "name": "Cyberdeck Mk.III",
+      "name": "items.decks.deck_mk3",
       "image": "./assets/imgs/deck-mk-III.png",
       "slots": 3,
       "cpu": 10,
@@ -47,7 +47,7 @@
   "consoles": [
     {
       "id": "console_neo",
-      "name": "Console NEO-Link",
+      "name": "items.consoles.console_neo",
       "image": "./assets/imgs/console_neo.png",
       "slots": 1,
       "cpu": 2,
@@ -58,7 +58,7 @@
     },
     {
       "id": "console_quantum",
-      "name": "Console Q-Nexus",
+      "name": "items.consoles.console_quantum",
       "image": "./assets/imgs/console_quantum.png",
       "slots": 2,
       "cpu": 5,
@@ -75,7 +75,7 @@
   "implants": [
     {
       "id": "implant_neural",
-      "name": "Implant neural µWeave",
+      "name": "items.implants.implant_neural",
       "image": "./assets/imgs/implant-icon.webp",
       "cost": 220,
       "bonuses": {
@@ -84,7 +84,7 @@
     },
     {
       "id": "implant_cortex",
-      "name": "Cortex coproc.",
+      "name": "items.implants.implant_cortex",
       "image": "./assets/imgs/implant-icon.webp",
       "cost": 760,
       "requires": [
@@ -99,7 +99,7 @@
   "mods": [
     {
       "id": "mod_cooling",
-      "name": "Mod refroidissement",
+      "name": "items.mods.mod_cooling",
       "image": "./assets/imgs/mods-icon.webp",
       "cost": 140,
       "bonuses": {
@@ -108,7 +108,7 @@
     },
     {
       "id": "mod_stealth",
-      "name": "Mod camo-réseau",
+      "name": "items.mods.mod_stealth",
       "image": "./assets/imgs/mods-icon.webp",
       "cost": 260,
       "bonuses": {
@@ -117,7 +117,7 @@
     },
     {
       "id": "mod_overclock",
-      "name": "Mod overclock",
+      "name": "items.mods.mod_overclock",
       "image": "./assets/imgs/mods-icon.webp",
       "cost": 420,
       "bonuses": {
@@ -126,7 +126,7 @@
     },
     {
       "id": "mod_qubit_decryptor",
-      "name": "Mod décrypteur Qubit",
+      "name": "items.mods.mod_qubit_decryptor",
       "image": "./assets/imgs/mods-icon.webp",
       "cost": 680,
       "bonuses": {
@@ -136,7 +136,7 @@
     },
     {
       "id": "mod_ghost_cloak",
-      "name": "Mod camouflage spectral",
+      "name": "items.mods.mod_ghost_cloak",
       "image": "./assets/imgs/mods-icon.webp",
       "cost": 560,
       "bonuses": {
@@ -145,7 +145,7 @@
     },
     {
       "id": "mod_synapse_tuner",
-      "name": "Mod amplificateur synaptique",
+      "name": "items.mods.mod_synapse_tuner",
       "image": "./assets/imgs/mods-icon.webp",
       "cost": 520,
       "bonuses": {
@@ -154,7 +154,7 @@
     },
     {
       "id": "mod_overclock_mk2",
-      "name": "Mod overclock Mk.II",
+      "name": "items.mods.mod_overclock_mk2",
       "image": "./assets/imgs/mods-icon.webp",
       "cost": 640,
       "bonuses": {
@@ -163,7 +163,7 @@
     },
     {
       "id": "mod_thermal_baffle",
-      "name": "Mod pare-chaleur",
+      "name": "items.mods.mod_thermal_baffle",
       "image": "./assets/imgs/mods-icon.webp",
       "cost": 480,
       "bonuses": {
@@ -174,7 +174,7 @@
   "tools": [
     {
       "id": "tool_sniffer",
-      "name": "Sniffer paquets",
+      "name": "items.tools.tool_sniffer",
       "image": "./assets/imgs/tools-icon.webp",
       "cost": 450,
       "bonuses": {
@@ -183,7 +183,7 @@
     },
     {
       "id": "tool_router",
-      "name": "Routeur furtif",
+      "name": "items.tools.tool_router",
       "image": "./assets/imgs/tools-icon.webp",
       "cost": 190,
       "bonuses": {
@@ -192,7 +192,7 @@
     },
     {
       "id": "tool_packet_injector",
-      "name": "Injecteur de paquets",
+      "name": "items.tools.tool_packet_injector",
       "image": "./assets/imgs/tools-icon.webp",
       "cost": 350,
       "bonuses": {
@@ -201,7 +201,7 @@
     },
     {
       "id": "tool_trace_scrubber",
-      "name": "Nettoyeur de trace",
+      "name": "items.tools.tool_trace_scrubber",
       "image": "./assets/imgs/tools-icon.webp",
       "cost": 320,
       "bonuses": {
@@ -210,7 +210,7 @@
     },
     {
       "id": "tool_proto_decrypt",
-      "name": "Décrypteur portable",
+      "name": "items.tools.tool_proto_decrypt",
       "image": "./assets/imgs/tools-icon.webp",
       "cost": 220,
       "bonuses": {
@@ -219,7 +219,7 @@
     },
     {
       "id": "tool_shadowmask",
-      "name": "Masque d'ombre",
+      "name": "items.tools.tool_shadowmask",
       "image": "./assets/imgs/tools-icon.webp",
       "cost": 220,
       "bonuses": {
@@ -228,7 +228,7 @@
     },
     {
       "id": "tool_adrenaline_boost",
-      "name": "Boost adrénaline neurale",
+      "name": "items.tools.tool_adrenaline_boost",
       "image": "./assets/imgs/tools-icon.webp",
       "cost": 280,
       "bonuses": {

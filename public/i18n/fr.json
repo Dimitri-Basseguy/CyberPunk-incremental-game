@@ -63,7 +63,9 @@
     "accepted_mission_text": "Mission acceptée",
     "abandoned_mission_text": "Mission abandonnée",
     "completed_mission_text": "Mission accomplie:",
+    "chain_finish":"Chaîne terminée — toutes les missions complétées !",
     "upgrade_unlocked_text": "Upgrade débloqué:",
+    "research_completed_text": "Recherche terminée:",
     "save_text": "Sauvegardé",
     "municipal_network_text": " — Réseau municipal",
     "no_active_events_text": "— Aucun événement en cours —"
@@ -381,6 +383,40 @@
       "sp_t3_parallel": {"name": "Parallélisme", "desc": "+1 slot programme"},
       "sp_t4_overclock": {"name": "Overclock stable", "desc": "Capacité CPU +2"},
       "sp_cap_hyper": {"name": "Hyperthread", "desc": "25% chance de tentative bonus"}
+    }
+  },
+  "items": {
+    "decks" : {
+      "deck_mk1":  "Cyberdeck Mk.I",
+      "deck_mk2":  "Cyberdeck Mk.II",
+      "deck_mk3":  "Cyberdeck Mk.III"
+    },
+    "consoles" : {
+      "console_neo":  "Console NEO-Link",
+      "console_quantum":  "Console Q-Nexus"
+    },
+    "implants" : {
+      "implant_neural":  "Implant neural µWeave",
+      "implant_cortex":  "Cortex coproc."
+    },
+    "mods" : {
+      "mod_cooling":  "Mod refroidissement",
+      "mod_stealth":  "Mod camo-réseau",
+      "mod_overclock":  "Mod overclock",
+      "mod_qubit_decryptor":  "Mod décrypteur Qubit",
+      "mod_ghost_cloak":  "Mod camouflage spectral",
+      "mod_synapse_tuner":  "Mod amplificateur synaptique",
+      "mod_overclock_mk2":  "Mod overclock Mk.II",
+      "mod_thermal_baffle":  "Mod pare-chaleur"
+    },
+    "tools" : {
+      "tool_sniffer":  "Sniffer paquets",
+      "tool_router":  "Routeur furtif",
+      "tool_packet_injector":  "Injecteur de paquets",
+      "tool_trace_scrubber":  "Nettoyeur de trace",
+      "tool_proto_decrypt":  "Décrypteur portable",
+      "tool_shadowmask":  "Masque d'ombre",
+      "tool_adrenaline_boost":  "Boost adrénaline neurale"
     }
   }
 }

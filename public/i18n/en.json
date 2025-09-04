@@ -64,7 +64,7 @@
     "abandoned_mission_text": "Mission abandoned",
     "completed_mission_text": "Mission completed:",
     "chain_finish":"Chain finished — all missions completed!",
-    "upgrade_unlocked_text": "Upgrade unlocked:",
+    "upgrade_unlocked_te@xt": "Upgrade unlocked:",
     "research_completed_text": "Research completed:",
     "save_text": "Saved",
     "municipal_network_text": " — Municipal Network",
@@ -383,6 +383,40 @@
       "sp_t3_parallel": {"name": "Parallelism", "desc": "+1 program slot"},
       "sp_t4_overclock": {"name": "Stable Overclock", "desc": "CPU capacity +2"},
       "sp_cap_hyper": {"name": "Hyperthread", "desc": "25% chance for bonus attempt"}
+    }
+  },
+  "items": {
+    "decks" : {
+      "deck_mk1":  "Cyberdeck Mk.I",
+      "deck_mk2":  "Cyberdeck Mk.II",
+      "deck_mk3":  "Cyberdeck Mk.III"
+    },
+    "consoles" : {
+      "console_neo":  "NEO-Link Console",
+      "console_quantum":  "Q-Nexus Console"
+    },
+    "implants" : {
+      "implant_neural":  "Neural µWeave Implant",
+      "implant_cortex":  "Cortex Coprocessor"
+    },
+    "mods" : {
+      "mod_cooling":  "Cooling Mod",
+      "mod_stealth":  "Network Camo Mod",
+      "mod_overclock":  "Overclock Mod",
+      "mod_qubit_decryptor":  "Qubit Decryptor Mod",
+      "mod_ghost_cloak":  "Spectral Cloak Mod",
+      "mod_synapse_tuner":  "Synapse Amplifier Mod",
+      "mod_overclock_mk2":  "Overclock Mod Mk.II",
+      "mod_thermal_baffle":  "Thermal Baffle Mod"
+    },
+    "tools" : {
+      "tool_sniffer":  "Packet Sniffer",
+      "tool_router":  "Stealth Router",
+      "tool_packet_injector":  "Packet Injector",
+      "tool_trace_scrubber":  "Trace Scrubber",
+      "tool_proto_decrypt":  "Portable Decryptor",
+      "tool_shadowmask":  "Shadowmask",
+      "tool_adrenaline_boost":  "Neural Adrenaline Boost"
     }
   }
 }

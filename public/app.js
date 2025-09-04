@@ -1470,7 +1470,7 @@ function buy(itemId){
   } else if(type==='tool'){
     state.gearInstalled.tools.push(it.id);
   }
-  addLog(`🛒 ${t('purchased_text')}: <b>${it.name}</b>`);
+  addLog(`🛒 ${t('logs.purchased_text')}: <b>${t(it.name)}</b>`);
   renderAll();
 }
 
@@ -1655,7 +1655,7 @@ function unlock(nodeId){
   const spCost = (node.sp||1);
   state.sp -= spCost;
   state.upgrades.add(node.id);
-  addLog(`🔧 ${t('logs.upgrade_unlocked_text')} <b>${node.name}</b> (${spCost} SP)`);
+  addLog(`🔧 ${t('logs.upgrade_unlocked_text')} <b>${t(node.name)}</b> (${spCost} SP)`);
   renderAll(); persist();
 }
 
@@ -2171,11 +2171,12 @@ function renderStore(){
       : (affordable ? BTN_SUCCESS : BTN_PRIMARY);
 
     const btnLabel = owned ? '✅' : (blocked ? 'Requis' : '💰');
+    console.log(it);
 
     card.innerHTML = `<div class="text-slate-400 text-sm">${type}</div>
       <div class="flex items-center justify-between">
-        <p>${it.name}</p>
-        ${it.image ? `<img src="${it.image}" alt="${it.name}"
+        <p>${t(it.name)}</p>
+        ${it.image ? `<img src="${it.image}" alt="${t(it.name)}"
              class="max-w-[40px] rounded ring-1 mx-2 ${imgRing}" data-itemimg="${it.id}">` : ''}
       </div>
       <div class="text-slate-400 text-sm">${bonuses||'—'}</div>
