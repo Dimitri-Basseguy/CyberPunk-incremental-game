@@ -95,7 +95,7 @@
       "id": "neongate",
       "name": "NeonGate Industries",
       "image": "./assets/imgs/neon-gate-logo.webp",
-      "kind": "corpo",
+      "kind": "corp",
       "servers": [
         {
           "id": "ng_gate",

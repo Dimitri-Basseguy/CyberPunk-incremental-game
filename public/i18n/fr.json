@@ -420,9 +420,9 @@
     }
   },
   "skills": {
-    "netrun": {"desc": "Ta maîtrise des intrusions et de l’OS du deck. Impact majeur sur la réussite (poids ×8 dans le calcul). S’applique au scan et au piratage. Petits gains après succès possibles (+0.02)."},
-    "decrypt": {"desc":  "Cassage de chiffrements, attaques par dictionnaire, heuristiques. Impact fort sur la réussite (poids ×7). S’applique au scan et au piratage. Légers gains après succès (+0.015)."},
-    "stealth": {"desc": "Furtivité réseau, obfuscation et réduction des signatures. Améliore la réussite (poids ×5)."},
-    "speed": {"desc": "Vitesse d’exécution, macros et réactivité. Améliore la réussite (poids ×4). N’influe pas la latence par défaut."}
+    "netrun": {"desc": "Ta maîtrise des intrusions et de l’OS du deck. Impact majeur sur la réussite (poids ×5 dans le calcul). S’applique au scan et au piratage. Petits gains après succès possibles (+0.02)."},
+    "decrypt": {"desc":  "Cassage de chiffrements, attaques par dictionnaire, heuristiques. Impact fort sur la réussite (poids ×4). S’applique au scan et au piratage. Légers gains après succès (+0.015)."},
+    "stealth": {"desc": "Furtivité réseau, obfuscation et réduction des signatures. Améliore la réussite (poids ×3)."},
+    "speed": {"desc": "Vitesse d’exécution, macros et réactivité. Améliore la réussite (poids ×2). N’influe pas la latence par défaut."}
   }
 }

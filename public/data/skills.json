@@ -4,7 +4,7 @@
     {
       "id": "netrun",
       "name": "Netrun",
-      "weight": 8,
+      "weight": 5,
       "gearWeight": 6,
       "start": 1,
       "gainOnSuccess": 0.02,
@@ -14,7 +14,7 @@
     {
       "id": "decrypt",
       "name": "Decrypt",
-      "weight": 7,
+      "weight": 4,
       "gearWeight": 5,
       "start": 1,
       "gainOnSuccess": 0.015,
@@ -24,7 +24,7 @@
     {
       "id": "stealth",
       "name": "Stealth",
-      "weight": 5,
+      "weight": 3,
       "gearWeight": 4,
       "start": 1,
       "gainOnSuccess": 0,
@@ -34,7 +34,7 @@
     {
       "id": "speed",
       "name": "Speed",
-      "weight": 4,
+      "weight": 2,
       "gearWeight": 3,
       "start": 1,
       "gainOnSuccess": 0.01,

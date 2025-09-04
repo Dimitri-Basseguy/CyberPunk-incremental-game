@@ -714,7 +714,7 @@ function maybeTraceOnScan(target){
       if(target.kind==='corp') ev.corp = target.id;
       state.events.push(ev);
     }
-
+    
     addLog(`🎯 ${t('logs.tracer_active_text')} <b>${t(target.name)}</b> — ${t('logs.level_text')} ${lvl}. ${t('logs.scan_risk_text')}.`);
     renderEventTicker?.();
 
@@ -1119,8 +1119,8 @@ function eventMeta(e){
     const L = e.level || 1;
     let who2 = '';
       if (e.corp) {
-        const corp = (window.TARGETS||[]).find(t => t.id === e.corp);
-        
+        const corp = (window.TARGETS||[]).find(target => target.id === e.corp);
+
         // Si la corpo du traceur est la même que la cible active, on simplifie le message
         if (corp && window.CURRENT_TARGET && corp.id === window.CURRENT_TARGET.id) {
           who2 = '';
@@ -2173,7 +2173,6 @@ function renderStore(){
       : (affordable ? BTN_SUCCESS : BTN_PRIMARY);
 
     const btnLabel = owned ? '✅' : (blocked ? 'Requis' : '💰');
-    console.log(it);
 
     card.innerHTML = `<div class="text-slate-400 text-sm">${type}</div>
       <div class="flex items-center justify-between">
