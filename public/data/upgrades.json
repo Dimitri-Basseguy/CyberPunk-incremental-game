@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "branches": {
     "stealth": {
-      "name": "Furtivité",
+      "name": "upgrades.stealth.name",
       "nodes": [
         {
           "id": "st_t1_shroud",
           "tier": 1,
-          "name": "Shroud I",
+          "name": "upgrades.stealth.st_t1_shroud.name",
           "sp": 1,
           "rp": 300,
-          "desc": "Chaleur en échec -10%",
+          "desc": "upgrades.stealth.st_t1_shroud.desc",
           "effect": {
             "heatFailMul": 0.9
           }
@@ -18,13 +18,13 @@
         {
           "id": "st_t2_ghost",
           "tier": 2,
-          "name": "Ghost Net",
+          "name": "upgrades.stealth.st_t2_ghost.name",
           "sp": 2,
           "rp": 600,
           "req": [
             "st_t1_shroud"
           ],
-          "desc": "Événements de sécu -15%",
+          "desc": "upgrades.stealth.st_t2_ghost.desc",
           "effect": {
             "eventProbMul": 0.85
           }
@@ -32,13 +32,13 @@
         {
           "id": "st_t3_cloaksync",
           "tier": 3,
-          "name": "CLOAK Sync",
+          "name": "upgrades.stealth.st_t3_cloaksync.name",
           "sp": 2,
           "rp": 900,
           "req": [
             "st_t2_ghost"
           ],
-          "desc": "CLOAK -10% chaleur supp.",
+          "desc": "upgrades.stealth.st_t3_cloaksync.desc",
           "effect": {
             "cloakExtraHeatMul": 0.9
           }
@@ -46,13 +46,13 @@
         {
           "id": "st_t4_traceevade",
           "tier": 4,
-          "name": "Trace Evade",
+          "name": "upgrades.stealth.st_t4_traceevade.name",
           "sp": 3,
           "rp": 1200,
           "req": [
             "st_t3_cloaksync"
           ],
-          "desc": "20% d’éviter la chaleur en échec",
+          "desc": "upgrades.stealth.st_t4_traceevade.desc",
           "effect": {
             "avoidHeatOnFailPct": 20
           }
@@ -60,13 +60,13 @@
         {
           "id": "st_cap_silentrunner",
           "tier": 5,
-          "name": "Silent Runner",
+          "name": "upgrades.stealth.st_cap_silentrunner.name",
           "sp": 3,
           "rp": 1600,
           "req": [
             "st_t4_traceevade"
           ],
-          "desc": "Lockout -30% & chaleur max -10 pts",
+          "desc": "upgrades.stealth.st_cap_silentrunner.desc",
           "effect": {
             "lockoutMul": 0.7,
             "heatCapMinus": 10
@@ -75,15 +75,15 @@
       ]
     },
     "decrypt": {
-      "name": "Décryptage",
+      "name": "upgrades.decrypt.name",
       "nodes": [
         {
           "id": "dc_t1_tables",
           "tier": 1,
-          "name": "Tables optimisées",
+          "name": "upgrades.decrypt.dc_t1_tables.name",
           "sp": 1,
           "rp": 400,
-          "desc": "+5% succès plat",
+          "desc": "upgrades.decrypt.dc_t1_tables.desc",
           "effect": {
             "successAdd": 0.05
           }
@@ -91,13 +91,13 @@
         {
           "id": "dc_t2_sidechannel",
           "tier": 2,
-          "name": "Canaux latéraux",
+          "name": "upgrades.decrypt.dc_t2_sidechannel.name",
           "sp": 2,
           "rp": 800,
           "req": [
             "dc_t1_tables"
           ],
-          "desc": "+10% crédits",
+          "desc": "upgrades.decrypt.dc_t2_sidechannel.desc",
           "effect": {
             "rewardMul": 1.1
           }
@@ -105,13 +105,13 @@
         {
           "id": "dc_t3_blackadapt",
           "tier": 3,
-          "name": "Anti-Noire/Adapt.",
+          "name": "upgrades.decrypt.dc_t3_blackadapt.name",
           "sp": 2,
           "rp": 1200,
           "req": [
             "dc_t2_sidechannel"
           ],
-          "desc": "+6% succès vs Noire/Adapt.",
+          "desc": "upgrades.decrypt.dc_t3_blackadapt.desc",
           "effect": {
             "vsBlackAdaptAdd": 0.06
           }
@@ -119,13 +119,13 @@
         {
           "id": "dc_t4_bypass",
           "tier": 4,
-          "name": "Bypass unique",
+          "name": "upgrades.decrypt.dc_t4_bypass.name",
           "sp": 3,
           "rp": 1600,
           "req": [
             "dc_t3_blackadapt"
           ],
-          "desc": "Ignore la 1re GLACE 1x/30s",
+          "desc": "upgrades.decrypt.dc_t4_bypass.desc",
           "effect": {
             "bypassCooldownMs": 30000
           }
@@ -133,13 +133,13 @@
         {
           "id": "dc_cap_quantum",
           "tier": 5,
-          "name": "Facto quantique",
+          "name": "upgrades.decrypt.dc_cap_quantum.name",
           "sp": 3,
           "rp": 2000,
           "req": [
             "dc_t4_bypass"
           ],
-          "desc": "Scan révèle chance exacte + scans +25% rapides",
+          "desc": "upgrades.decrypt.dc_cap_quantum.desc",
           "effect": {
             "showScanExact": true,
             "scanLatencyMul": 0.75
@@ -148,15 +148,15 @@
       ]
     },
     "speed": {
-      "name": "Vitesse",
+      "name": "upgrades.speed.name",
       "nodes": [
         {
           "id": "sp_t1_threading",
           "tier": 1,
-          "name": "Threading",
+          "name": "upgrades.speed.sp_t1_threading.name",
           "sp": 1,
           "rp": 300,
-          "desc": "Latence par CPU -10%",
+          "desc": "upgrades.speed.sp_t1_threading.desc",
           "effect": {
             "latencyCpuMul": 0.9
           }
@@ -164,13 +164,13 @@
         {
           "id": "sp_t2_cooldown",
           "tier": 2,
-          "name": "Surcharge froide",
+          "name": "upgrades.speed.sp_t2_cooldown.name",
           "sp": 2,
           "rp": 600,
           "req": [
             "sp_t1_threading"
           ],
-          "desc": "Chaleur décroît +0.5/s",
+          "desc": "upgrades.speed.sp_t2_cooldown.desc",
           "effect": {
             "heatDecayPerSec": 0.5
           }
@@ -178,13 +178,13 @@
         {
           "id": "sp_t3_parallel",
           "tier": 3,
-          "name": "Parallélisme",
+          "name": "upgrades.speed.sp_t3_parallel.name",
           "sp": 2,
           "rp": 900,
           "req": [
             "sp_t2_cooldown"
           ],
-          "desc": "+1 slot programme",
+          "desc": "upgrades.speed.sp_t3_parallel.desc",
           "effect": {
             "slotAdd": 1
           }
@@ -192,13 +192,13 @@
         {
           "id": "sp_t4_overclock",
           "tier": 4,
-          "name": "Overclock stable",
+          "name": "upgrades.speed.sp_t4_overclock.name",
           "sp": 3,
           "rp": 1200,
           "req": [
             "sp_t3_parallel"
           ],
-          "desc": "Capacité CPU +2",
+          "desc": "upgrades.speed.sp_t4_overclock.desc",
           "effect": {
             "cpuAdd": 2
           }
@@ -206,13 +206,13 @@
         {
           "id": "sp_cap_hyper",
           "tier": 5,
-          "name": "Hyperthread",
+          "name": "upgrades.speed.sp_cap_hyper.name",
           "sp": 3,
           "rp": 1600,
           "req": [
             "sp_t4_overclock"
           ],
-          "desc": "25% chance de tentative bonus",
+          "desc": "upgrades.speed.sp_cap_hyper.desc",
           "effect": {
             "extraAttemptPct": 25
           }

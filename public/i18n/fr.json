@@ -10,7 +10,11 @@
     "city": "— Métropole",
     "load": "Charger",
     "activ_tracer": "Traceur actif L",
-    "active_events": "Événements actifs"
+    "active_events": "Événements actifs",
+    "capabilities": "Capacités & programmes",
+    "skills": "Compétences",
+    "installed_hardware": "Matériel installé",
+    "black_market": "Marché noir — matériel & mods"
   },
   "inc": {
     "generators": "Générateurs",
@@ -352,5 +356,31 @@
     "sensor_sweep": {"name": "Balayage capteurs", "log": {"default": "📡 Balayage capteurs — chaleur en cas d’échec +10 (22s)"}},
     "lockdown_protocol": {"name": "Protocole Lockdown", "log": {"default": "🚔 Lockdown — GLACE +12, chances −6%, +2 chaleur/tentative (40s)"}},
     "zero_day_buzz": {"name": "Agitation Zero-Day", "log": {"default": "⚠️ Agitation Zero-Day — récompenses ×1.35, +3 chaleur/tentative, chances −2% (30s)"}}
+  },
+  "upgrades": {
+    "stealth" : {
+      "name":"Furtivité",
+      "st_t1_shroud": {"name": "Shroud I", "desc": "Chaleur en échec -10%"},
+      "st_t2_ghost": {"name": "Ghost Net", "desc": "Événements de sécu -15%"},
+      "st_t3_cloaksync": {"name": "CLOAK Sync", "desc": "CLOAK -10% chaleur supp."},
+      "st_t4_traceevade": {"name": "Trace Evade", "desc": "20% d’éviter la chaleur en échec"},
+      "st_cap_silentrunner": {"name": "Silent Runner", "desc": "Lockout -30% & chaleur max -10 pts"}
+    },
+    "decrypt" : {
+      "name":"Décryptage",
+      "dc_t1_tables": {"name": "Tables optimisées", "desc": "+5% succès plat"},
+      "dc_t2_sidechannel": {"name": "Canaux latéraux", "desc": "+10% crédits"},
+      "dc_t3_blackadapt": {"name": "Anti-Noire/Adapt.", "desc": "+6% succès vs Noire/Adapt."},
+      "dc_t4_bypass": {"name": "Bypass unique", "desc": "Ignore la 1re GLACE 1x/30s"},
+      "dc_cap_quantum": {"name": "Facto quantique", "desc": "Scan révèle chance exacte + scans +25% rapides"}
+    },
+    "speed" : {
+      "name":"Vitesse",
+      "sp_t1_threading": {"name": "Threading", "desc": "Latence par CPU -10%"},
+      "sp_t2_cooldown": {"name": "Surcharge froide", "desc": "Chaleur décroît +0.5/s"},
+      "sp_t3_parallel": {"name": "Parallélisme", "desc": "+1 slot programme"},
+      "sp_t4_overclock": {"name": "Overclock stable", "desc": "Capacité CPU +2"},
+      "sp_cap_hyper": {"name": "Hyperthread", "desc": "25% chance de tentative bonus"}
+    }
   }
 }

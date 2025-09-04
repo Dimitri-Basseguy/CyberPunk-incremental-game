@@ -10,7 +10,11 @@
     "city": "— Metro",
     "load": "Load",
     "activ_tracer": "Active tracer L",
-    "active_events": "Active events"
+    "active_events": "Active events",
+    "capabilities": "Capabilities & Programs",
+    "skills": "Skills",
+    "installed_hardware": "Installed Hardware",
+    "black_market": "Black Market — Hardware & Mods"
   },
   "inc": {
     "generators": "Generators",
@@ -354,5 +358,31 @@
     "sensor_sweep": {"name": "Sensor Sweep", "log": {"default": "📡 Sensor sweep — heat on failure +10 (22s)"}},
     "lockdown_protocol": {"name": "Lockdown Protocol", "log": {"default": "🚔 Lockdown — ICE +12, chances −6%, +2 heat/attempt (40s)"}},
     "zero_day_buzz": {"name": "Zero-Day Buzz", "log": {"default": "⚠️ Zero-Day buzz — rewards ×1.35, +3 heat/attempt, chances −2% (30s)"}}
+  },
+  "upgrades": {
+    "stealth" : {
+      "name":"Stealth",
+      "st_t1_shroud": {"name": "Shroud I", "desc": "Heat on failure -10%"},
+      "st_t2_ghost": {"name": "Ghost Net", "desc": "Security events -15%"},
+      "st_t3_cloaksync": {"name": "CLOAK Sync", "desc": "CLOAK -10% heat"},
+      "st_t4_traceevade": {"name": "Trace Evade", "desc": "20% chance to avoid heat on failure"},
+      "st_cap_silentrunner": {"name": "Silent Runner", "desc": "Lockout -30% & max heat -10"}
+    },
+    "decrypt" : {
+      "name":"Decryption",
+      "dc_t1_tables": {"name": "Optimized Tables", "desc": "+5% flat success"},
+      "dc_t2_sidechannel": {"name": "Side Channels", "desc": "+10% credits"},
+      "dc_t3_blackadapt": {"name": "Anti-Black/Adaptive", "desc": "+6% success vs Black/Adaptive"},
+      "dc_t4_bypass": {"name": "Single-use Bypass", "desc": "Ignores 1st ICE once every 30s"},
+      "dc_cap_quantum": {"name": "Quantum Factorization", "desc": "Scan reveals exact chance + scans 25% faster"}
+    },
+    "speed" : {
+      "name":"Speed",
+      "sp_t1_threading": {"name": "Threading", "desc": "CPU latency -10%"},
+      "sp_t2_cooldown": {"name": "Cold Discharge", "desc": "Heat decreases +0.5/s"},
+      "sp_t3_parallel": {"name": "Parallelism", "desc": "+1 program slot"},
+      "sp_t4_overclock": {"name": "Stable Overclock", "desc": "CPU capacity +2"},
+      "sp_cap_hyper": {"name": "Hyperthread", "desc": "25% chance for bonus attempt"}
+    }
   }
 }

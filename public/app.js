@@ -1677,7 +1677,7 @@ function renderUpgrades(){
     const card = document.createElement('div'); card.className = CARD;
     const title = document.createElement('div');
     title.className = 'font-semibold text-cyan-300 mb-2';
-    title.textContent = branch.name;
+    title.textContent = t(branch.name);
     card.appendChild(title);
 
     // group by tiers
@@ -1701,7 +1701,7 @@ function renderUpgrades(){
         row.className='flex items-start justify-between gap-3 rounded-md border border-white/10 bg-white/5 p-2';
 
         const left = document.createElement('div');
-        left.innerHTML = `<b>${n.name}</b><div class="text-slate-400 text-sm">${n.desc}</div>`;
+        left.innerHTML = `<b>${t(n.name)}</b><div class="text-slate-400 text-sm">${t(n.desc)}</div>`;
         // Coûts
         if (n.rp){
           const pillRp = document.createElement('span');
