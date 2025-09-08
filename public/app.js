@@ -1949,13 +1949,24 @@ function renderGearInstalled(){
     const id = state.gearInstalled[key];
     const item = itemById(id);
     const div = document.createElement('div'); div.className=PILL;
-    div.innerHTML = `<span class="text-slate-400">${label}:</span> ${item? item.name:'—'}`;
+    div.innerHTML = `<span class="text-slate-400">${label}:</span> ${t(item? item.name:'—')}`;
     root.appendChild(div);
   }
   const mods = state.gearInstalled.mods.map(id=>itemById(id)?.name).filter(Boolean);
   const tools = state.gearInstalled.tools.map(id=>itemById(id)?.name).filter(Boolean);
-  const divMods = document.createElement('div'); divMods.className=PILL; divMods.innerHTML = `<span class="text-slate-400">Mods:</span> ${mods.join(', ')||'—'}`; root.appendChild(divMods);
-  const divTools = document.createElement('div'); divTools.className=PILL; divTools.innerHTML = `<span class="text-slate-400">Outils:</span> ${tools.join(', ')||'—'}`; root.appendChild(divTools);
+  const divMods = document.createElement('div'); 
+  divMods.className = PILL; 
+  divMods.innerHTML = `<span class="text-slate-400">Mods:</span> ${
+    mods.length ? mods.map(m => t(m)).join(', ') : '—'
+  }`; 
+  root.appendChild(divMods);
+
+  const divTools = document.createElement('div'); 
+  divTools.className = PILL; 
+  divTools.innerHTML = `<span class="text-slate-400">Outils:</span> ${
+    tools.length ? tools.map(tl => t(tl)).join(', ') : '—'
+  }`; 
+  root.appendChild(divTools);
 }
 
 function serverLine(target, s){
