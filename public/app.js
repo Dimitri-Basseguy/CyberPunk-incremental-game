@@ -281,7 +281,7 @@ function bumpHardeningIfNeeded(target, server, observedChance, reason='mise à j
   h.last = now;
 
   if (ADAPTIVE.log){
-    addLog(`🛡️ <b>${target.name} › ${server.name}</b> — ${t('logs.fortification')} ${reason} (${t('logs.ice_text')} +${ADAPTIVE.icePerLevel*applied}, L${h.lvl})`);
+    addLog(`🛡️ <b>${t(target.name)} › ${t(server.name)}</b> — ${t('logs.fortification')} ${reason} (${t('logs.ice_text')} +${ADAPTIVE.icePerLevel*applied}, L${h.lvl})`);
   }
 
   // re-calcul immédiat de la chance connue (si scannée)
