@@ -29,12 +29,18 @@
 <body class="min-h-screen text-sky-50  bg-[#0b0f14] selection:bg-cyan-500/30 selection:text-white">
   <div class="max-w-[1180px] mx-auto p-4">
     <div class="grid grid-cols-[1fr_auto] gap-3 items-center mb-3">
-      <h1 class="text-xl tracking-wider font-semibold">CYBERNETRUNNER <span class="text-cyan-300/80 text-sm">— Go Net running now !</span><span class="text-xs"> v 0.2</span></h1>
+      <p class="text-xl tracking-wider font-semibold">CYBERNETRUNNER <span class="text-cyan-300/80 text-sm">— Go Net running now !</span><span class="text-xs"> v 0.2</span></>
+      <h1>Cyberpunk Hacking Netrunner Browser Game</h1>
       <div class="flex flex-col md:flex-row gap-2">
         <button id="saveBtn" class="inline-flex items-center px-3 py-2 rounded-lg border border-white/15 bg-white/10 hover:bg-white/15 font-semibold">Sauvegarder</button>
         <button id="resetBtn" class="inline-flex items-center px-3 py-2 rounded-lg border border-white/15 bg-white/10 hover:bg-white/15 font-semibold">Réinitialiser</button>
         <a href="./support.html" class="inline-flex items-center px-3 py-2 rounded-lg border border-white/15 bg-white/10 hover:bg-white/15 font-semibold"><img src="./assets/imgs/support.png" alt="support me" class="mr-2"> Support</a>
       </div>
+    </div>
+
+    <div class="my-4">
+      <h2 data-i18n="ui.intro_title">CyberNetrunner : le browser game cyberpunk ultime pour les fans de hacking !</h2>
+      <p class="text-sm" data-i18n="ui.intro_text">Plongez dans l’univers futuriste de CyberNetrunner, un browser game inspiré du genre cyberpunk et des jeux de netrunner. Incarnez un hacker de talent, infiltrez les réseaux des plus grandes corporations, améliorez vos compétences et votre équipement, et relevez des défis uniques directement depuis votre navigateur. Ce jeu cyberpunk vous propose une expérience immersive de netrunning, avec des missions, des événements dynamiques et une progression basée sur vos choix. Rejoignez les netrunners et devenez le maître du hacking dans ce browser game innovant et gratuit !</p>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -166,11 +172,12 @@
       <h2 class="text-cyan-300 font-semibold mb-2" data-i18n="ui.active_events">Événements actifs</h2>
       <div id="eventsTicker" class="flex flex-col gap-2"></div>
     </section>
-
+    
     <section class="rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-900/70 p-3 shadow-inner mt-4">
       <h2 class="text-cyan-300 font-semibold mb-2">Console</h2>
       <div id="log" class="h-52 overflow-auto bg-gradient-to-br from-slate-800 to-slate-950 rounded-xl p-2 border border-white/10 font-mono text-xs lg:text-sm text-lime-400 scrollbar-neon"></div>
     </section>
+
   </div>
 
   <script defer src="data-loader.js"></script>

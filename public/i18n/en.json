@@ -14,7 +14,9 @@
     "capabilities": "Capabilities & Programs",
     "skills": "Skills",
     "installed_hardware": "Installed Hardware",
-    "black_market": "Black Market — Hardware & Mods"
+    "black_market": "Black Market — Hardware & Mods",
+    "intro_title": "CyberNetrunner: the ultimate cyberpunk browser game for hacking fans!",
+    "intro_text": "Dive into the futuristic world of CyberNetrunner, a browser game inspired by the cyberpunk genre and Netrunner games. Play as a skilled hacker, infiltrate the networks of major corporations, upgrade your skills and equipment, and take on unique challenges directly from your browser. This cyberpunk game offers an immersive netrunning experience, with missions, dynamic events, and progression based on your choices. Join the netrunners and become the master of hacking in this innovative and free browser game!"
   },
   "inc": {
     "generators": "Generators",
