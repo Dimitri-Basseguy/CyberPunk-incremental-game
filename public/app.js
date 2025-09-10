@@ -9,6 +9,10 @@ const PILL = 'inline-flex items-center gap-1.5 px-1 py-0.5 rounded-full border b
 const PROGRESS_OUTER = 'h-2 bg-white/10 rounded-full overflow-hidden mt-1.5';
 const PROGRESS_INNER = 'block h-full bg-gradient-to-r from-neon-cyan to-neon-fuchsia';
 
+// === Game constants ===
+const LOOT_REP_MULTIPLICATE = 0.01; // +1% par point de Réputation
+const LOOT_CRT_MULTIPLICATE = 0.02; // +2% par point de Crédits/hack
+
 // === i18n (FR/EN) minimal ===
 const SUPPORTED_LANGS = ['fr','en'];
 const DEFAULT_LANG = 'fr';
@@ -505,7 +509,7 @@ function rewardMul(target, server){
   let m = ECONOMY.base * (target.kind === 'city' ? ECONOMY.cityMul : ECONOMY.corpMul);
 
   // multiplicateurs existants (programmes/ups + réputation)
-  m *= (pm.rewardMul || 1) * (um.rewardMul || 1) * (1 + (state.rep * 0.02));
+  m *= (pm.rewardMul || 1) * (um.rewardMul || 1) * (1 + (state.rep * LOOT_CRT_MULTIPLICATE)); // multiplicateur credits/hack
   if (g.successAdd) m *= (1 + g.successAdd * 0.2);
 
   // taxe de chaleur (linéaire selon la chaleur actuelle)
@@ -549,9 +553,9 @@ function addLootItem(id, name, base, qty){
   state.loot[id] = cur;
 }
 
-function lootUnitPrice(base, asFloat=false){
+function lootUnitPrice(base, asFloat=false, name='Objet inconnu'){
   // autorise les valeurs < 1$ ; la réputation s'applique aussi
-  const repMul = 1 + Math.max(0, state.rep)*0.02;
+  const repMul = 1 + Math.max(0, state.rep)*LOOT_REP_MULTIPLICATE // multiplicateur réputation;
   const val = (Number(base)||1) * repMul;
   return asFloat ? val : Math.round(val); // version entière si besoin ailleurs
 }
@@ -567,7 +571,7 @@ function sellLoot(id, qty=null){
   if(n<=0) return;
 
   // prix unitaire en float (peut être < 1)
-  const unit = lootUnitPrice(it.base, true);
+  const unit = lootUnitPrice(it.base, true, it.name);
   const gain = Math.round((unit * n) * 100) / 100; // arrondi 2 décimales
 
   state.creds = Math.round((state.creds + gain) * 100) / 100;
@@ -582,7 +586,7 @@ function sellAllLoot(){
   if(!state.loot) return;
   let gain=0, parts=[];
   for (const [id,it] of Object.entries(state.loot)){
-    const unit = lootUnitPrice(it.base, true);
+    const unit = lootUnitPrice(it.base, true, it.name);
     gain += unit * it.qty;
     parts.push(`${it.qty}× ${it.name}`);
   }
